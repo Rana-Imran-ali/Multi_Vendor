@@ -485,6 +485,4 @@
         </div>
         <!--end::App Content-->
       </main>
-      @endsection
-      <!--end::App Main-->
-      
+@endsection

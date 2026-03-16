@@ -46,18 +46,17 @@
       @include('admin.layout.sidebar')
       {{-- end sider bar --}}
 
-  {{-- footer begain --}}
-      @include('admin.layout.footer')
-  {{-- footer end --}}
+      @yield('content')
 
-      <!--end::App Main-->
+      {{-- footer begain --}}
+      @include('admin.layout.footer')
+      {{-- footer end --}}
       
     </div>
     <!--end::App Wrapper-->
     <!--begin::Script-->
     @include('admin.layout.scripts' )
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    @yield ('content')
     
   </body>
   <!--end::Body-->
