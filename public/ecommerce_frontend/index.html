@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendo | Premium Multi-Vendor Marketplace</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Home Specific Styles */
+        .hero {
+            position: relative;
+            height: calc(100vh - var(--navbar-height));
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            background: radial-gradient(circle at top right, var(--primary-light) 0%, var(--background) 50%);
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+        .hero-content { max-width: 650px; z-index: 2; position: relative; }
+        .hero h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        .hero h1 span { color: var(--primary); }
+        .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 2.5rem; max-width: 500px; }
+        
+        .hero-graphics { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: 45%; max-width: 650px; z-index: 1; pointer-events: none; }
+        .hero-graphics-placeholder { width: 100%; height: 500px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 2rem; animation: floating 6s ease-in-out infinite; filter: drop-shadow(0 25px 35px rgba(0,0,0,0.1)); display: flex; align-items: center; justify-content: center; color: white; opacity: 0.1; }
+        @keyframes floating { 0% { transform: translateY(0); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0); } }
+
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+        .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.5rem 1.5rem; text-align: center; transition: var(--transition); display: block; }
+        .cat-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); background: radial-gradient(circle at top right, var(--surface) 0%, var(--primary-light) 150%); }
+        .cat-icon { width: 70px; height: 70px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.25rem; transition: var(--transition); }
+        .cat-card:hover .cat-icon { background: var(--primary); color: #fff; transform: scale(1.1); }
+        .cat-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text); }
+        .cat-card p { font-size: 0.85rem; color: var(--text-muted); }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 1.25rem; overflow: hidden; transition: var(--transition); position: relative; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+        .product-img { position: relative; aspect-ratio: 1; background: var(--background); display: flex; align-items: center; justify-content: center; }
+        .product-img i { font-size: 3rem; color: var(--border); }
+        .product-badge { position: absolute; top: 1rem; left: 1rem; background: var(--accent); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 0.5rem; z-index: 2; }
+        .product-actions { position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; opacity: 0; transform: translateX(10px); transition: var(--transition); z-index: 2; }
+        .product-card:hover .product-actions { opacity: 1; transform: translateX(0); }
+        .product-action-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); transition: var(--transition); border: 1px solid var(--border); }
+        .product-action-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .product-info { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-vendor { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.25rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        .product-vendor:hover { color: var(--primary); }
+        .product-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-title:hover { color: var(--primary); }
+        .product-rating { color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem; display: flex; gap: 0.2rem; }
+        .product-rating span { color: var(--text-muted); margin-left: 0.25rem; }
+        .product-price-row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .price-box { display: flex; align-items: baseline; gap: 0.5rem; }
+        .price { font-weight: 800; font-size: 1.25rem; color: var(--primary); }
+        .old-price { text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; }
+        
+        .deals-section { background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%); padding: 6rem 0; border-radius: 2rem; margin: 5rem 0; border: 1px solid var(--primary-light); }
+        .deals-content { text-align: center; max-width: 600px; margin: 0 auto; }
+        .deals-content h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text); }
+        .deals-content p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; }
+        .countdown { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .cd-box { background: var(--surface); width: 85px; height: 85px; border-radius: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+        .cd-num { font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1; }
+        .cd-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-top: 0.25rem; }
+
+        .vendor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .vendor-card { display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1.5rem; border: 1px solid var(--border); border-radius: 1rem; transition: var(--transition); }
+        .vendor-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+        .vendor-img { width: 65px; height: 65px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.5rem; flex-shrink: 0; }
+        .vendor-info h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text); }
+        .vendor-info p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .vendor-badge { display: inline-block; background: var(--secondary); color: white; border-radius: 2rem; padding: 0.15rem 0.6rem; font-size: 0.7rem; font-weight: bold; }
+
+        .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        .testimonial-card { background: var(--surface); padding: 2.5rem 2rem; border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); position: relative; }
+        .testimonial-card::before { content: '\f10d'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: 1.5rem; right: 2rem; font-size: 3rem; color: var(--primary-light); opacity: 0.5; }
+        .testimonial-text { font-style: italic; color: var(--text-muted); margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.7; position: relative; z-index: 1; }
+        .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+        .author-img { width: 55px; height: 55px; border-radius: 50%; background: var(--background); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-muted); border: 2px solid var(--white); box-shadow: var(--shadow-sm); }
+        .author-info h5 { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+        .author-info p { font-size: 0.85rem; color: var(--text-muted); }
+        
+        .newsletter { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); padding: 6rem 2rem; border-radius: 2rem; margin: 6rem 0; color: #fff; text-align: center; position: relative; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.3); }
+        .newsletter::after { content: ''; position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none; }
+        .newsletter h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; position: relative; z-index: 1; }
+        .newsletter p { font-size: 1.15rem; opacity: 0.9; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; position: relative; z-index: 1; }
+        .nl-form { max-width: 550px; margin: 0 auto; display: flex; gap: 0.5rem; background: #fff; padding: 0.5rem; border-radius: 3rem; position: relative; z-index: 1; }
+        .nl-form input { flex: 1; border: none; background: transparent; padding: 0.5rem 1.5rem; font-size: 1rem; font-family: inherit; color: var(--text); }
+        .nl-form input:focus { outline: none; }
+        .nl-form .btn { border-radius: 2.5rem; padding: 0.75rem 2.5rem; font-size: 1rem; }
+
+        @media (max-width: 1024px) {
+            .hero-graphics { display: none; }
+            .hero-content { text-align: center; margin: 0 auto; }
+            .hero { text-align: center; }
+            .hero .btn-group { justify-content: center; flex-wrap: wrap; display:flex; gap:1rem; }
+            .nl-form { flex-direction: column; background: transparent; padding: 0; }
+            .nl-form input { background: #fff; border-radius: 1rem; padding: 1.25rem; margin-bottom: 0.5rem; }
+            .nl-form .btn { border-radius: 1rem; padding: 1.25rem; width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR START -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-store"></i> <span>Vendo</span>
+            </a>
+
+            <!-- Search Bar (Desktop) -->
+            <div class="nav-search desktop-only">
+                <input type="text" placeholder="Search products...">
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link active">Home</a></li>
+                <li><a href="shop.html" class="nav-link">Shop</a></li>
+                
+                <li class="dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">
+                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-laptop fa-fw"></i> Electronics</a></li>
+                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-shirt fa-fw"></i> Fashion</a></li>
+                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-couch fa-fw"></i> Home Decor</a></li>
+                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-dumbbell fa-fw"></i> Sports</a></li>
+                    </ul>
+                </li>
+                
+                <li><a href="vendor.html" class="nav-link">Vendors</a></li>
+                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                
+                <li class="mobile-only"><a href="auth.html" class="btn btn-outline"><i class="fa-regular fa-user"></i> Login / Register</a></li>
+                <li class="mobile-only"><a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </a>
+                <a href="product.html" class="icon-btn" title="Wishlist">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="badge">3</span>
+                </a>
+                <a href="cart.html" class="icon-btn" title="Cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="badge badge-primary">2</span>
+                </a>
+                
+                <a href="auth.html" class="btn btn-outline desktop-only">Login</a>
+                <a href="seller.html" class="btn btn-accent desktop-only"><i class="fa-solid fa-crown"></i> Become a Seller</a>
+            </div>
+
+            <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
+        </div>
+    </nav>
+    <div class="mobile-overlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content fade-in">
+                    <h1>Discover the Best <span>Independent Sellers</span> Worldwide</h1>
+                    <p>Shop thousands of exclusive products from curated vendors. Electronics, fashion, home decor, and more delivered straight to your door.</p>
+                    <div class="btn-group">
+                        <a href="shop.html" class="btn btn-primary"><i class="fa-solid fa-cart-shopping"></i> Shop Now</a>
+                        <a href="vendor.html" class="btn btn-outline"><i class="fa-solid fa-shop"></i> Browse Vendors</a>
+                    </div>
+                </div>
+                <div class="hero-graphics">
+                    <div class="hero-graphics-placeholder"><i class="fa-solid fa-image fa-4x"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIES -->
+        <section class="section-padding container">
+            <div class="section-title fade-in">Top Categories</div>
+            <div class="section-subtitle fade-in">Explore our wide range of premium collections</div>
+            
+            <div class="category-grid">
+                <a href="shop.html" class="cat-card fade-in delay-1">
+                    <div class="cat-icon"><i class="fa-solid fa-headphones-simple"></i></div>
+                    <h3>Electronics</h3>
+                    <p>4,231 Products</p>
+                </a>
+                <a href="shop.html" class="cat-card fade-in delay-2">
+                    <div class="cat-icon"><i class="fa-solid fa-shoe-prints"></i></div>
+                    <h3>Fashion</h3>
+                    <p>8,512 Products</p>
+                </a>
+                <a href="shop.html" class="cat-card fade-in delay-3">
+                    <div class="cat-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                    <h3>Home Decor</h3>
+                    <p>1,240 Products</p>
+                </a>
+                <a href="shop.html" class="cat-card fade-in delay-1">
+                    <div class="cat-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                    <h3>Sports</h3>
+                    <p>2,100 Products</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- PRODUCTS GRID -->
+        <section class="section-padding container">
+            <div class="section-title fade-in">Featured Products</div>
+            <div class="section-subtitle fade-in">Handpicked items perfectly curated for you</div>
+
+            <div class="product-grid">
+                <div class="product-card fade-in">
+                    <div class="product-badge">NEW</div>
+                    <div class="product-img">
+                        <i class="fa-solid fa-laptop"></i>
+                        <div class="product-actions">
+                            <button class="product-action-btn" title="Add to Wishlist"><i class="fa-regular fa-heart"></i></button>
+                            <button class="product-action-btn" title="Quick View"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <a href="vendor.html" class="product-vendor">TechNova Store</a>
+                        <a href="product.html" class="product-title">ProBook Z15 Ultra Slim Laptop - 16GB RAM</a>
+                        <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i><span>(124)</span></div>
+                        <div class="product-price-row">
+                            <div class="price-box"><span class="price">$1,299.00</span></div>
+                            <button class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in delay-1">
+                    <div class="product-badge" style="background:var(--secondary);">SALE</div>
+                    <div class="product-img">
+                        <i class="fa-solid fa-camera"></i>
+                        <div class="product-actions">
+                            <button class="product-action-btn"><i class="fa-regular fa-heart"></i></button>
+                            <button class="product-action-btn"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <a href="vendor.html" class="product-vendor">Camerix</a>
+                        <a href="product.html" class="product-title">Mirrorless Digital Camera V2 - 4K Video Lens Kit</a>
+                        <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span>(45)</span></div>
+                        <div class="product-price-row">
+                            <div class="price-box"><span class="price">$849.00</span><span class="old-price">$999.00</span></div>
+                            <button class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in delay-2">
+                    <div class="product-badge">HOT</div>
+                    <div class="product-img">
+                        <i class="fa-solid fa-watch"></i>
+                        <div class="product-actions">
+                            <button class="product-action-btn"><i class="fa-regular fa-heart"></i></button>
+                            <button class="product-action-btn"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <a href="vendor.html" class="product-vendor">Style Wear</a>
+                        <a href="product.html" class="product-title">Luxury Chronograph Men's Watch - Stainless Steel</a>
+                        <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i><span>(88)</span></div>
+                        <div class="product-price-row">
+                            <div class="price-box"><span class="price">$245.00</span></div>
+                            <button class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEALS COUNTDOWN -->
+        <section class="container fade-in">
+            <div class="deals-section">
+                <div class="deals-content">
+                    <h2>Deals of the Day</h2>
+                    <p>Don't miss out on these exclusive offers. Limited time only up to 60% off combined with free shipping.</p>
+                    <div class="countdown">
+                        <div class="cd-box"><span class="cd-num">02</span><span class="cd-text">DAYS</span></div>
+                        <div class="cd-box"><span class="cd-num">14</span><span class="cd-text">HOURS</span></div>
+                        <div class="cd-box"><span class="cd-num">45</span><span class="cd-text">MINS</span></div>
+                        <div class="cd-box"><span class="cd-num" id="sec-cnt">30</span><span class="cd-text">SECS</span></div>
+                    </div>
+                    <a href="shop.html" class="btn btn-accent"><i class="fa-solid fa-bolt"></i> Shop Deals Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOP VENDORS -->
+        <section class="section-padding container">
+            <div class="section-title fade-in">Top Vendors</div>
+            <div class="section-subtitle fade-in">Shop directly from our highest rated independent stores</div>
+            <div class="vendor-grid">
+                <a href="vendor.html" class="vendor-card fade-in delay-1">
+                    <div class="vendor-img"><i class="fa-solid fa-shop"></i></div>
+                    <div class="vendor-info">
+                        <h4>TechNova Store</h4>
+                        <p><i class="fa-solid fa-star" style="color:var(--accent)"></i> 4.9 (1,240 Reviews)</p>
+                        <span class="vendor-badge">Pro Seller</span>
+                    </div>
+                </a>
+                <a href="vendor.html" class="vendor-card fade-in delay-2">
+                    <div class="vendor-img"><i class="fa-solid fa-camera"></i></div>
+                    <div class="vendor-info">
+                        <h4>Camerix Photography</h4>
+                        <p><i class="fa-solid fa-star" style="color:var(--accent)"></i> 4.8 (850 Reviews)</p>
+                        <span class="vendor-badge" style="background:var(--primary)">Brand</span>
+                    </div>
+                </a>
+                <a href="vendor.html" class="vendor-card fade-in delay-3">
+                    <div class="vendor-img"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="vendor-info">
+                        <h4>Urban Threads</h4>
+                        <p><i class="fa-solid fa-star" style="color:var(--accent)"></i> 4.7 (3,400 Reviews)</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- NEWSLETTER -->
+        <section class="container fade-in">
+            <div class="newsletter">
+                <h2>Never Miss a Deal</h2>
+                <p>Subscribe to our newsletter and get exclusive access to flash sales, unique vendor drops, and 10% off your first order.</p>
+                <form class="nl-form" onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="Enter your email address..." required>
+                    <button type="submit" class="btn btn-accent">Subscribe</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
+                    <p>The premium multi-vendor marketplace connecting you with independent creators and established brands worldwide.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="shop.html">Shop Categories</a></li>
+                        <li><a href="vendor.html">Our Vendors</a></li>
+                        <li><a href="blog.html">Latest News & Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Customer Service</h4>
+                    <ul>
+                        <li><a href="auth.html">My Account</a></li>
+                        <li><a href="#">Track Order</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Make Money With Us</h4>
+                    <ul>
+                        <li><a href="seller.html">Sell on Vendo</a></li>
+                        <li><a href="seller.html">Vendor Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vendo Marketplace. All rights reserved.</p>
+                <div style="display:flex;gap:1.5rem;">
+                    <i class="fa-brands fa-cc-visa fa-2x"></i>
+                    <i class="fa-brands fa-cc-mastercard fa-2x"></i>
+                    <i class="fa-brands fa-cc-paypal fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App JS -->
+    <script src="js/app.js"></script>
+    <script>
+        const secCnt = document.getElementById('sec-cnt');
+        if(secCnt) {
+            setInterval(() => {
+                let s = parseInt(secCnt.textContent);
+                if(s > 0) { secCnt.textContent = (s-1 < 10 ? '0' : '') + (s-1); } else { secCnt.textContent = '59'; }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
