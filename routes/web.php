@@ -14,5 +14,19 @@ Route::prefix('admin') ->group(function () {
     Route::get('login', [AdminController::class, 'create'])->name('admin.login');   
     Route::group(['middleware' => 'admin'], function () {
         Route::resource('dashboard', AdminController::class)->only(['index']);
+
+        // Pages Management Routes
+        Route::prefix('pages')->name('admin.pages.')->group(function () {
+            Route::get('home', [\App\Http\Controllers\Admin\PageController::class, 'home'])->name('home');
+            Route::get('shop', [\App\Http\Controllers\Admin\PageController::class, 'shop'])->name('shop');
+            Route::get('product', [\App\Http\Controllers\Admin\PageController::class, 'product'])->name('product');
+            Route::get('vendor', [\App\Http\Controllers\Admin\PageController::class, 'vendor'])->name('vendor');
+            Route::get('seller', [\App\Http\Controllers\Admin\PageController::class, 'seller'])->name('seller');
+            Route::get('blog', [\App\Http\Controllers\Admin\PageController::class, 'blog'])->name('blog');
+            Route::get('contact', [\App\Http\Controllers\Admin\PageController::class, 'contact'])->name('contact');
+            Route::get('cart', [\App\Http\Controllers\Admin\PageController::class, 'cart'])->name('cart');
+            Route::get('checkout', [\App\Http\Controllers\Admin\PageController::class, 'checkout'])->name('checkout');
+            Route::get('auth', [\App\Http\Controllers\Admin\PageController::class, 'auth'])->name('auth');
+        });
     });
 });

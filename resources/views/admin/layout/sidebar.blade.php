@@ -68,6 +68,77 @@
               </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-file-earmark-text"></i>
+                  <p>
+                    Pages Management
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.home') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Home Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.shop') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Shop Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.product') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Product Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.vendor') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Vendor Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.seller') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Become a Seller</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.blog') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Blog Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.contact') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Contact Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.cart') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Cart Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.checkout') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Checkout Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.pages.auth') }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Auth Pages</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-box-seam-fill"></i>
                   <p>
                     Widgets
