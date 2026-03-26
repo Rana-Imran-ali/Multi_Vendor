@@ -230,6 +230,26 @@ img { max-width: 100%; height: auto; display: block; }
     .nav-actions .btn { display: none; } /* Hide desktop login CTA on small devices */
 }
 
+/* Auth Role Utilitites */
+/* By default, guest objects might be shown. app.js handles visibility based on role */
+/* Handled mainly in JS, but we can set defaults */
+.admin-only, .vendor-only { display: none !important; }
+
+/* Mega Menu Styles */
+.mega-dropdown { position: static !important; }
+.mega-menu { width: 100% !important; max-width: 900px !important; transform: translateY(15px) !important; padding: 2rem !important; }
+.mega-dropdown:hover .mega-menu { transform: translateY(0) scale(1) !important; }
+.mega-col h5 { font-size: 1.05rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.mega-col a { transition: var(--transition); text-decoration: none; display: block; }
+.mega-col a:hover { color: var(--primary) !important; padding-left: 0.5rem; }
+.dropdown-menu.mega-menu { visibility: hidden; opacity: 0; }
+.dropdown-menu.mega-menu.active { visibility: visible; opacity: 1; transform: translateY(0) scale(1) !important; }
+@media (max-width: 1024px) {
+    .mega-menu { position: static !important; width: 100% !important; transform: none !important; padding: 1rem !important; box-shadow: none !important; border:none !important; border-left: 2px solid var(--primary-light) !important; border-radius: 0 !important; }
+    .mega-menu-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+    .mega-banner { display: none; }
+}
+
 /* =========================================================
    FOOTER
    ========================================================= */

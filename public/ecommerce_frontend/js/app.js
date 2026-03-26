@@ -1,5 +1,85 @@
 document.addEventListener('DOMContentLoaded', () => {
     
+    // 0. Auth Role Logic (Mock for Prototype)
+    // Change this to test different roles: 'guest', 'user', 'vendor', 'admin'
+    const currentUser = {
+        isLoggedIn: true,
+        role: 'user', // Default test role
+        name: 'Alex Johnson'
+    };
+    
+    // For demo purposes, check URL params to easily test roles: ?role=admin
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('role')) {
+        currentUser.role = urlParams.get('role');
+        currentUser.isLoggedIn = currentUser.role !== 'guest';
+    }
+
+    if (currentUser.isLoggedIn) {
+        document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.auth-only').forEach(el => {
+            // Check if it has specific role classes
+            const isVendorOnly = el.classList.contains('vendor-only');
+            const isAdminOnly = el.classList.contains('admin-only');
+            const isAuthUserOnly = el.classList.contains('auth-user-only');
+            
+            if (isVendorOnly && currentUser.role !== 'vendor') {
+                el.style.display = 'none';
+            } else if (isAdminOnly && currentUser.role !== 'admin') {
+                el.style.display = 'none';
+            } else if (isAuthUserOnly && (currentUser.role === 'vendor' || currentUser.role === 'admin')) {
+                el.style.display = 'none';
+            } else {
+                if (el.tagName === 'LI' || el.classList.contains('dropdown')) {
+                    el.style.display = '';
+                } else if (el.classList.contains('icon-btn') || el.classList.contains('btn') || el.classList.contains('desktop-only')){
+                    el.style.display = 'flex'; 
+                } else {
+                    el.style.display = 'block';
+                }
+            }
+        });
+        
+        // Update Name
+        document.querySelectorAll('.navUserName').forEach(el => el.textContent = currentUser.name);
+        document.querySelectorAll('.navUserRole').forEach(el => el.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1));
+    } else {
+        document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.guest-only').forEach(el => {
+            if (el.tagName === 'LI' || el.classList.contains('dropdown')) {
+                el.style.display = '';
+            } else if (el.classList.contains('desktop-only') || el.classList.contains('btn')){
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'block';
+            }
+        });
+    }
+
+    // Logout mock
+    document.querySelectorAll('.mobileLogoutBtn, .desktopLogoutBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = window.location.pathname + '?role=guest';
+        });
+    });
+
+    // Mega menu desktop interaction logic
+    const megaDropdown = document.querySelector('.mega-dropdown');
+    const megaMenu = document.querySelector('.mega-menu');
+    if(megaDropdown && megaMenu && window.innerWidth > 1024) {
+        let timeout;
+        megaDropdown.addEventListener('mouseenter', () => {
+            clearTimeout(timeout);
+            megaMenu.classList.add('active');
+        });
+        megaDropdown.addEventListener('mouseleave', () => {
+            timeout = setTimeout(() => {
+                megaMenu.classList.remove('active');
+            }, 200);
+        });
+    }
+
     // 1. Sticky Navbar & Shadow
     const navbar = document.querySelector('.navbar');
     if(navbar) {
