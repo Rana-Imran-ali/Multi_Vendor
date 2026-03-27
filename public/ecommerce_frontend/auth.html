@@ -67,7 +67,7 @@
             <div class="auth-forms-wrapper">
                 
                 <!-- LOGIN FORM -->
-                <form id="login-form" class="auth-form active" onsubmit="event.preventDefault(); window.location.href='index.html';">
+                <form id="login-form" class="auth-form active">
                     <div class="auth-header">
                         <h2>Welcome Back</h2>
                         <p>Enter your details to access your account.</p>
@@ -99,7 +99,7 @@
                 </form>
 
                 <!-- REGISTER FORM -->
-                <form id="register-form" class="auth-form" onsubmit="event.preventDefault(); window.location.href='index.html';">
+                <form id="register-form" class="auth-form">
                     <div class="auth-header">
                         <h2>Create Account</h2>
                         <p>Join millions of shoppers discovering unique items.</p>
@@ -171,6 +171,82 @@
                 }, 100);
             }
         }
+
+        // Login Logic
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            const btn = this.querySelector('button[type="submit"]');
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing In...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    localStorage.setItem('auth_token', data.data.token);
+                    localStorage.setItem('user_data', JSON.stringify(data.data.user));
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (err) {
+                alert('Connection error');
+            } finally {
+                btn.innerHTML = 'Sign In';
+                btn.disabled = false;
+            }
+        });
+
+        // Register Logic
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const inputs = this.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+            const name = inputs[0].value + ' ' + inputs[1].value;
+            const email = inputs[2].value;
+            const password = inputs[3].value;
+            const btn = this.querySelector('button[type="submit"]');
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing Up...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name,
+                        email: email, 
+                        password: password,
+                        password_confirmation: password,
+                        role: 'user' // Default to user
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    localStorage.setItem('auth_token', data.data.token);
+                    localStorage.setItem('user_data', JSON.stringify(data.data.user));
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message || Object.values(data.errors || {})[0] || 'Registration failed');
+                }
+            } catch (err) {
+                alert('Connection error');
+            } finally {
+                btn.innerHTML = 'Sign Up';
+                btn.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>

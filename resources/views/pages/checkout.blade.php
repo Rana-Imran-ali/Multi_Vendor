@@ -1,0 +1,245 @@
+@extends('layouts.app')
+
+@section('title', 'Checkout | Vendo')
+
+@push('styles')
+<style>
+    .checkout-layout { display: flex; gap: 4rem; align-items: flex-start; margin-top: 3rem; margin-bottom: 5rem; }
+    .checkout-form-container { flex: 1; }
+    
+    .checkout-step { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
+    .checkout-step h3 { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+    .checkout-step h3 span { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .full-width { grid-column: 1 / -1; }
+    
+    /* Payment Methods */
+    .payment-methods { display: flex; flex-direction: column; gap: 1rem; }
+    .payment-option { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border: 1px solid var(--border); border-radius: 0.75rem; cursor: pointer; transition: var(--transition); background: var(--background); }
+    .payment-option:hover { border-color: var(--primary); }
+    .payment-option.active { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 1px var(--primary); }
+    
+    .radio-custom { width: 1.25rem; height: 1.25rem; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; }
+    .payment-option.active .radio-custom { border-color: var(--primary); }
+    .payment-option.active .radio-custom::after { content: ''; width: 0.6rem; height: 0.6rem; background: var(--primary); border-radius: 50%; }
+    
+    .payment-details { display: flex; align-items: center; }
+    .payment-details span { font-weight: 600; color: var(--text); font-size: 1.05rem; }
+    .payment-icons { display: flex; gap: 0.5rem; color: var(--text-muted); font-size: 1.5rem; }
+    .payment-icons i.fa-cc-visa { color: #1a1f71; }
+    .payment-icons i.fa-cc-mastercard { color: #eb001b; }
+    .payment-icons i.fa-cc-paypal { color: #00457c; }
+
+    /* Summary Sidebar (similar to cart) */
+    .order-summary { width: 400px; flex-shrink: 0; position: sticky; top: calc(var(--navbar-height) + 2rem); }
+    .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow-lg); }
+    .summary-box h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+    
+    .checkout-items { max-height: 300px; overflow-y: auto; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .c-item { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+    .c-item-img { width: 60px; height: 60px; background: var(--background); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-muted); border: 1px solid var(--border); position: relative; flex-shrink: 0;}
+    .c-item-qty { position: absolute; top: -8px; right: -8px; background: var(--secondary); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .c-item-details { flex: 1; }
+    .c-item-title { font-weight: 600; font-size: 0.95rem; color: var(--text); line-height: 1.3; margin-bottom: 0.25rem; }
+    .c-item-price { font-weight: 700; color: var(--primary); }
+    
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-muted); font-size: 1rem; }
+    .summary-row span:last-child { font-weight: 600; color: var(--text); }
+    .summary-total { border-top: 1px solid var(--border); margin-top: 1.5rem; padding-top: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text); }
+    .summary-total span:last-child { color: var(--primary); font-size: 1.5rem; }
+    
+    .place-order-btn { width: 100%; margin-top: 2rem; padding: 1.25rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 1.15rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
+
+    @media (max-width: 1024px) {
+        .checkout-layout { flex-direction: column-reverse; gap: 2rem; }
+        .order-summary { width: 100%; position: static; }
+        .form-grid { grid-template-columns: 1fr; }
+    }
+</style>
+@endpush
+
+@section('content')
+
+<div class="page-header" style="padding: 4rem 0 2rem;">
+    <div class="container fade-in">
+        <h1 style="font-size:2.5rem;">Checkout</h1>
+    </div>
+</div>
+
+<!-- MAIN CHECKOUT -->
+<section class="container fade-in delay-1">
+    <form class="checkout-layout" onsubmit="event.preventDefault(); window.location.href='{{ url('/') }}';">
+        
+        <!-- Forms -->
+        <div class="checkout-form-container">
+            
+            <!-- Step 1: Shipping -->
+            <div class="checkout-step fade-in">
+                <h3><span>1</span> Shipping Address</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Street Address</label>
+                        <input type="text" class="form-control" placeholder="House number and street name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">State / Province</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ZIP / Postal Code</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <select class="form-control" required>
+                            <option>United States</option>
+                            <option>United Kingdom</option>
+                            <option>Canada</option>
+                            <option>Australia</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Payment Method -->
+            <div class="checkout-step fade-in delay-1">
+                <h3><span>2</span> Payment Method</h3>
+                <div class="payment-methods">
+                    
+                    <label class="payment-option active">
+                        <div class="payment-details">
+                            <span class="radio-custom"></span>
+                            <span>Credit / Debit Card</span>
+                        </div>
+                        <div class="payment-icons">
+                            <i class="fa-brands fa-cc-visa"></i>
+                            <i class="fa-brands fa-cc-mastercard"></i>
+                        </div>
+                        <input type="radio" name="payment" value="card" checked style="display:none">
+                    </label>
+                    
+                    <!-- Mini Credit Card Form -->
+                    <div style="padding: 1rem 1.5rem; background: var(--background); border: 1px solid var(--border); border-top: none; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; margin-top: -1rem; margin-bottom: 1rem;">
+                        <div class="form-group full-width">
+                            <label class="form-label">Card Number</label>
+                            <input type="text" class="form-control" placeholder="0000 0000 0000 0000">
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" placeholder="MM/YY">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVC</label>
+                                <input type="text" class="form-control" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="payment-option">
+                        <div class="payment-details">
+                            <span class="radio-custom"></span>
+                            <span>PayPal</span>
+                        </div>
+                        <div class="payment-icons">
+                            <i class="fa-brands fa-cc-paypal" style="color:var(--text);"></i>
+                        </div>
+                        <input type="radio" name="payment" value="paypal" style="display:none">
+                    </label>
+                    
+                    <label class="payment-option">
+                        <div class="payment-details">
+                            <span class="radio-custom"></span>
+                            <span>Cash on Delivery</span>
+                        </div>
+                        <div class="payment-icons">
+                            <i class="fa-solid fa-money-bill-wave" style="color:var(--secondary);"></i>
+                        </div>
+                        <input type="radio" name="payment" value="cod" style="display:none">
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="summary-box fade-in delay-2">
+                <h3>Review Order</h3>
+                
+                <div class="checkout-items">
+                    <div class="c-item">
+                        <div class="c-item-img"><i class="fa-solid fa-laptop"></i><div class="c-item-qty">1</div></div>
+                        <div class="c-item-details">
+                            <div class="c-item-title">ProBook Z15 Ultra Slim Laptop</div>
+                            <div class="c-item-price">$1,299.00</div>
+                        </div>
+                    </div>
+                    <div class="c-item">
+                        <div class="c-item-img"><i class="fa-solid fa-headphones"></i><div class="c-item-qty">1</div></div>
+                        <div class="c-item-details">
+                            <div class="c-item-title">Noise Cancelling Headphones v3</div>
+                            <div class="c-item-price">$199.99</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>$1,498.99</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span style="color:var(--secondary)">Free</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax</span>
+                    <span>$120.00</span>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>Total to Pay</span>
+                    <span>$1,618.99</span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary place-order-btn">
+                    <i class="fa-solid fa-lock"></i> Place Order
+                </button>
+                <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:1rem;">
+                    By placing your order, you agree to our Terms of Sale and Privacy Policy.
+                </p>
+            </div>
+        </div>
+        
+    </form>
+</section>
+@endsection
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            this.querySelector('input').checked = true;
+        });
+    });
+</script>
+@endpush

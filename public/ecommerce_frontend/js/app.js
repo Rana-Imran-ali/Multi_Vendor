@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 0. Auth Role Logic (Mock for Prototype)
-    // Change this to test different roles: 'guest', 'user', 'vendor', 'admin'
-    const currentUser = {
-        isLoggedIn: true,
-        role: 'user', // Default test role
-        name: 'Alex Johnson'
-    };
-    
-    // For demo purposes, check URL params to easily test roles: ?role=admin
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('role')) {
-        currentUser.role = urlParams.get('role');
-        currentUser.isLoggedIn = currentUser.role !== 'guest';
+    // 0. Auth Role Logic (Actual API Integration)
+    let currentUser = { isLoggedIn: false, role: 'guest', name: '' };
+    const token = localStorage.getItem('auth_token');
+    const userData = localStorage.getItem('user_data');
+    if (token && userData) {
+        try {
+            const user = JSON.parse(userData);
+            currentUser = {
+                isLoggedIn: true,
+                role: user.role,
+                name: user.name
+            };
+        } catch(e) {}
     }
 
     if (currentUser.isLoggedIn) {
@@ -56,11 +56,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Logout mock
+    // Logout Logic
     document.querySelectorAll('.mobileLogoutBtn, .desktopLogoutBtn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             e.preventDefault();
-            window.location.href = window.location.pathname + '?role=guest';
+            if (localStorage.getItem('auth_token')) {
+                try {
+                    await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('auth_token'),
+                            'Accept': 'application/json'
+                        }
+                    });
+                } catch(e) {}
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_data');
+            }
+            window.location.href = 'index.html';
         });
     });
 

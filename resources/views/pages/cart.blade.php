@@ -1,0 +1,168 @@
+@extends('layouts.app')
+
+@section('title', 'Shopping Cart | Vendo')
+
+@push('styles')
+<style>
+    .cart-layout { display: flex; gap: 3rem; align-items: flex-start; margin-top: 3rem; margin-bottom: 5rem; }
+    .cart-main { flex: 1; }
+    
+    .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .cart-item { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: 1rem; margin-bottom: 1.5rem; background: var(--surface); transition: var(--transition); }
+    .cart-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); border-color: var(--primary-light); }
+    
+    .item-img { width: 100px; height: 100px; background: var(--primary-light); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--primary); flex-shrink: 0; }
+    
+    .item-details { flex: 1; min-width: 0; }
+    .item-vendor { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .item-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display:block; text-decoration:none;}
+    .item-variants { font-size: 0.85rem; color: var(--text-muted); }
+    
+    .item-price { font-weight: 700; font-size: 1.1rem; width: 120px; text-align: right; }
+    
+    .qty-control { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--background); overflow: hidden; height: 40px; margin-left: 2rem; border-color:var(--border) }
+    .qty-btn { width: 30px; height: 100%; display: flex; align-items: center; justify-content: center; background: transparent; color: var(--text); cursor: pointer; transition: background 0.2s; border:none;}
+    .qty-btn:hover { background: var(--border); }
+    .qty-input { width: 40px; text-align: center; border: none; background: transparent; font-weight: 600; color: var(--text); }
+    .qty-input:focus { outline: none; }
+    
+    .item-total { font-weight: 800; font-size: 1.15rem; color: var(--primary); width: 120px; text-align: right; margin-left: 2rem; }
+    
+    .remove-btn { color: #ef4444; background: transparent; border: none; font-size: 1.25rem; margin-left: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 0.5rem; transition: var(--transition); }
+    .remove-btn:hover { background: #fee2e2; }
+
+    /* Summary Sidebar */
+    .cart-sidebar { width: 380px; flex-shrink: 0; position: sticky; top: calc(var(--navbar-height) + 2rem); }
+    .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow-sm); }
+    .summary-box h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+    
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-muted); font-size: 1rem; }
+    .summary-row span:last-child { font-weight: 600; color: var(--text); }
+    
+    .summary-total { border-top: 1px solid var(--border); margin-top: 1.5rem; padding-top: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text); }
+    .summary-total span:last-child { color: var(--primary); font-size: 1.5rem; }
+    
+    .checkout-btn { width: 100%; margin-top: 2rem; padding: 1rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 1.1rem; }
+    
+    .promo-code { display: flex; gap: 0.5rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .promo-code input { flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--background); color: var(--text); font-size: 0.95rem; }
+    .promo-code input:focus { outline: none; border-color: var(--primary); }
+
+    @media (max-width: 1024px) {
+        .cart-layout { flex-direction: column; }
+        .cart-sidebar { width: 100%; position: static; }
+        .cart-header { display: none; }
+        .cart-item { flex-wrap: wrap; padding: 1rem; position: relative; }
+        .item-img { width: 80px; height: 80px; font-size: 2rem; }
+        .item-details { width: calc(100% - 100px); }
+        .item-price { display: none; }
+        .qty-control { margin-left: 0; margin-top: 1rem; }
+        .item-total { flex: 1; text-align: right; margin-top: 1rem; }
+        .remove-btn { position: absolute; top: 1rem; right: 1rem; margin: 0; }
+    }
+</style>
+@endpush
+
+@section('content')
+
+<!-- PAGE HEADER -->
+<div class="page-header" style="padding: 4rem 0 2rem;">
+    <div class="container fade-in">
+        <h1 style="font-size:2.5rem;">Your Shopping Cart</h1>
+        <p>Review your items and proceed to checkout.</p>
+    </div>
+</div>
+
+<!-- CART SECTION -->
+<section class="container fade-in delay-1">
+    <div class="cart-layout">
+        
+        <div class="cart-main">
+            <div class="cart-header">
+                <span style="flex:1">Product</span>
+                <span style="width:120px; text-align:right">Price</span>
+                <span style="width:100px; text-align:center; padding-left:2rem;">Quantity</span>
+                <span style="width:120px; text-align:right; padding-left:2rem;">Subtotal</span>
+                <span style="width:40px; margin-left:1.5rem"></span>
+            </div>
+
+            <!-- Item 1 -->
+            <div class="cart-item fade-in">
+                <div class="item-img"><i class="fa-solid fa-laptop"></i></div>
+                <div class="item-details">
+                    <span class="item-vendor">TechNova Store</span>
+                    <a href="{{ url('/product-details') }}" class="item-title">ProBook Z15 Ultra Slim Laptop</a>
+                    <div class="item-variants">Color: Space Gray | Storage: 512GB</div>
+                </div>
+                <div class="item-price">$1,299.00</div>
+                <div class="qty-control">
+                    <button class="qty-btn" onclick="javascript:void(0);"><i class="fa-solid fa-minus"></i></button>
+                    <input type="text" class="qty-input" value="1" readonly>
+                    <button class="qty-btn" onclick="javascript:void(0);"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div class="item-total">$1,299.00</div>
+                <button class="remove-btn" title="Remove Item"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="cart-item fade-in delay-1">
+                <div class="item-img"><i class="fa-solid fa-headphones"></i></div>
+                <div class="item-details">
+                    <span class="item-vendor">AudioTech</span>
+                    <a href="{{ url('/product-details') }}" class="item-title">Noise Cancelling Headphones v3</a>
+                    <div class="item-variants">Color: Matte Black</div>
+                </div>
+                <div class="item-price">$199.99</div>
+                <div class="qty-control">
+                    <button class="qty-btn"><i class="fa-solid fa-minus"></i></button>
+                    <input type="text" class="qty-input" value="1" readonly>
+                    <button class="qty-btn"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div class="item-total">$199.99</div>
+                <button class="remove-btn" title="Remove Item"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+            
+            <a href="{{ url('/shop') }}" class="btn btn-outline" style="margin-top:1rem;"><i class="fa-solid fa-arrow-left-long"></i> Continue Shopping</a>
+        </div>
+
+        <div class="cart-sidebar">
+            <div class="summary-box fade-in delay-2">
+                <h3>Order Summary</h3>
+                
+                <div class="summary-row">
+                    <span>Items (2)</span>
+                    <span>$1,498.99</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping Estimate</span>
+                    <span style="color:var(--secondary)">Free</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax Estimate</span>
+                    <span>$120.00</span>
+                </div>
+                
+                <div class="promo-code">
+                    <input type="text" placeholder="Promo code...">
+                    <button class="btn btn-outline" style="padding:0.75rem 1rem;">Apply</button>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>Total</span>
+                    <span>$1,618.99</span>
+                </div>
+                
+                <a href="{{ url('/checkout') }}" class="btn btn-primary checkout-btn">
+                    Proceed to Checkout <i class="fa-solid fa-arrow-right-long"></i>
+                </a>
+                
+                <div style="text-align:center;color:var(--text-muted);margin-top:1.5rem;font-size:0.85rem;">
+                    <i class="fa-solid fa-lock" style="color:var(--secondary)"></i> Secure Checkout
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+@endsection

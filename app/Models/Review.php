@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Vendor extends Model
+class Review extends Model
 {
     protected $fillable = [
         'user_id',
-        'store_name',
-        'description',
-        'status',
+        'product_id',
+        'rating',
+        'comment',
     ];
 
     public function user()
@@ -18,8 +18,8 @@ class Vendor extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function products()
+    public function product()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Product::class);
     }
 }

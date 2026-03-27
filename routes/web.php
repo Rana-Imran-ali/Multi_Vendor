@@ -3,9 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 
-Route::get('/', function () {
-    return redirect('/ecommerce_frontend/index.html');
-});
+Route::get('/', function () { return view('pages.home'); })->name('home');
+Route::get('/shop', function () { return view('pages.shop'); })->name('shop');
+Route::get('/product-details', function () { return view('pages.product-details'); })->name('product-details');
+Route::get('/cart', function () { return view('pages.cart'); })->name('cart');
+Route::get('/checkout', function () { return view('pages.checkout'); })->name('checkout');
+Route::get('/login', function () { return view('pages.login'); })->name('login');
+Route::get('/register', function () { return view('pages.register'); })->name('register');
+Route::get('/vendor-dashboard', function () { return view('pages.vendor-dashboard'); })->name('vendor.dashboard');
 // Route::get('login', [AdminController::class, 'create'])->name('admin.login');   
 
 // // Route::resource('admin/dashboard', AdminController::class);->only(['index']);

@@ -1,0 +1,249 @@
+@extends('layouts.app')
+
+@section('title', 'Product Details | Vendo')
+
+@push('styles')
+<style>
+    .breadcrumb { display: flex; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; margin: 2rem 0; padding:0 1.5rem;}
+    .breadcrumb a { transition: var(--transition); }
+    .breadcrumb a:hover { color: var(--primary); }
+    .breadcrumb span { color: var(--border); }
+    
+    .product-layout { display: flex; gap: 4rem; align-items: flex-start; }
+    
+    /* Gallery */
+    .product-gallery { width: 50%; }
+    .main-img { width: 100%; aspect-ratio: 1; border-radius: 1.5rem; background: var(--background); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 6rem; color: var(--border); margin-bottom: 1rem; overflow: hidden; position: relative; }
+    .product-badge-large { position: absolute; top: 1.5rem; left: 1.5rem; background: var(--secondary); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 700; font-size: 0.85rem; }
+    .thumb-list { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
+    .thumb { width: 90px; height: 90px; flex-shrink: 0; border-radius: 1rem; background: var(--background); border: 2px solid transparent; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); cursor: pointer; transition: var(--transition); }
+    .thumb:hover, .thumb.active { border-color: var(--primary); color: var(--primary); }
+
+    /* Details */
+    .product-details { width: 50%; }
+    .p-vendor { font-size: 0.9rem; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 0.5rem; }
+    .product-details h1 { font-size: 2.25rem; font-weight: 800; color: var(--text); line-height: 1.2; margin-bottom: 1rem; }
+    
+    .p-rating { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+    .p-rating-stars { color: var(--accent); font-size: 1.1rem; }
+    .p-rating span { color: var(--text-muted); font-size: 0.95rem; }
+    
+    .p-price-block { margin-bottom: 2rem; }
+    .p-price { font-size: 2.5rem; font-weight: 800; color: var(--text); display: flex; align-items: baseline; gap: 1rem; }
+    .p-old-price { font-size: 1.25rem; color: var(--text-muted); text-decoration: line-through; font-weight: 500; }
+    
+    .p-description { color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem; }
+    
+    .p-variants { margin-bottom: 2rem; }
+    .variant-group { margin-bottom: 1.5rem; }
+    .variant-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+    .color-options { display: flex; gap: 0.75rem; }
+    .color-btn { width: 35px; height: 35px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--border); cursor: pointer; transition: var(--transition); }
+    .color-btn.active, .color-btn:hover { box-shadow: 0 0 0 2px var(--primary); }
+    
+    .size-options { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .size-btn { padding: 0.5rem 1.25rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--surface); color: var(--text); font-weight: 500; cursor: pointer; transition: var(--transition); }
+    .size-btn.active, .size-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    
+    .add-to-cart-action { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+    .qty-control { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--background); overflow: hidden; height: 50px; }
+    .qty-btn { width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; background: transparent; color: var(--text); cursor: pointer; transition: background 0.2s; }
+    .qty-btn:hover { background: var(--border); }
+    .qty-input { width: 50px; text-align: center; border: none; background: transparent; font-weight: 600; color: var(--text); font-size: 1.1rem; }
+    .qty-input:focus { outline: none; }
+    
+    .add-btn { flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; border-radius: 0.5rem; gap: 0.5rem; }
+    .wishlist-btn { width: 50px; height: 50px; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; transition: var(--transition); }
+    .wishlist-btn:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+    
+    /* Tabs */
+    .product-tabs-section { margin-top: 6rem; border-top: 1px solid var(--border); padding-top: 5rem; }
+    .tab-nav { display: flex; gap: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; overflow-x: auto; }
+    .tab-btn { background: transparent; border: none; font-size: 1.1rem; font-weight: 600; color: var(--text-muted); padding: 1rem 0; border-bottom: 3px solid transparent; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--primary); border-color: var(--primary); }
+    
+    .tab-content { display: none; color: var(--text); line-height: 1.8; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Reviews inside Tab */
+    .review-list { margin-top: 2rem; }
+    .review-card { padding: 1.5rem; border: 1px solid var(--border); border-radius: 1rem; margin-bottom: 1.5rem; background: var(--surface); }
+    .review-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+    .reviewer { display: flex; align-items: center; gap: 1rem; }
+    .reviewer-avatar { width: 45px; height: 45px; background: var(--background); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+    
+    @media (max-width: 1024px) {
+        .product-layout { flex-direction: column; gap: 2rem; }
+        .product-gallery, .product-details { width: 100%; }
+        .p-price { font-size: 2rem; }
+        .add-to-cart-action { flex-wrap: wrap; }
+        .add-btn { flex-basis: 100%; order: 3; }
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="container" style="max-width:1200px;">
+    <!-- Breadcrumbs -->
+    <div class="breadcrumb fade-in">
+        <a href="{{ url('/') }}">Home</a> <span>/</span>
+        <a href="{{ url('/shop') }}">Electronics</a> <span>/</span>
+        <a href="{{ url('/shop') }}">Laptops</a> <span>/</span>
+        <span style="color:var(--text);">ProBook Z15 Ultra Slim</span>
+    </div>
+
+    <!-- PRODUCT SECTION -->
+    <section class="product-layout fade-in delay-1" id="productContainer">
+        <!-- Gallery -->
+        <div class="product-gallery">
+            <div class="main-img">
+                <div class="product-badge-large">SALE</div>
+                <i class="fa-solid fa-laptop"></i>
+            </div>
+            <div class="thumb-list">
+                <div class="thumb active"><i class="fa-solid fa-laptop"></i></div>
+                <div class="thumb"><i class="fa-solid fa-laptop-code"></i></div>
+                <div class="thumb"><i class="fa-solid fa-microchip"></i></div>
+                <div class="thumb"><i class="fa-solid fa-battery-full"></i></div>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="product-details">
+            <a href="{{ url('/vendor') }}" class="p-vendor">TechNova Store</a>
+            <h1>ProBook Z15 Ultra Slim Laptop - 16GB RAM, 512GB SSD</h1>
+            
+            <div class="p-rating">
+                <div class="p-rating-stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i>
+                </div>
+                <span>4.8 (124 reviews) &nbsp;|&nbsp; <span style="color:var(--secondary);font-weight:600;"><i class="fa-solid fa-check-circle"></i> In Stock</span></span>
+            </div>
+
+            <div class="p-price-block">
+                <div class="p-price">$1,299.00 <span class="p-old-price">$1,499.00</span></div>
+            </div>
+
+            <p class="p-description">
+                Experience unrivaled performance with the ProBook Z15. Featuring the latest generation octa-core processor, a stunning retina-class display, and an ultra-thin aluminum chassis.
+            </p>
+
+            <div class="p-variants">
+                <div class="variant-group">
+                    <span class="variant-label">Color: Space Gray</span>
+                    <div class="color-options">
+                        <div class="color-btn active" style="background-color: #4a4a4a;"></div>
+                        <div class="color-btn" style="background-color: #d1d5db;"></div>
+                        <div class="color-btn" style="background-color: #111827;"></div>
+                    </div>
+                </div>
+                <div class="variant-group">
+                    <span class="variant-label">Storage</span>
+                    <div class="size-options">
+                        <button class="size-btn">256GB</button>
+                        <button class="size-btn active">512GB</button>
+                        <button class="size-btn">1TB</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="add-to-cart-action">
+                <div class="qty-control">
+                    <button class="qty-btn" onclick="document.getElementById('qty').value = Math.max(1, parseInt(document.getElementById('qty').value) - 1)"><i class="fa-solid fa-minus"></i></button>
+                    <input type="number" id="qty" class="qty-input" value="1" min="1">
+                    <button class="qty-btn" onclick="document.getElementById('qty').value = parseInt(document.getElementById('qty').value) + 1)"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                <button class="btn btn-primary add-btn" onclick="window.location.href='{{ url('/cart') }}'"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+            </div>
+            
+            <div style="display:flex;gap:1.5rem;color:var(--text-muted);font-size:0.9rem;">
+                <span><i class="fa-solid fa-truck-fast"></i> Free Shipping</span>
+                <span><i class="fa-solid fa-rotate-left"></i> 30-Day Returns</span>
+                <span><i class="fa-solid fa-shield"></i> 1 Year Warranty</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- TABS -->
+    <section class="product-tabs-section fade-in">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab('desc')">Description</button>
+            <button class="tab-btn" onclick="openTab('specs')">Specifications</button>
+            <button class="tab-btn" onclick="openTab('reviews')">Reviews (124)</button>
+            <button class="tab-btn" onclick="openTab('vendor')">Vendor Info</button>
+        </div>
+
+        <!-- Description -->
+        <div id="desc" class="tab-content active">
+            <h3>Built for Professionals</h3>
+            <p>The ProBook Z15 features a durable, lightweight aluminum chassis that you can take anywhere. Keep your workflow seamless with a huge battery life designed to last a full 14 hours on a single charge. Whether you are coding, video editing, or just browsing, ensure smooth operations with its advanced thermal cooling design.</p>
+            <br>
+            <p>Enjoy vibrant colors on the edge-to-edge IPS display that covers 100% of the sRGB color gamut.</p>
+        </div>
+
+        <!-- Specs -->
+        <div id="specs" class="tab-content">
+            <ul style="list-style:disc; margin-left:1.5rem;">
+                <li><strong>Processor:</strong> Octa-core 3.2GHz</li>
+                <li><strong>RAM:</strong> 16GB LPDDR5</li>
+                <li><strong>Storage:</strong> 512GB NVMe SSD</li>
+                <li><strong>Display:</strong> 15.6" Retina-class (2560x1600)</li>
+                <li><strong>Ports:</strong> 2x USB-C (Thunderbolt 4), 2x USB-A 3.2, HDMI 2.1, 3.5mm Jack</li>
+            </ul>
+        </div>
+
+        <!-- Reviews -->
+        <div id="reviews" class="tab-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:1.5rem;">
+                <div>
+                    <h3 style="font-size:2rem;font-weight:800;color:var(--text);margin-bottom:0.25rem;">4.8 <span style="font-size:1rem;color:var(--text-muted);font-weight:400;">out of 5</span></h3>
+                    <div style="color:var(--accent);"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                </div>
+                <button class="btn btn-outline">Write a Review</button>
+            </div>
+            
+            <div class="review-list">
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer">
+                            <div class="reviewer-avatar"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <h5 style="color:var(--text);">James Anderson</h5>
+                                <span style="font-size:0.8rem;color:var(--text-muted);">October 14, 2026</span>
+                            </div>
+                        </div>
+                        <div style="color:var(--accent);"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <p>Incredible machine! Boot times are insanely fast and the build quality feels premium. Highly recommend buying from TechNova Store, shipping was overnight.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="vendor" class="tab-content">
+            <div style="display:flex;align-items:center;gap:1.5rem;">
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:2rem;"><i class="fa-solid fa-store"></i></div>
+                <div>
+                    <h3>TechNova Store <span style="background:var(--secondary);color:white;font-size:0.7rem;padding:0.2rem 0.6rem;border-radius:1rem;vertical-align:middle;margin-left:0.5rem;">Verified</span></h3>
+                    <p style="color:var(--text-muted);">99% Positive Feedback | Joined 2023</p>
+                    <a href="{{ url('/vendor') }}" class="btn btn-sm btn-outline" style="margin-top:0.75rem;">Visit Store</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+@endpush
