@@ -22,18 +22,33 @@ Route::get('/login', function () { return view('auth.login'); })->name('login');
 Route::post('/login', function () { return back()->with('error', 'This is a UI demo.'); });
 Route::get('/register', function () { return view('auth.register'); })->name('register');
 Route::post('/register', function () { return back()->with('error', 'This is a UI demo.'); });
+Route::post('/logout', function () { return redirect('/')->with('success', 'Logged out.'); })->name('logout');
 
 
 // ── ADMIN ROUTES ──
 Route::prefix('admin')->group(function () {
-    Route::get('login', [AdminController::class, 'create'])->name('admin.login');   
+    Route::get('login', [AdminController::class, 'create'])->name('admin.login');
 
-    // Using closure routes for UI mockups temporarily
+    // ── Admin Core Dashboards ──
     Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard.index');
     Route::get('/products', function () { return view('admin.products'); })->name('admin.products');
     Route::get('/orders', function () { return view('admin.orders'); })->name('admin.orders');
     Route::get('/vendors', function () { return view('admin.vendors'); })->name('admin.vendors');
     Route::get('/users', function () { return view('admin.users'); })->name('admin.users');
+
+    // ── Admin Page Management (AdminLTE sidebar) ──
+    Route::prefix('pages')->name('admin.pages.')->group(function () {
+        Route::get('/home',     [\App\Http\Controllers\Admin\PageController::class, 'home'])->name('home');
+        Route::get('/shop',     [\App\Http\Controllers\Admin\PageController::class, 'shop'])->name('shop');
+        Route::get('/product',  [\App\Http\Controllers\Admin\PageController::class, 'product'])->name('product');
+        Route::get('/vendor',   [\App\Http\Controllers\Admin\PageController::class, 'vendor'])->name('vendor');
+        Route::get('/seller',   [\App\Http\Controllers\Admin\PageController::class, 'seller'])->name('seller');
+        Route::get('/blog',     [\App\Http\Controllers\Admin\PageController::class, 'blog'])->name('blog');
+        Route::get('/contact',  [\App\Http\Controllers\Admin\PageController::class, 'contact'])->name('contact');
+        Route::get('/cart',     [\App\Http\Controllers\Admin\PageController::class, 'cart'])->name('cart');
+        Route::get('/checkout', [\App\Http\Controllers\Admin\PageController::class, 'checkout'])->name('checkout');
+        Route::get('/auth',     [\App\Http\Controllers\Admin\PageController::class, 'auth'])->name('auth');
+    });
 
     Route::group(['middleware' => 'admin'], function () {
         // Keep existing controller logic if any controllers point to real stuff

@@ -276,6 +276,29 @@
             <a href="#" class="sidebar-link">
                 <i class="fa-solid fa-paint-roller icon"></i> Appearance
             </a>
+
+            <span class="sidebar-label">Page Management</span>
+            <a href="{{ route('admin.pages.home') }}" class="sidebar-link {{ request()->is('admin/pages/home') ? 'active' : '' }}">
+                <i class="fa-solid fa-house icon"></i> Home Page
+            </a>
+            <a href="{{ route('admin.pages.shop') }}" class="sidebar-link {{ request()->is('admin/pages/shop') ? 'active' : '' }}">
+                <i class="fa-solid fa-store icon"></i> Shop Page
+            </a>
+            <a href="{{ route('admin.pages.vendor') }}" class="sidebar-link {{ request()->is('admin/pages/vendor') ? 'active' : '' }}">
+                <i class="fa-solid fa-user-tie icon"></i> Vendor Page
+            </a>
+            <a href="{{ route('admin.pages.seller') }}" class="sidebar-link {{ request()->is('admin/pages/seller') ? 'active' : '' }}">
+                <i class="fa-solid fa-handshake icon"></i> Become a Seller
+            </a>
+            <a href="{{ route('admin.pages.blog') }}" class="sidebar-link {{ request()->is('admin/pages/blog') ? 'active' : '' }}">
+                <i class="fa-solid fa-newspaper icon"></i> Blog Page
+            </a>
+            <a href="{{ route('admin.pages.contact') }}" class="sidebar-link {{ request()->is('admin/pages/contact') ? 'active' : '' }}">
+                <i class="fa-solid fa-envelope icon"></i> Contact Page
+            </a>
+            <a href="{{ route('admin.pages.auth') }}" class="sidebar-link {{ request()->is('admin/pages/auth') ? 'active' : '' }}">
+                <i class="fa-solid fa-lock icon"></i> Auth Pages
+            </a>
         </div>
 
         {{-- Bottom Logout --}}
@@ -326,14 +349,14 @@
                 </div>
 
                 <div class="dropdown ms-2">
-                    <div class="profile-trigger" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="profile-trigger bg-transparent" style="cursor:pointer; outline:none;" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="profile-info text-end">
                             <span class="p-name">Super Admin</span>
                             <span class="p-role">Administrator</span>
                         </div>
                         <div class="profile-avatar">SA</div>
                         <i class="fa-solid fa-chevron-down text-muted ms-1 fs-xs"></i>
-                    </div>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                         <li><a class="dropdown-item" href="#"><i class="fa-regular fa-user me-2 text-muted"></i> Profile</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear me-2 text-muted"></i> Settings</a></li>
