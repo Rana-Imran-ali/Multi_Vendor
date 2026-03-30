@@ -17,18 +17,18 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'in:user,vendor', // Admin should only be created manually or via a seeder
+            'role' => 'in:customer,vendor', // Admin should only be created manually or via a seeder
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'] ?? 'user',
+            'role' => $validated['role'] ?? 'customer',
         ]);
 
-        // If user is registered as a user, create an empty cart for them
-        if ($user->role === 'user') {
+        // If user is registered as a customer, create an empty cart for them
+        if ($user->role === 'customer') {
             Cart::create(['user_id' => $user->id]);
         }
 

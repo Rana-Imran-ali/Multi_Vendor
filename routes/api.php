@@ -29,23 +29,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'profile']);
 
-    // Common Authenticated User Actions
-    Route::post('/vendors', [VendorController::class, 'store']); // Apply to become vendor
-    
-    // Cart System
-    Route::get('/cart', [CartController::class, 'index']);
-    Route::post('/cart', [CartController::class, 'add']);
-    Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity']);
-    Route::delete('/cart/{cartItem}', [CartController::class, 'remove']);
-    Route::delete('/cart', [CartController::class, 'clear']);
+    // ==========================================
+    // CUSTOMER ROUTES (Requires 'customer' role)
+    // ==========================================
+    Route::middleware('role:customer')->group(function () {
+        // Common Authenticated User Actions
+        Route::post('/vendors', [VendorController::class, 'store']); // Apply to become vendor
+        
+        // Cart System
+        Route::get('/cart', [CartController::class, 'index']);
+        Route::post('/cart', [CartController::class, 'add']);
+        Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity']);
+        Route::delete('/cart/{cartItem}', [CartController::class, 'remove']);
+        Route::delete('/cart', [CartController::class, 'clear']);
 
-    // Order System (User)
-    Route::get('/orders', [OrderController::class, 'index']);
-    Route::post('/orders', [OrderController::class, 'store']);
-    Route::get('/orders/{order}', [OrderController::class, 'show']);
+        // Order System (User)
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::post('/orders', [OrderController::class, 'store']);
+        Route::get('/orders/{order}', [OrderController::class, 'show']);
 
-    // Reviews (User)
-    Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
+        // Reviews (User)
+        Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
+    });
 
     // ==========================================
     // VENDOR ROUTES (Requires 'vendor' role)
