@@ -28,7 +28,12 @@
                     </div>
                     @endif
 
-                    <form method="POST" action="{{ route('login') }}" class="auth-form">
+                    {{-- API Error Container --}}
+                    <div id="loginErrorContainer" class="alert alert-danger bg-opacity-10 border-danger border-opacity-25 py-2 px-3 text-danger d-none" style="font-size:.85rem;">
+                        <i class="fa fa-circle-exclamation me-2"></i> <span id="loginErrorText"></span>
+                    </div>
+
+                    <form id="loginForm" class="auth-form">
                         @csrf
 
                         {{-- Email Field --}}
@@ -37,12 +42,10 @@
                             <div class="position-relative">
                                 <i class="fa-regular fa-envelope auth-input-icon"></i>
                                 <input type="email" id="email" name="email" 
-                                       class="form-control auth-input @error('email') is-invalid @enderror" 
-                                       placeholder="name@example.com" value="{{ old('email') }}" required autofocus>
+                                       class="form-control auth-input" 
+                                       placeholder="name@example.com" required autofocus>
                             </div>
-                            @error('email')
-                            <div class="invalid-feedback d-block fs-xs">{{ $message }}</div>
-                            @enderror
+                            <div id="emailError" class="invalid-feedback d-none fs-xs"></div>
                         </div>
 
                         {{-- Password Field --}}
@@ -56,15 +59,13 @@
                             <div class="position-relative">
                                 <i class="fa-solid fa-lock auth-input-icon"></i>
                                 <input type="password" id="password" name="password" 
-                                       class="form-control auth-input @error('password') is-invalid @enderror" 
+                                       class="form-control auth-input" 
                                        placeholder="Enter your password" required>
                                 <button type="button" class="auth-eye-btn" onclick="togglePassword('password', this)" tabindex="-1">
                                     <i class="fa-regular fa-eye"></i>
                                 </button>
                             </div>
-                            @error('password')
-                            <div class="invalid-feedback d-block fs-xs">{{ $message }}</div>
-                            @enderror
+                            <div id="passwordError" class="invalid-feedback d-none fs-xs"></div>
                         </div>
 
                         {{-- Remember Me --}}
@@ -229,5 +230,67 @@ function togglePassword(inputId, btn) {
         icon.classList.add('fa-eye');
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    if(loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear prior errors
+            document.getElementById('loginErrorContainer').classList.add('d-none');
+            document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach(f => f.classList.add('d-none'));
+
+            const btn = loginForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i> Logging in...';
+            btn.disabled = true;
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                if (!window.Auth) throw new Error("Auth helper not loaded.");
+                
+                const response = await window.Auth.login(email, password);
+                
+                if(response.success) {
+                    // Redirect based on role
+                    window.location.href = window.Auth.getRedirectUrl();
+                } else {
+                    // Display general error
+                    if(!response.errors) {
+                        document.getElementById('loginErrorText').textContent = response.message;
+                        document.getElementById('loginErrorContainer').classList.remove('d-none');
+                    } else {
+                        // Display validation errors
+                        if(response.errors.email) {
+                            const emF = document.getElementById('email');
+                            emF.classList.add('is-invalid');
+                            const emE = document.getElementById('emailError');
+                            emE.textContent = response.errors.email[0];
+                            emE.classList.remove('d-none');
+                        }
+                        if(response.errors.password) {
+                            const pwF = document.getElementById('password');
+                            pwF.classList.add('is-invalid');
+                            const pwE = document.getElementById('passwordError');
+                            pwE.textContent = response.errors.password[0];
+                            pwE.classList.remove('d-none');
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loginErrorText').textContent = 'An unexpected error occurred. Please try again.';
+                document.getElementById('loginErrorContainer').classList.remove('d-none');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+});
 </script>
 @endpush

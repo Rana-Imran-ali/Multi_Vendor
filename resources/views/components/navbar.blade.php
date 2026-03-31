@@ -193,72 +193,66 @@
                     <span class="cart-badge">3</span>
                 </a>
 
-                {{-- Auth Buttons --}}
-                @auth
-                    {{-- Authenticated User Dropdown --}}
-                    <div class="dropdown">
-                        <button class="btn btn-sm vendo-user-btn dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="user-avatar">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                            </span>
-                            <span class="d-none d-xxl-inline ms-1">{{ explode(' ', auth()->user()->name)[0] }}</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end user-dropdown shadow border-0">
-                            <li>
-                                <div class="user-dropdown-header">
-                                    <strong>{{ auth()->user()->name }}</strong>
-                                    <small class="text-muted d-block">{{ auth()->user()->email }}</small>
-                                </div>
-                            </li>
-                            <li><hr class="dropdown-divider my-1"></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/dashboard') }}">
-                                    <i class="fa fa-gauge me-2 text-muted"></i> Dashboard
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/profile') }}">
-                                    <i class="fa fa-user me-2 text-muted"></i> My Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/orders') }}">
-                                    <i class="fa fa-box me-2 text-muted"></i> My Orders
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/wishlist') }}">
-                                    <i class="fa-regular fa-heart me-2 text-muted"></i> Wishlist
-                                </a>
-                            </li>
-                            @if(auth()->user()->role === 'vendor')
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/vendor/dashboard') }}">
-                                    <i class="fa fa-store me-2 text-muted"></i> Vendor Dashboard
-                                </a>
-                            </li>
-                            @endif
-                            @if(auth()->user()->role === 'admin')
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/admin/dashboard') }}">
-                                    <i class="fa fa-shield-halved me-2 text-muted"></i> Admin Panel
-                                </a>
-                            </li>
-                            @endif
-                            <li><hr class="dropdown-divider my-1"></li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fa fa-right-from-bracket me-2"></i> Sign Out
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                @else
-                    {{-- Guest Buttons --}}
+                {{-- Auth Buttons (Handled by JS) --}}
+                
+                {{-- Authenticated User Dropdown --}}
+                    <button class="btn dropdown-toggle d-flex align-items-center shadow-sm" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" 
+                            style="background-color: #f25019; color: white; border-radius: 50px; padding: 0.25rem 0.85rem 0.25rem 0.25rem; border: none; transition: all 0.2s;">
+                        <span id="nav-user-initial" style="background-color: rgba(255,255,255,0.25); color: white; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; margin-right: 0.5rem; font-size: 0.9rem;">U</span>
+                        <span class="fw-bold text-uppercase" id="nav-user-name" style="letter-spacing: 0.5px; font-size: 0.85rem;">User</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end user-dropdown shadow border-0" style="padding: 0.5rem 0; min-width: 240px; border-radius: 8px;">
+                        <li>
+                            <div class="user-dropdown-header" style="padding: 1rem 1.25rem;">
+                                <strong id="nav-user-full-name" style="font-size: 1rem; color: #333;">User</strong>
+                                <small class="text-muted d-block" id="nav-user-email" style="font-size: 0.85rem;">email</small>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-2"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('user.dashboard') }}" style="padding: 0.6rem 1.25rem;">
+                                <i class="fa-solid fa-palette fa-fw me-2" style="color: #6c757d;"></i> Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('user.profile') }}" style="padding: 0.6rem 1.25rem;">
+                                <i class="fa-solid fa-user fa-fw me-2" style="color: #6c757d;"></i> My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('user.orders') }}" style="padding: 0.6rem 1.25rem;">
+                                <i class="fa-solid fa-box fa-fw me-2" style="color: #6c757d;"></i> My Orders
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('wishlist') }}" style="padding: 0.6rem 1.25rem;">
+                                <i class="fa-regular fa-heart fa-fw me-2" style="color: #6c757d;"></i> Wishlist
+                            </a>
+                        </li>
+                        
+                        <li id="nav-vendor-link" style="display: none;">
+                            <a class="dropdown-item" href="{{ url('/vendor/dashboard') }}" style="padding: 0.6rem 1.25rem;">
+                                <i class="fa-solid fa-store fa-fw me-2" style="color: #6c757d;"></i> Vendor Dashboard
+                            </a>
+                        </li>
+                        <li id="nav-admin-link" style="display: none;">
+                            <a class="dropdown-item" href="{{ url('/admin/dashboard') }}" style="padding: 0.6rem 1.25rem;">
+                                <i class="fa-solid fa-shield-halved fa-fw me-2" style="color: #6c757d;"></i> Admin Panel
+                            </a>
+                        </li>
+                        
+                        <li><hr class="dropdown-divider my-2"></li>
+                        <li>
+                            <button type="button" class="dropdown-item" onclick="handleLogout()" style="padding: 0.6rem 1.25rem; color: #dc3545;">
+                                <i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2" style="color: #dc3545;"></i> Sign Out
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Guest Buttons --}}
+                <div id="guest-menu-container" style="display: none; gap: .5rem; align-items:center;">
                     <a href="{{ route('login') }}" class="btn btn-sm btn-outline-brand d-none d-xl-inline-flex">
                         Sign In
                     </a>
@@ -269,7 +263,7 @@
                     <a href="{{ route('login') }}" class="nav-icon-btn d-xl-none">
                         <i class="fa-regular fa-user fs-5"></i>
                     </a>
-                @endauth
+                </div>
 
             </div>{{-- /.vendo-nav-actions --}}
         </div>{{-- /#vendoNavMenu --}}
@@ -662,4 +656,46 @@
             }
         });
     });
+
+    // ── AUTH RENDERING SCRIPT ──
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.Auth === 'undefined') return;
+
+        const authMenu = document.getElementById('auth-menu-container');
+        const guestMenu = document.getElementById('guest-menu-container');
+
+        if (window.Auth.check()) {
+            const user = window.Auth.getUser();
+            
+            // Show Auth Menu, Hide Guest Menu
+            authMenu.style.display = 'inline-block';
+            guestMenu.style.display = 'none';
+            
+            // Update User Labels
+            document.getElementById('nav-user-initial').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('nav-user-name').textContent = user.name.split(' ')[0];
+            document.getElementById('nav-user-full-name').textContent = user.name;
+            document.getElementById('nav-user-email').textContent = user.email;
+            
+            // Show role-based links
+            if (user.role === 'vendor') {
+                document.getElementById('nav-vendor-link').style.display = 'block';
+            }
+            if (user.role === 'admin') {
+                document.getElementById('nav-admin-link').style.display = 'block';
+            }
+        } else {
+            // Show Guest Menu, Hide Auth Menu
+            guestMenu.style.display = 'flex';
+            authMenu.style.display = 'none';
+        }
+    });
+
+    // API Logout Handler
+    async function handleLogout() {
+        if (typeof window.Auth !== 'undefined') {
+            await window.Auth.logout();
+            window.location.href = '/login';
+        }
+    }
 </script>

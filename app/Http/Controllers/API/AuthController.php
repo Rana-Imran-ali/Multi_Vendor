@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         // If user is registered as a customer, create an empty cart for them
         if ($user->role === 'customer') {
-            Cart::create(['user_id' => $user->id]);
+            // Cart::create(['user_id' => $user->id]); // TODO: Implement Cart model and migrations
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -88,6 +88,39 @@ class AuthController extends Controller
             'status' => 'success',
             'data' => [
                 'user' => $request->user()->load('vendor')
+            ]
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'sometimes|nullable|string|min:8|confirmed',
+        ]);
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+        
+        if (isset($validated['email'])) {
+            $user->email = $validated['email'];
+        }
+        
+        if (!empty($validated['password'])) {
+            $user->password = \Illuminate\Support\Facades\Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profile updated successfully',
+            'data' => [
+                'user' => $user->load('vendor')
             ]
         ]);
     }

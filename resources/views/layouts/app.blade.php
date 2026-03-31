@@ -123,6 +123,9 @@
     </style>
 
     @stack('styles')
+    
+    <!-- Auth API Helper -->
+    <script src="{{ asset('js/auth.js') }}"></script>
 </head>
 <body>
 

@@ -9,6 +9,8 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\Admin\AdminController;
+
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -28,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth & Profile
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'profile']);
+    Route::put('/user', [AuthController::class, 'updateProfile']);
 
     // ==========================================
     // CUSTOMER ROUTES (Requires 'customer' role)
@@ -82,4 +85,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders', [OrderController::class, 'indexAll']);
         Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus']);
     });
+});
+    // Admin Routes
+    Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/users', [AdminController::class, 'users']);
+    Route::get('/users/{id}', [AdminController::class, 'show']);
+    Route::put('/users/{id}', [AdminController::class, 'update']);
+    Route::delete('/users/{id}', [AdminController::class, 'delete']);
+
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
+
+    Route::post('/approve-vendor/{id}', [AdminController::class, 'approveVendor']);
+
 });

@@ -9,6 +9,8 @@ Route::get('/shop', function () { return view('front.shop'); })->name('shop');
 Route::get('/categories', function () { return view('front.categories'); })->name('categories');
 Route::get('/vendors', function () { return view('front.vendors'); })->name('vendors');
 Route::get('/about', function () { return view('front.about'); })->name('about');
+Route::get('/contact', function () { return view('front.contact'); })->name('contact');
+Route::get('/become-seller', function () { return view('front.seller'); })->name('seller.register');
 Route::get('/blog', function () { return view('front.blog'); })->name('blog');
 Route::get('/wishlist', function () { return view('front.wishlist'); })->name('wishlist');
 Route::get('/deals', function () { return view('front.deals'); })->name('deals');
@@ -23,6 +25,13 @@ Route::post('/login', function () { return back()->with('error', 'This is a UI d
 Route::get('/register', function () { return view('auth.register'); })->name('register');
 Route::post('/register', function () { return back()->with('error', 'This is a UI demo.'); });
 Route::post('/logout', function () { return redirect('/')->with('success', 'Logged out.'); })->name('logout');
+
+// ── USER DASHBOARD (Role: Customer/Auth) ──
+Route::prefix('user')->group(function () {
+    Route::get('/dashboard', function () { return view('user.dashboard'); })->name('user.dashboard');
+    Route::get('/profile', function () { return view('user.profile'); })->name('user.profile');
+    Route::get('/orders', function () { return view('user.orders'); })->name('user.orders');
+});
 
 
 // ── ADMIN ROUTES ──

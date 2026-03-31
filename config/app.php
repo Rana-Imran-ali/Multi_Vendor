@@ -121,6 +121,7 @@ return [
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ],
 
 ];

@@ -21,7 +21,12 @@
                         <p class="auth-subtitle">Join us today to get the best deals and fast checkout</p>
                     </div>
 
-                    <form method="POST" action="{{ route('register') }}" class="auth-form row g-3">
+                    {{-- API Error Container --}}
+                    <div id="registerErrorContainer" class="alert alert-danger bg-opacity-10 border-danger border-opacity-25 py-2 px-3 text-danger d-none mb-4" style="font-size:.85rem;">
+                        <i class="fa fa-circle-exclamation me-2"></i> <span id="registerErrorText"></span>
+                    </div>
+
+                    <form id="registerForm" class="auth-form row g-3">
                         @csrf
 
                         {{-- Full Name --}}
@@ -30,12 +35,10 @@
                             <div class="position-relative">
                                 <i class="fa-regular fa-user auth-input-icon"></i>
                                 <input type="text" id="name" name="name" 
-                                       class="form-control auth-input @error('name') is-invalid @enderror" 
-                                       placeholder="e.g. Ali Khan" value="{{ old('name') }}" required autofocus>
+                                       class="form-control auth-input" 
+                                       placeholder="e.g. Ali Khan" required autofocus>
                             </div>
-                            @error('name')
-                            <div class="invalid-feedback d-block fs-xs">{{ $message }}</div>
-                            @enderror
+                            <div id="nameError" class="invalid-feedback d-none fs-xs"></div>
                         </div>
 
                         {{-- Email Field --}}
@@ -44,26 +47,22 @@
                             <div class="position-relative">
                                 <i class="fa-regular fa-envelope auth-input-icon"></i>
                                 <input type="email" id="email" name="email" 
-                                       class="form-control auth-input @error('email') is-invalid @enderror" 
-                                       placeholder="name@example.com" value="{{ old('email') }}" required>
+                                       class="form-control auth-input" 
+                                       placeholder="name@example.com" required>
                             </div>
-                            @error('email')
-                            <div class="invalid-feedback d-block fs-xs">{{ $message }}</div>
-                            @enderror
+                            <div id="emailError" class="invalid-feedback d-none fs-xs"></div>
                         </div>
 
-                        {{-- Phone Field --}}
+                        {{-- Phone Field (Optional but in UI) --}}
                         <div class="col-12 col-md-6">
                             <label class="form-label auth-label" for="phone">Phone Number</label>
                             <div class="position-relative">
                                 <i class="fa-solid fa-phone auth-input-icon"></i>
                                 <input type="tel" id="phone" name="phone" 
-                                       class="form-control auth-input @error('phone') is-invalid @enderror" 
-                                       placeholder="03xx-xxxxxxx" value="{{ old('phone') }}" required>
+                                       class="form-control auth-input" 
+                                       placeholder="03xx-xxxxxxx" required>
                             </div>
-                            @error('phone')
-                            <div class="invalid-feedback d-block fs-xs">{{ $message }}</div>
-                            @enderror
+                            <div id="phoneError" class="invalid-feedback d-none fs-xs"></div>
                         </div>
 
                         {{-- Password Field --}}
@@ -72,15 +71,13 @@
                             <div class="position-relative">
                                 <i class="fa-solid fa-lock auth-input-icon"></i>
                                 <input type="password" id="password" name="password" 
-                                       class="form-control auth-input @error('password') is-invalid @enderror" 
+                                       class="form-control auth-input" 
                                        placeholder="Min 8 characters" required>
                                 <button type="button" class="auth-eye-btn" onclick="togglePassword('password', this)" tabindex="-1">
                                     <i class="fa-regular fa-eye"></i>
                                 </button>
                             </div>
-                            @error('password')
-                            <div class="invalid-feedback d-block fs-xs">{{ $message }}</div>
-                            @enderror
+                            <div id="passwordError" class="invalid-feedback d-none fs-xs"></div>
                         </div>
 
                         {{-- Password Confirmation --}}
@@ -215,5 +212,72 @@ function togglePassword(inputId, btn) {
         icon.classList.add('fa-eye');
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('registerForm');
+    if(registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear prior errors
+            document.getElementById('registerErrorContainer').classList.add('d-none');
+            document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach(f => f.classList.add('d-none'));
+
+            const btn = registerForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i> Creating Account...';
+            btn.disabled = true;
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const password_confirmation = document.getElementById('password_confirmation').value;
+            // Phone is ignored in the payload right now since the db doesn't have it
+
+            try {
+                if (!window.Auth) throw new Error("Auth helper not loaded");
+
+                const response = await window.Auth.register(name, email, password, password_confirmation, 'customer');
+                
+                if(response.success) {
+                    window.location.href = window.Auth.getRedirectUrl();
+                } else {
+                    if(!response.errors) {
+                        document.getElementById('registerErrorText').textContent = response.message;
+                        document.getElementById('registerErrorContainer').classList.remove('d-none');
+                    } else {
+                        // Loop map validation errors
+                        const errorMap = {
+                            'name': 'nameError',
+                            'email': 'emailError',
+                            'password': 'passwordError'
+                        };
+                        
+                        Object.keys(response.errors).forEach(key => {
+                            if(errorMap[key] && document.getElementById(key)) {
+                                document.getElementById(key).classList.add('is-invalid');
+                                let errDiv = document.getElementById(errorMap[key]);
+                                errDiv.textContent = response.errors[key][0];
+                                errDiv.classList.remove('d-none');
+                            } else {
+                                // fallback for unmapped errors
+                                document.getElementById('registerErrorText').textContent = response.errors[key][0];
+                                document.getElementById('registerErrorContainer').classList.remove('d-none');
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('registerErrorText').textContent = 'An unexpected error occurred. Please try again.';
+                document.getElementById('registerErrorContainer').classList.remove('d-none');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+});
 </script>
 @endpush
