@@ -21,36 +21,36 @@
 </div>
 
 {{-- STAT CARDS --}}
+{{-- ── STAT CARDS (values populated via JS from /api/admin/dashboard) ── --}}
 <div class="row g-4 mb-4">
-    
-    {{-- Total Revenue --}}
+
+    {{-- Total Customers --}}
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="saas-card h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <p class="text-uppercase fw-bold text-muted mb-1" style="font-size:.7rem; letter-spacing:.5px;">Total Revenue</p>
-                    <h3 class="fw-800 text-dark mb-0" style="letter-spacing:-1px;">Rs 4.2M</h3>
+                    <p class="stat-label-text">Total Customers</p>
+                    <h3 class="stat-value" id="stat-users"><span class="shimmer-line" style="width:80px;"></span></h3>
                 </div>
                 <div class="icon-box bg-primary bg-opacity-10 text-primary">
-                    <i class="fa-solid fa-wallet"></i>
+                    <i class="fa-solid fa-users"></i>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="status-pill status-success py-1 px-2" style="font-size:.7rem;">
-                    <i class="fa-solid fa-arrow-trend-up"></i> +12.5%
+                <span class="status-pill status-info py-1 px-2" style="font-size:.7rem;" id="stat-pending-badge">
+                    <i class="fa-solid fa-clock"></i> <span id="stat-pending">—</span> pending vendors
                 </span>
-                <span class="text-muted" style="font-size:.75rem;">vs last month</span>
             </div>
         </div>
     </div>
 
-    {{-- Orders --}}
+    {{-- Total Orders --}}
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="saas-card h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <p class="text-uppercase fw-bold text-muted mb-1" style="font-size:.7rem; letter-spacing:.5px;">Total Orders</p>
-                    <h3 class="fw-800 text-dark mb-0" style="letter-spacing:-1px;">1,245</h3>
+                    <p class="stat-label-text">Total Orders</p>
+                    <h3 class="stat-value" id="stat-orders"><span class="shimmer-line" style="width:70px;"></span></h3>
                 </div>
                 <div class="icon-box bg-success bg-opacity-10 text-success">
                     <i class="fa-solid fa-cart-shopping"></i>
@@ -58,51 +58,48 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="status-pill status-success py-1 px-2" style="font-size:.7rem;">
-                    <i class="fa-solid fa-arrow-trend-up"></i> +8.2%
+                    <i class="fa-solid fa-circle-check"></i> Live from database
                 </span>
-                <span class="text-muted" style="font-size:.75rem;">vs last month</span>
             </div>
         </div>
     </div>
 
-    {{-- Active Vendors --}}
+    {{-- Approved Vendors --}}
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="saas-card h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <p class="text-uppercase fw-bold text-muted mb-1" style="font-size:.7rem; letter-spacing:.5px;">Active Vendors</p>
-                    <h3 class="fw-800 text-dark mb-0" style="letter-spacing:-1px;">84</h3>
+                    <p class="stat-label-text">Approved Vendors</p>
+                    <h3 class="stat-value" id="stat-vendors"><span class="shimmer-line" style="width:50px;"></span></h3>
                 </div>
                 <div class="icon-box bg-warning bg-opacity-10 text-warning">
                     <i class="fa-solid fa-store"></i>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="status-pill status-success py-1 px-2" style="font-size:.7rem;">
-                    <i class="fa-solid fa-arrow-trend-up"></i> +2
+                <span class="status-pill status-warning py-1 px-2" style="font-size:.7rem;">
+                    <i class="fa-solid fa-hourglass-half"></i> <span id="stat-pending2">—</span> awaiting review
                 </span>
-                <span class="text-muted" style="font-size:.75rem;">new this week</span>
             </div>
         </div>
     </div>
 
-    {{-- Customers --}}
+    {{-- Total Products --}}
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="saas-card h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <p class="text-uppercase fw-bold text-muted mb-1" style="font-size:.7rem; letter-spacing:.5px;">Total Customers</p>
-                    <h3 class="fw-800 text-dark mb-0" style="letter-spacing:-1px;">12.5k</h3>
+                    <p class="stat-label-text">Total Products</p>
+                    <h3 class="stat-value" id="stat-products"><span class="shimmer-line" style="width:60px;"></span></h3>
                 </div>
                 <div class="icon-box bg-info bg-opacity-10 text-info">
-                    <i class="fa-solid fa-users"></i>
+                    <i class="fa-solid fa-box-open"></i>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="status-pill status-success py-1 px-2" style="font-size:.7rem;">
-                    <i class="fa-solid fa-arrow-trend-up"></i> +14.1%
+                    <i class="fa-solid fa-circle-check"></i> Live from database
                 </span>
-                <span class="text-muted" style="font-size:.75rem;">vs last month</span>
             </div>
         </div>
     </div>
@@ -260,9 +257,109 @@
 
 @endsection
 
+@push('scripts')
+<script>
+(function () {
+    // ── Fetch live dashboard stats ─────────────────────────────────────────
+    const token = localStorage.getItem('admin_token');
+
+    // Shimmer animation helper
+    function shimmer(id) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<span class="shimmer-line" style="width:70px;display:inline-block;"></span>';
+    }
+
+    // Animate count-up for a numeric value
+    function countUp(id, target, duration = 800) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const start = 0;
+        const step  = target / (duration / 16);
+        let   cur   = start;
+        const tick  = () => {
+            cur += step;
+            if (cur >= target) { el.textContent = target.toLocaleString(); return; }
+            el.textContent = Math.floor(cur).toLocaleString();
+            requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    }
+
+    async function loadDashboard() {
+        try {
+            const res = await fetch('/api/admin/dashboard', {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/json',
+                },
+            });
+
+            // ── Auth guard: if token is invalid/expired, redirect to login ──
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                window.location.replace('/admin/login');
+                return;
+            }
+
+            if (!res.ok) throw new Error('API error ' + res.status);
+
+            const json = await res.json();
+            const d    = json.data;
+
+            // ── Populate stat cards with count-up animation ──
+            countUp('stat-users',    d.total_users    ?? 0);
+            countUp('stat-orders',   d.total_orders   ?? 0);
+            countUp('stat-vendors',  d.approved_vendors ?? 0);
+            countUp('stat-products', d.total_products  ?? 0);
+
+            // ── Pending vendor badge ──
+            const pending = d.pending_vendors ?? 0;
+            document.getElementById('stat-pending').textContent  = pending;
+            document.getElementById('stat-pending2').textContent = pending;
+
+        } catch (err) {
+            // Show error state on cards
+            ['stat-users','stat-orders','stat-vendors','stat-products'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = '<span style="color:#ef4444;font-size:.85rem;"><i class="fa fa-exclamation-circle me-1"></i>Error</span>';
+            });
+            console.error('Dashboard fetch failed:', err);
+        }
+    }
+
+    loadDashboard();
+})();
+</script>
+@endpush
+
 @push('styles')
 <style>
+/* ── Shimmer loading skeleton ── */
+@keyframes shimmerMove {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+.shimmer-line {
+    display: inline-block; height: 1.8rem; border-radius: 6px;
+    background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
+    background-size: 800px 100%;
+    animation: shimmerMove 1.4s infinite linear;
+    vertical-align: middle;
+}
+
+/* ── Stat card labels ── */
+.stat-label-text {
+    text-transform: uppercase; font-weight: 700; font-size: .7rem;
+    letter-spacing: .5px; color: var(--admin-text-sub); margin-bottom: .25rem;
+}
+.stat-value {
+    font-size: 1.75rem; font-weight: 800; color: var(--admin-text-main);
+    letter-spacing: -1px; margin: 0; min-height: 2.25rem;
+}
+
 /* Stat Cards Specific */
+
 .icon-box {
     width: 48px; height: 48px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;

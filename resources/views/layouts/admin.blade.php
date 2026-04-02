@@ -234,6 +234,15 @@
 </head>
 <body>
 
+    {{-- ── GLOBAL AUTH GUARD ── --}}
+    {{-- Runs before any paint; redirects to login if no admin token found --}}
+    <script>
+    (function () {
+        var token = localStorage.getItem('admin_token');
+        if (!token) { window.location.replace('/admin/login'); }
+    })();
+    </script>
+
     {{-- SIDEBAR OVERLAY --}}
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -351,10 +360,10 @@
                 <div class="dropdown ms-2">
                     <button type="button" class="profile-trigger bg-transparent" style="cursor:pointer; outline:none;" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="profile-info text-end">
-                            <span class="p-name">Super Admin</span>
+                            <span class="p-name" id="adminName">Admin</span>
                             <span class="p-role">Administrator</span>
                         </div>
-                        <div class="profile-avatar">SA</div>
+                        <div class="profile-avatar" id="adminInitials">A</div>
                         <i class="fa-solid fa-chevron-down text-muted ms-1 fs-xs"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
@@ -362,12 +371,9 @@
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear me-2 text-muted"></i> Settings</a></li>
                         <li><hr class="dropdown-divider border-light"></li>
                         <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Logout
-                                </button>
-                            </form>
+                            <button type="button" class="dropdown-item text-danger" id="logoutBtn">
+                                <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Logout
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -385,26 +391,55 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Sidebar Toggle Logic
+        // ── Sidebar Toggle ──────────────────────────────────────────────
         const toggleBtn = document.getElementById('mobileToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
+        const sidebar   = document.getElementById('sidebar');
+        const overlay   = document.getElementById('sidebarOverlay');
 
         function toggleSidebar() {
             sidebar.classList.toggle('show');
             overlay.classList.toggle('show');
             document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
         }
-
         toggleBtn.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
-        // Active State Link simulation (for dummy routing context, normally backend handles this)
+        // ── Active sidebar link ─────────────────────────────────────────
         document.querySelectorAll('.sidebar-link').forEach(link => {
-            if(window.location.href.includes(link.getAttribute('href'))) {
+            if (window.location.href.includes(link.getAttribute('href'))) {
                 document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
             }
+        });
+
+        // ── Populate admin profile from localStorage ────────────────────
+        (function () {
+            try {
+                const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+                if (user.name) {
+                    document.getElementById('adminName').textContent = user.name;
+                    const initials = user.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                    document.getElementById('adminInitials').textContent = initials;
+                }
+            } catch (e) { /* silently fail */ }
+        })();
+
+        // ── Logout ─────────────────────────────────────────────────────
+        document.getElementById('logoutBtn').addEventListener('click', async function () {
+            const token = localStorage.getItem('admin_token');
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Logging out...';
+            try {
+                if (token) {
+                    await fetch('/api/logout', {
+                        method:  'POST',
+                        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
+                    });
+                }
+            } catch (e) { /* still clear local state even on network error */ }
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.replace('/admin/login');
         });
     </script>
     @stack('scripts')
