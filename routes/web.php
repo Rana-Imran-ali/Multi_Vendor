@@ -36,10 +36,11 @@ Route::prefix('user')->group(function () {
 
 // ── ADMIN ROUTES ──
 Route::prefix('admin')->group(function () {
-    Route::get('login', [AdminController::class, 'create'])->name('admin.login');
+    Route::get('login', function () { return view('admin.login'); })->name('admin.login');
 
     // ── Admin Core Dashboards ──
     Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard.index');
+    Route::get('/categories', function () { return view('admin.categories'); })->name('admin.categories');
     Route::get('/products', function () { return view('admin.products'); })->name('admin.products');
     Route::get('/orders', function () { return view('admin.orders'); })->name('admin.orders');
     Route::get('/vendors', function () { return view('admin.vendors'); })->name('admin.vendors');

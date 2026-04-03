@@ -241,4 +241,47 @@ class AdminController extends Controller
             'data'    => $vendor->fresh('user'),
         ]);
     }
+    // ─── Product Moderation ───────────────────────────────────────────────────
+
+    /**
+     * GET /api/admin/products
+     * List all products platform-wide with optional status filter.
+     */
+    public function products(Request $request): JsonResponse
+    {
+        $request->validate([
+            'status'   => ['nullable', Rule::in(['pending', 'active', 'suspended', 'rejected'])],
+            'per_page' => 'nullable|integer|min:5|max:100',
+        ]);
+
+        $products = Product::with(['vendor', 'category'])
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->latest()
+            ->paginate($request->per_page ?? 15);
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $products,
+        ]);
+    }
+
+    /**
+     * PUT /api/admin/products/{id}/status
+     * Admin modifies a product's visibility/status.
+     */
+    public function updateProductStatus(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['pending', 'active', 'suspended', 'rejected'])],
+        ]);
+
+        $product = Product::findOrFail($id);
+        $product->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Product status updated to {$validated['status']}.",
+            'data'    => $product->fresh(['vendor', 'category']),
+        ]);
+    }
 }

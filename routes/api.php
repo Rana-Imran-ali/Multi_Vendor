@@ -97,5 +97,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // ── Order Management ──────────────────────────────────────────────────
         Route::get('/orders',                        [OrderController::class, 'indexAll']);
         Route::put('/orders/{order}/status',         [OrderController::class, 'updateStatus']);
+
+        // ── Product Moderation ────────────────────────────────────────────────
+        Route::get('/products',                      [AdminController::class, 'products']);
+        Route::put('/products/{id}/status',          [AdminController::class, 'updateProductStatus']);
     });
 });

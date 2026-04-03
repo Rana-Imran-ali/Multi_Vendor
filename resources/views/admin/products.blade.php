@@ -1,18 +1,15 @@
 @extends('layouts.admin')
 
-@section('title', 'Manage Products')
+@section('title', 'Product Moderation')
 
 @section('content')
 
 {{-- PAGE HEADER --}}
 <div class="page-header">
     <div>
-        <h1 class="page-title">Products</h1>
-        <p class="page-desc">Manage your store's inventory and product listings.</p>
+        <h1 class="page-title">Products Sandbox</h1>
+        <p class="page-desc">Moderate all products across the platform. Suspend or reject non-compliant items.</p>
     </div>
-    <button class="btn btn-primary" style="background:var(--admin-primary); border:none;">
-        <i class="fa-solid fa-plus me-2"></i> Add Product
-    </button>
 </div>
 
 {{-- DATA TABLE CARD --}}
@@ -23,24 +20,15 @@
         
         {{-- Filters --}}
         <div class="d-flex gap-2">
-            <select class="form-select form-select-sm" style="width:140px; font-size:.85rem; color:var(--admin-text-sub);">
-                <option>All Categories</option>
-                <option>Electronics</option>
-                <option>Clothing</option>
-            </select>
-            <select class="form-select form-select-sm" style="width:140px; font-size:.85rem; color:var(--admin-text-sub);">
-                <option>All Status</option>
-                <option>Active</option>
-                <option>Draft</option>
-                <option>Out of Stock</option>
+            <select id="statusFilter" class="form-select form-select-sm" style="width:140px; font-size:.85rem; color:var(--admin-text-sub);">
+                <option value="">Status: All</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="suspended">Suspended</option>
+                <option value="rejected">Rejected</option>
             </select>
         </div>
 
-        {{-- Search --}}
-        <div class="position-relative" style="width:250px;">
-            <i class="fa fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size:.8rem;"></i>
-            <input type="text" class="form-control form-control-sm ps-5" placeholder="Search products..." style="font-size:.85rem; border-radius:50px;">
-        </div>
     </div>
 
     {{-- Table --}}
@@ -48,100 +36,24 @@
         <table class="table saas-table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th style="width:40px;">
-                        <input class="form-check-input ms-1" type="checkbox">
-                    </th>
                     <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
+                    <th>Vendor</th>
+                    <th>Price & Stock</th>
                     <th>Status</th>
-                    <th class="text-end">Actions</th>
+                    <th class="text-end">Moderation</th>
                 </tr>
             </thead>
-            <tbody>
-                {{-- Item 1 --}}
-                <tr>
-                    <td><input class="form-check-input ms-1" type="checkbox"></td>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded d-flex align-items-center justify-content-center text-primary" style="width:40px;height:40px;font-size:1.2rem;">
-                                <i class="fa fa-headphones"></i>
-                            </div>
-                            <div>
-                                <a href="#" class="d-block fw-600 text-dark text-decoration-none">Sony WH-1000XM5</a>
-                                <span class="text-muted fs-xs">SKU: SNY-1005</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary border">Electronics</span></td>
-                    <td class="fw-600">Rs 42,999</td>
-                    <td>14 <span class="text-success fs-xs ms-1"><i class="fa-solid fa-arrow-trend-up"></i></span></td>
-                    <td><span class="status-pill status-success">Active</span></td>
-                    <td class="text-end">
-                        <button class="action-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button class="action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
-                    </td>
-                </tr>
-                {{-- Item 2 --}}
-                <tr>
-                    <td><input class="form-check-input ms-1" type="checkbox"></td>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded d-flex align-items-center justify-content-center text-info" style="width:40px;height:40px;font-size:1.2rem;">
-                                <i class="fa fa-shoe-prints"></i>
-                            </div>
-                            <div>
-                                <a href="#" class="d-block fw-600 text-dark text-decoration-none">Nike Air Max 270</a>
-                                <span class="text-muted fs-xs">SKU: NKE-AM270</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary border">Footwear</span></td>
-                    <td class="fw-600">Rs 18,500</td>
-                    <td>0 <span class="text-danger fs-xs ms-1"><i class="fa-solid fa-arrow-trend-down"></i></span></td>
-                    <td><span class="status-pill status-danger">Out of Stock</span></td>
-                    <td class="text-end">
-                        <button class="action-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button class="action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
-                    </td>
-                </tr>
-                {{-- Item 3 --}}
-                <tr>
-                    <td><input class="form-check-input ms-1" type="checkbox"></td>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded d-flex align-items-center justify-content-center text-warning" style="width:40px;height:40px;font-size:1.2rem;">
-                                <i class="fa fa-stopwatch"></i>
-                            </div>
-                            <div>
-                                <a href="#" class="d-block fw-600 text-dark text-decoration-none">Apple Watch Series 8</a>
-                                <span class="text-muted fs-xs">SKU: APL-W8</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary border">Wearables</span></td>
-                    <td class="fw-600">Rs 85,000</td>
-                    <td>- <span class="text-muted fs-xs ms-1">N/A</span></td>
-                    <td><span class="status-pill status-warning">Draft</span></td>
-                    <td class="text-end">
-                        <button class="action-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button class="action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
-                    </td>
-                </tr>
+            <tbody id="productsTableBody">
+                {{-- Dynamic Content --}}
             </tbody>
         </table>
     </div>
 
     {{-- Pagination --}}
     <div class="p-3 border-top border-light d-flex justify-content-between align-items-center">
-        <span class="text-muted" style="font-size:.8rem;">Showing 1 to 3 of 142 entries</span>
-        <ul class="pagination pagination-sm mb-0">
-            <li class="page-item disabled"><a class="page-link" href="#">Prev</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        <span class="text-muted" id="paginationInfo" style="font-size:.8rem;">Loading...</span>
+        <ul class="pagination pagination-sm mb-0" id="paginationControls">
+            {{-- Dynamic Pagination --}}
         </ul>
     </div>
 </div>
@@ -150,8 +62,173 @@
 
 @push('styles')
 <style>
+.fs-sm { font-size: 0.85rem; }
 .fs-xs { font-size: 0.75rem; }
+.fw-500 { font-weight: 500; }
 .fw-600 { font-weight: 600; }
-.form-check-input:checked { background-color: var(--admin-primary); border-color: var(--admin-primary); }
+
+.shimmer-row td { position: relative; overflow: hidden; }
+.shimmer-box { 
+    height: 20px; background: #e2e8f0; border-radius: 4px;
+    position: relative; overflow: hidden;
+}
+.shimmer-box::after {
+    content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0));
+    animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('admin_token');
+    const tableBody = document.getElementById('productsTableBody');
+    const statusFilter = document.getElementById('statusFilter');
+    let currentPage = 1;
+
+    async function fetchProducts(page = 1) {
+        currentPage = page;
+        renderSkeleton();
+        
+        const params = new URLSearchParams({ page });
+        if(statusFilter.value) params.append('status', statusFilter.value);
+
+        try {
+            const res = await fetch(`/api/admin/products?${params.toString()}`, {
+                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+            });
+            const json = await res.json();
+            
+            if (res.ok) {
+                renderProducts(json.data.data);
+                renderPagination(json.data);
+            } else {
+                Swal.fire('Error', json.message || 'Failed to load products', 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Network error occurred.', 'error');
+        }
+    }
+
+    function renderSkeleton() {
+        let html = '';
+        for (let i=0; i<5; i++) {
+            html += `<tr class="shimmer-row">
+                <td><div class="shimmer-box mb-1" style="width:160px;"></div><div class="shimmer-box" style="width:100px;height:12px"></div></td>
+                <td><div class="shimmer-box" style="width:120px;"></div></td>
+                <td><div class="shimmer-box" style="width:80px;"></div></td>
+                <td><div class="shimmer-box" style="width:90px;"></div></td>
+                <td><div class="shimmer-box ms-auto" style="width:100px;"></div></td>
+            </tr>`;
+        }
+        tableBody.innerHTML = html;
+    }
+
+    function renderProducts(products) {
+        if(products.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No products found.</td></tr>`;
+            return;
+        }
+
+        let html = products.map((prod) => {
+            const vendorName = prod.vendor ? prod.vendor.name : 'Unknown Vendor';
+            const catName = prod.category ? prod.category.name : 'Uncategorized';
+            
+            let statusBadge = '';
+            if(prod.status === 'active') statusBadge = '<span class="status-pill status-success">Active</span>';
+            else if(prod.status === 'suspended') statusBadge = '<span class="status-pill status-danger">Suspended</span>';
+            else if(prod.status === 'rejected') statusBadge = '<span class="status-pill status-danger">Rejected</span>';
+            else statusBadge = '<span class="status-pill status-warning">Pending</span>';
+
+            const toggleBtn = prod.status === 'active' 
+                ? `<button class="btn btn-sm btn-outline-danger py-1 px-2 fs-xs status-toggle" data-id="${prod.id}" data-action="suspended">Suspend</button>`
+                : `<button class="btn btn-sm btn-outline-success py-1 px-2 fs-xs status-toggle" data-id="${prod.id}" data-action="active">Activate</button>`;
+
+            return `
+                <tr>
+                    <td>
+                        <span class="d-block fw-600 text-dark">${prod.name}</span>
+                        <span class="text-muted fs-xs"><i class="fa-solid fa-tag me-1"></i>${catName}</span>
+                    </td>
+                    <td>
+                        <span class="d-block fs-sm text-dark">${vendorName}</span>
+                    </td>
+                    <td>
+                        <span class="d-block fw-600 text-primary">$${parseFloat(prod.price).toFixed(2)}</span>
+                        <span class="text-muted fs-xs">${prod.stock} in stock</span>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td class="text-end text-nowrap">
+                        ${toggleBtn}
+                        <button class="btn btn-sm btn-light py-1 px-2 fs-xs ms-1 border" title="View"><i class="fa-regular fa-eye"></i></button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        tableBody.innerHTML = html;
+
+        document.querySelectorAll('.status-toggle').forEach(btn => {
+            btn.addEventListener('click', function() {
+                updateStatus(this.dataset.id, this.dataset.action);
+            });
+        });
+    }
+
+    function renderPagination(meta) {
+        document.getElementById('paginationInfo').textContent = `Showing ${meta.from || 0} to ${meta.to || 0} of ${meta.total} entries`;
+        let html = `<li class="page-item ${meta.prev_page_url ? '' : 'disabled'}"><button class="page-link" onclick="fetchPage(${meta.current_page - 1})">Prev</button></li>`;
+        html += `<li class="page-item active"><button class="page-link">${meta.current_page}</button></li>`;
+        html += `<li class="page-item ${meta.next_page_url ? '' : 'disabled'}"><button class="page-link" onclick="fetchPage(${meta.current_page + 1})">Next</button></li>`;
+        document.getElementById('paginationControls').innerHTML = html;
+    }
+
+    window.fetchPage = function(page) {
+        if(page > 0) fetchProducts(page);
+    };
+
+    statusFilter.addEventListener('change', () => fetchProducts(1));
+
+    window.updateStatus = async function(id, status) {
+        const confirmText = status === 'suspended' ? 'suspend this product?' : 'activate this product?';
+        const resAlert = await Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to ${confirmText}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: status === 'suspended' ? '#dc2626' : '#16a34a',
+            confirmButtonText: 'Yes, do it'
+        });
+
+        if(!resAlert.isConfirmed) return;
+
+        try {
+            const res = await fetch(`/api/admin/products/${id}/status`, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': 'Bearer ' + token, 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json' 
+                },
+                body: JSON.stringify({ status })
+            });
+
+            if (res.ok) {
+                Swal.fire({title: 'Updated!', icon: 'success', timer: 1000, showConfirmButton: false});
+                fetchProducts(currentPage);
+            } else {
+                Swal.fire('Error', 'Failed to update status', 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Network error', 'error');
+        }
+    };
+
+    fetchProducts(1);
+});
+</script>
 @endpush
