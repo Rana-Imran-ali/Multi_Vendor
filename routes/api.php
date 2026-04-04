@@ -101,5 +101,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // ── Product Moderation ────────────────────────────────────────────────
         Route::get('/products',                      [AdminController::class, 'products']);
         Route::put('/products/{id}/status',          [AdminController::class, 'updateProductStatus']);
+        
+        // ── Product Approval ──────────────────────────────────────────────────
+        Route::get('/approval/products',                 [\App\Http\Controllers\Admin\ProductApprovalController::class, 'index']);
+        Route::put('/approval/products/{product}/approve', [\App\Http\Controllers\Admin\ProductApprovalController::class, 'approve']);
+        Route::put('/approval/products/{product}/reject',  [\App\Http\Controllers\Admin\ProductApprovalController::class, 'reject']);
     });
 });

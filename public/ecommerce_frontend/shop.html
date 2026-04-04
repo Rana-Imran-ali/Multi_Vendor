@@ -257,31 +257,30 @@
                 <div class="filter-group">
                     <h4>Categories</h4>
                     <ul class="filter-list">
-                        <li><label><input type="checkbox" checked> Electronics <span>120</span></label></li>
-                        <li><label><input type="checkbox"> Fashion & Apparels <span>85</span></label></li>
-                        <li><label><input type="checkbox"> Home & Living <span>42</span></label></li>
-                        <li><label><input type="checkbox"> Sports & Outdoors <span>38</span></label></li>
-                        <li><label><input type="checkbox"> Jewelry & Watches <span>15</span></label></li>
-                        <li><label><input type="checkbox"> Beauty & Health <span>50</span></label></li>
+                        <li><label><input type="radio" name="category_filter" value="1"> Electronics <span></span></label></li>
+                        <li><label><input type="radio" name="category_filter" value="2"> Fashion &amp; Apparels <span></span></label></li>
+                        <li><label><input type="radio" name="category_filter" value="3"> Home &amp; Living <span></span></label></li>
+                        <li><label><input type="radio" name="category_filter" value="4"> Sports &amp; Outdoors <span></span></label></li>
+                        <li><label><input type="radio" name="category_filter" value="5"> Jewelry &amp; Watches <span></span></label></li>
+                        <li><label><input type="radio" name="category_filter" value="6"> Beauty &amp; Health <span></span></label></li>
                     </ul>
                 </div>
                 
                 <div class="filter-group">
                     <h4>Price Range</h4>
-                    <input type="range" class="range-slider" min="0" max="2000" value="1000">
                     <div class="price-inputs">
-                        <input type="number" placeholder="Min" value="0">
+                        <input type="number" id="filterMinPrice" placeholder="Min $" min="0">
                         <span style="color:var(--text-muted)">-</span>
-                        <input type="number" placeholder="Max" value="1000">
+                        <input type="number" id="filterMaxPrice" placeholder="Max $" min="0">
                     </div>
                 </div>
 
                 <div class="filter-group">
                     <h4>Customer Rating</h4>
                     <ul class="filter-list">
-                        <li><label><input type="checkbox"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span> <span style="margin-left:auto;">24</span></label></li>
-                        <li><label><input type="checkbox"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i> & up</span></label></li>
-                        <li><label><input type="checkbox"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i> & up</span></label></li>
+                        <li><label><input type="radio" name="rating_filter" value="5"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span> 5 stars</label></li>
+                        <li><label><input type="radio" name="rating_filter" value="4"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i> &amp; up</span></label></li>
+                        <li><label><input type="radio" name="rating_filter" value="3"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i> &amp; up</span></label></li>
                     </ul>
                 </div>
 
@@ -294,20 +293,25 @@
                     </ul>
                 </div>
                 
-                <button class="btn btn-primary" style="width:100%;">Apply Filters</button>
+                <div style="display:flex;gap:0.75rem;">
+                    <button class="btn btn-primary" id="applyFiltersBtn" style="flex:1;">Apply Filters</button>
+                    <button class="btn btn-outline" id="clearFiltersBtn">Clear</button>
+                </div>
             </aside>
 
             <!-- PRODUCT GRID AREA -->
             <div class="shop-main">
                 <div class="shop-toolbar fade-in">
-                    <p>Showing 1-6 of 36 results</p>
-                    <div style="display:flex;gap:1rem;align-items:center;">
+                    <p id="shopResultCount">Loading products...</p>
+                    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+                        <!-- Live search -->
+                        <input id="shopSearchInput" type="text" placeholder="&#x1F50D; Search products..." style="padding:0.5rem 1rem;border:1px solid var(--border);border-radius:2rem;background:var(--background);color:var(--text);font-size:0.9rem;outline:none;min-width:180px;">
                         <label style="color:var(--text-muted);font-size:0.9rem;font-weight:600;">Sort by:</label>
-                        <select class="form-control" style="width:auto;padding:0.5rem 1rem;cursor:pointer;border-radius:2rem;">
-                            <option>Latest</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Top Rated</option>
+                        <select id="sortSelect" class="form-control" style="width:auto;padding:0.5rem 1rem;cursor:pointer;border-radius:2rem;">
+                            <option value="latest">Latest</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="rating">Top Rated</option>
                         </select>
                     </div>
                 </div>
@@ -319,15 +323,8 @@
                     </div>
                 </div>
                 
-                <!-- Pagination -->
-                <div class="pagination fade-in">
-                    <button class="page-btn"><i class="fa-solid fa-angle-left"></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">...</button>
-                    <button class="page-btn"><i class="fa-solid fa-angle-right"></i></button>
-                </div>
+                <!-- Infinite Scroll Sentinel -->
+                <div id="scrollSentinel" style="width:100%;text-align:center;padding:2rem 0;grid-column:1/-1;"></div>
 
             </div>
         </div>
@@ -349,8 +346,9 @@
         </div>
     </footer>
 
-    <!-- App JS -->
     <script src="js/app.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/shop.js"></script>
     <script>
         // Shop specific mobile filter logic
         document.addEventListener('DOMContentLoaded', () => {
@@ -374,53 +372,6 @@
 
                 if(filterCloseBtn) filterCloseBtn.addEventListener('click', closeFilter);
                 filterOverlay.addEventListener('click', closeFilter);
-            }
-        });
-
-        // Fetch Products from API
-        document.addEventListener('DOMContentLoaded', async () => {
-            const grid = document.getElementById('productGrid');
-            try {
-                const res = await fetch('/api/products');
-                const json = await res.json();
-                
-                if (res.ok && json.data && json.data.data) {
-                    const products = json.data.data;
-                    
-                    if (products.length === 0) {
-                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);"><i class="fa-solid fa-box-open fa-3x" style="opacity:0.5; margin-bottom:1rem;"></i><p>No products found yet.</p></div>';
-                        return;
-                    }
-                    
-                    let html = '';
-                    products.forEach(p => {
-                        html += `
-                        <div class="product-card fade-in">
-                            <div class="product-img">
-                                ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fa-solid fa-box"></i>`}
-                                <div class="product-actions">
-                                    <button class="product-action-btn" title="Add to Wishlist"><i class="fa-regular fa-heart"></i></button>
-                                    <button class="product-action-btn" title="Quick View"><i class="fa-regular fa-eye"></i></button>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <a href="vendor.html?id=${p.vendor_id}" class="product-vendor">${p.vendor ? p.vendor.store_name : 'Unknown Vendor'}</a>
-                                <a href="product.html?id=${p.id}" class="product-title">${p.name}</a>
-                                <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><span>(0)</span></div>
-                                <div class="product-price-row">
-                                    <div class="price-box"><span class="price">$${parseFloat(p.price).toFixed(2)}</span></div>
-                                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i></button>
-                                </div>
-                            </div>
-                        </div>`;
-                    });
-                    
-                    grid.innerHTML = html;
-                } else {
-                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color:#ef4444;"><p>Failed to load products.</p></div>';
-                }
-            } catch(e) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color:#ef4444;"><p>Error connecting to API.</p></div>';
             }
         });
     </script>

@@ -240,76 +240,50 @@
 
     <div class="container" style="max-width:1200px;">
         <!-- Breadcrumbs -->
-        <div class="breadcrumb fade-in">
+        <div class="breadcrumb fade-in" id="productBreadcrumb">
             <a href="index.html">Home</a> <span>/</span>
-            <a href="shop.html">Electronics</a> <span>/</span>
-            <a href="shop.html">Laptops</a> <span>/</span>
-            <span style="color:var(--text);">ProBook Z15 Ultra Slim</span>
+            <a href="shop.html">Shop</a> <span>/</span>
+            <span style="color:var(--text);">Loading...</span>
         </div>
 
         <!-- PRODUCT SECTION -->
         <section class="product-layout fade-in delay-1">
             <!-- Gallery -->
             <div class="product-gallery">
-                <div class="main-img">
+                <div class="main-img" id="mainProductImg">
                     <div class="product-badge-large">SALE</div>
-                    <i class="fa-solid fa-laptop"></i>
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:3rem;color:var(--border);"></i>
                 </div>
-                <div class="thumb-list">
-                    <div class="thumb active"><i class="fa-solid fa-laptop"></i></div>
-                    <div class="thumb"><i class="fa-solid fa-laptop-code"></i></div>
-                    <div class="thumb"><i class="fa-solid fa-microchip"></i></div>
-                    <div class="thumb"><i class="fa-solid fa-battery-full"></i></div>
-                </div>
+                <div class="thumb-list" id="thumbList"></div>
             </div>
 
             <!-- Details -->
             <div class="product-details">
-                <a href="vendor.html" class="p-vendor">TechNova Store</a>
-                <h1>ProBook Z15 Ultra Slim Laptop - 16GB RAM, 512GB SSD</h1>
+                <a href="#" class="p-vendor" id="productVendorLink">Loading...</a>
+                <h1 id="productTitle"><span style="color:var(--text-muted);">Loading product...</span></h1>
                 
-                <div class="p-rating">
-                    <div class="p-rating-stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i>
-                    </div>
-                    <span>4.8 (124 reviews) &nbsp;|&nbsp; <span style="color:var(--secondary);font-weight:600;"><i class="fa-solid fa-check-circle"></i> In Stock</span></span>
+                <div class="p-rating" id="productRating">
+                    <span style="color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</span>
                 </div>
 
                 <div class="p-price-block">
-                    <div class="p-price">$1,299.00 <span class="p-old-price">$1,499.00</span></div>
+                    <div class="p-price" id="productPrice">$—</div>
                 </div>
 
-                <p class="p-description">
-                    Experience unrivaled performance with the ProBook Z15. Featuring the latest generation octa-core processor, a stunning retina-class display, and an ultra-thin aluminum chassis.
-                </p>
+                <p class="p-description" id="productDescription" style="color:var(--text-muted);">Loading description...</p>
 
-                <div class="p-variants">
-                    <div class="variant-group">
-                        <span class="variant-label">Color: Space Gray</span>
-                        <div class="color-options">
-                            <div class="color-btn active" style="background-color: #4a4a4a;"></div>
-                            <div class="color-btn" style="background-color: #d1d5db;"></div>
-                            <div class="color-btn" style="background-color: #111827;"></div>
-                        </div>
-                    </div>
-                    <div class="variant-group">
-                        <span class="variant-label">Storage</span>
-                        <div class="size-options">
-                            <button class="size-btn">256GB</button>
-                            <button class="size-btn active">512GB</button>
-                            <button class="size-btn">1TB</button>
-                        </div>
-                    </div>
+                <div class="p-variants" id="productVariants">
+                    <!-- Populated dynamically by product.js -->
                 </div>
 
                 <div class="add-to-cart-action">
                     <div class="qty-control">
                         <button class="qty-btn" onclick="document.getElementById('qty').value = Math.max(1, parseInt(document.getElementById('qty').value) - 1)"><i class="fa-solid fa-minus"></i></button>
                         <input type="number" id="qty" class="qty-input" value="1" min="1">
-                        <button class="qty-btn" onclick="document.getElementById('qty').value = parseInt(document.getElementById('qty').value) + 1)"><i class="fa-solid fa-plus"></i></button>
+                        <button class="qty-btn" onclick="document.getElementById('qty').value = parseInt(document.getElementById('qty').value) + 1"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
-                    <button class="btn btn-primary add-btn" onclick="window.location.href='cart.html'"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+                    <button class="btn btn-primary add-btn" id="addToCartBtn"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
                 </div>
                 
                 <div style="display:flex;gap:1.5rem;color:var(--text-muted);font-size:0.9rem;">
@@ -376,12 +350,10 @@
             </div>
 
             <div id="vendor" class="tab-content">
-                <div style="display:flex;align-items:center;gap:1.5rem;">
-                    <div style="width:80px;height:80px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:2rem;"><i class="fa-solid fa-store"></i></div>
-                    <div>
-                        <h3>TechNova Store <span style="background:var(--secondary);color:white;font-size:0.7rem;padding:0.2rem 0.6rem;border-radius:1rem;vertical-align:middle;margin-left:0.5rem;">Verified</span></h3>
-                        <p style="color:var(--text-muted);">99% Positive Feedback | Joined 2023</p>
-                        <a href="vendor.html" class="btn btn-sm btn-outline" style="margin-top:0.75rem;">Visit Store</a>
+                <div id="vendorTabContent">
+                    <div style="display:flex;align-items:center;gap:1.5rem;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:2rem;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                        <div><p style="color:var(--text-muted);">Loading vendor info...</p></div>
                     </div>
                 </div>
             </div>
@@ -394,6 +366,8 @@
     </footer>
 
     <script src="js/app.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/product.js"></script>
     <script>
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
