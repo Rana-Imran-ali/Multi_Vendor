@@ -3,87 +3,117 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
+use App\Http\Resources\CartItemResource;
+use App\Http\Resources\CartResource;
 use App\Models\CartItem;
-use App\Models\Product;
+use App\Services\CartService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    private function getCart(Request $request)
+    public function __construct(private readonly CartService $cartService)
     {
-        return Cart::firstOrCreate(['user_id' => $request->user()->id]);
     }
 
-    public function index(Request $request)
+    // ─── GET /api/cart ────────────────────────────────────────────────────────
+    /**
+     * Return the authenticated user's full cart with product details.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $cart = $this->getCart($request);
+        $cart = $this->cartService->getCartWithDetails($request->user());
+
         return response()->json([
             'status' => 'success',
-            'data' => $cart->load('items.product')
+            'data'   => new CartResource($cart),
         ]);
     }
 
-    public function add(Request $request)
+    // ─── POST /api/cart ───────────────────────────────────────────────────────
+    /**
+     * Add a product to the cart (merges quantity if already present).
+     */
+    public function add(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+            'quantity'   => ['required', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $product = Product::findOrFail($validated['product_id']);
-        if ($product->stock < $validated['quantity']) {
-            return response()->json(['status' => 'error', 'message' => 'Not enough stock'], 400);
-        }
+        $item = $this->cartService->addItem(
+            $request->user(),
+            $validated['product_id'],
+            $validated['quantity']
+        );
 
-        $cart = $this->getCart($request);
-
-        $cartItem = CartItem::firstOrNew([
-            'cart_id' => $cart->id,
-            'product_id' => $validated['product_id']
-        ]);
-
-        $cartItem->quantity = ($cartItem->exists ? $cartItem->quantity : 0) + $validated['quantity'];
-        $cartItem->save();
-
-        return response()->json(['status' => 'success', 'message' => 'Item added to cart', 'data' => $cartItem]);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Item added to cart.',
+            'data'    => new CartItemResource($item),
+        ], 201);
     }
 
-    public function updateQuantity(Request $request, CartItem $cartItem)
+    // ─── PUT /api/cart/{cartItem} ─────────────────────────────────────────────
+    /**
+     * Update the quantity of a specific cart line item.
+     */
+    public function updateQuantity(Request $request, CartItem $cartItem): JsonResponse
     {
-        $cart = $this->getCart($request);
-
-        if ($cartItem->cart_id !== $cart->id) {
-            return response()->json(['status' => 'error', 'message' => 'Item not in your cart'], 403);
-        }
+        $this->requireOwnership($request, $cartItem);
 
         $validated = $request->validate([
-            'quantity' => 'required|integer|min:1'
+            'quantity' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $cartItem->update(['quantity' => $validated['quantity']]);
+        $item = $this->cartService->updateQuantity($cartItem, $validated['quantity']);
 
-        return response()->json(['status' => 'success', 'message' => 'Cart updated', 'data' => $cartItem]);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Cart item updated.',
+            'data'    => new CartItemResource($item),
+        ]);
     }
 
-    public function remove(Request $request, CartItem $cartItem)
+    // ─── DELETE /api/cart/{cartItem} ─────────────────────────────────────────
+    /**
+     * Remove a single item from the cart.
+     */
+    public function remove(Request $request, CartItem $cartItem): JsonResponse
     {
-        $cart = $this->getCart($request);
+        $this->requireOwnership($request, $cartItem);
 
-        if ($cartItem->cart_id !== $cart->id) {
-            return response()->json(['status' => 'error', 'message' => 'Item not in your cart'], 403);
+        $this->cartService->removeItem($cartItem);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Item removed from cart.',
+        ]);
+    }
+
+    // ─── DELETE /api/cart ─────────────────────────────────────────────────────
+    /**
+     * Clear all items from the cart.
+     */
+    public function clear(Request $request): JsonResponse
+    {
+        $this->cartService->clearCart($request->user());
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Cart cleared.',
+        ]);
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    /**
+     * Abort with 403 if the cart item does not belong to the current user.
+     */
+    private function requireOwnership(Request $request, CartItem $item): void
+    {
+        if (! $this->cartService->authorizeItem($request->user(), $item)) {
+            abort(403, 'You do not own this cart item.');
         }
-
-        $cartItem->delete();
-
-        return response()->json(['status' => 'success', 'message' => 'Item removed from cart']);
-    }
-
-    public function clear(Request $request)
-    {
-        $cart = $this->getCart($request);
-        $cart->items()->delete();
-
-        return response()->json(['status' => 'success', 'message' => 'Cart cleared']);
     }
 }
