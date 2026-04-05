@@ -37,13 +37,15 @@ class WishlistService
                           ->where('status', 'active')
                           ->firstOrFail();
 
-        [$item, $created] = Wishlist::firstOrCreate([
+        $item = Wishlist::firstOrCreate([
             'user_id'    => $user->id,
             'product_id' => $product->id,
         ]);
 
-        // Eager-load if newly created
-        if ($created) {
+        $created = $item->wasRecentlyCreated;
+
+        // Always ensure relations are present on the returned model
+        if (! $item->relationLoaded('product')) {
             $item->load(['product.images', 'product.category:id,name']);
         }
 

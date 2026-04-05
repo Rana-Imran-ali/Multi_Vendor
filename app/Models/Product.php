@@ -32,4 +32,38 @@ class Product extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    /**
+     * All cart line items that reference this product.
+     */
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Users who have wishlisted this product (many-to-many).
+     */
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlists')->withTimestamps();
+    }
+
+    // ─── Query Scopes ──────────────────────────────────────────────────────────
+
+    /**
+     * Only active (purchaseable) products.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Only products with stock remaining.
+     */
+    public function scopeInStock($query)
+    {
+        return $query->where('stock', '>', 0);
+    }
 }

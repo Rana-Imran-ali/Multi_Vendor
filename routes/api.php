@@ -6,6 +6,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\VendorController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CartController;
+use App\Http\Controllers\API\WishlistController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\Admin\AdminController;
@@ -44,19 +45,25 @@ Route::middleware('auth:sanctum')->group(function () {
         // Apply to become a vendor
         Route::post('/vendors', [VendorController::class, 'store']);
 
-        // Cart
-        Route::get('/cart',                  [CartController::class, 'index']);
-        Route::post('/cart',                 [CartController::class, 'add']);
-        Route::put('/cart/{cartItem}',       [CartController::class, 'updateQuantity']);
-        Route::delete('/cart/{cartItem}',    [CartController::class, 'remove']);
-        Route::delete('/cart',               [CartController::class, 'clear']);
+        // ── Cart ─────────────────────────────────────────────────────────────
+        Route::get('/cart',               [CartController::class, 'index']);
+        Route::post('/cart',              [CartController::class, 'add']);
+        Route::put('/cart/{cartItem}',    [CartController::class, 'updateQuantity']);
+        Route::delete('/cart/{cartItem}', [CartController::class, 'remove']);
+        Route::delete('/cart',            [CartController::class, 'clear']);
 
-        // Orders
+        // ── Wishlist ──────────────────────────────────────────────────────────
+        Route::get('/wishlist',                          [WishlistController::class, 'index']);
+        Route::post('/wishlist',                         [WishlistController::class, 'add']);
+        Route::delete('/wishlist/{product}',             [WishlistController::class, 'remove']);
+        Route::get('/wishlist/{product}/check',          [WishlistController::class, 'check']);
+
+        // ── Orders ────────────────────────────────────────────────────────────
         Route::get('/orders',              [OrderController::class, 'index']);
         Route::post('/orders',             [OrderController::class, 'store']);
         Route::get('/orders/{order}',      [OrderController::class, 'show']);
 
-        // Reviews
+        // ── Reviews ───────────────────────────────────────────────────────────
         Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
     });
 
