@@ -9,6 +9,7 @@ use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\WishlistController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\Admin\AdminController;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -26,7 +27,7 @@ Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::get('/products',             [ProductController::class, 'index']);
 Route::get('/products/{product}',   [ProductController::class, 'show']);
 
-Route::get('/products/{product}/reviews', [ReviewController::class, 'index']);
+Route::get('/{type}/{id}/reviews', [ReviewController::class, 'index'])->whereIn('type', ['products', 'vendors']);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PROTECTED ROUTES (auth:sanctum required for everything below)
@@ -64,7 +65,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders/{order}',      [OrderController::class, 'show']);
 
         // ── Reviews ───────────────────────────────────────────────────────────
-        Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
+        Route::post('/{type}/{id}/reviews', [ReviewController::class, 'store'])->whereIn('type', ['products', 'vendors']);
+
+        // ── Payments ──────────────────────────────────────────────────────────
+        Route::post('/orders/{order}/pay', [PaymentController::class, 'pay']);
     });
 
     // ── Vendor Routes ─────────────────────────────────────────────────────────
@@ -104,6 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // ── Order Management ──────────────────────────────────────────────────
         Route::get('/orders',                        [OrderController::class, 'indexAll']);
         Route::put('/orders/{order}/status',         [OrderController::class, 'updateStatus']);
+        Route::post('/orders/{order}/refund',        [PaymentController::class, 'refund']);
 
         // ── Product Moderation ────────────────────────────────────────────────
         Route::get('/products',                      [AdminController::class, 'products']);

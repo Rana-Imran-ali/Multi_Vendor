@@ -8,9 +8,12 @@ use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Traits\ApiResponse;
 
 class AuthController extends Controller
 {
+    use ApiResponse;
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -34,14 +37,10 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User registered successfully',
-            'data' => [
-                'user' => $user,
-                'token' => $token
-            ]
-        ], 201);
+        return $this->successResponse([
+            'user' => $user,
+            'token' => $token
+        ], 'User registered successfully', 201);
     }
 
     public function login(Request $request)
@@ -54,42 +53,29 @@ class AuthController extends Controller
         $user = User::where('email', $validated['email'])->first();
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid credentials'
-            ], 401);
+            return $this->errorResponse('Invalid credentials', 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Logged in successfully',
-            'data' => [
-                'user' => $user,
-                'token' => $token
-            ]
-        ]);
+        return $this->successResponse([
+            'user' => $user,
+            'token' => $token
+        ], 'Logged in successfully');
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Logged out successfully'
-        ]);
+        return $this->successResponse(null, 'Logged out successfully');
     }
 
     public function profile(Request $request)
     {
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'user' => $request->user()->load('vendor')
-            ]
-        ]);
+        return $this->successResponse([
+            'user' => $request->user()->load('vendor')
+        ], 'Profile retrieved successfully');
     }
 
     public function updateProfile(Request $request)
@@ -116,12 +102,8 @@ class AuthController extends Controller
 
         $user->save();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Profile updated successfully',
-            'data' => [
-                'user' => $user->load('vendor')
-            ]
-        ]);
+        return $this->successResponse([
+            'user' => $user->load('vendor')
+        ], 'Profile updated successfully');
     }
 }

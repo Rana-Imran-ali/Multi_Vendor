@@ -18,8 +18,10 @@ class RoleMiddleware
     {
         if (!$request->user() || !in_array($request->user()->role, $roles)) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized action. You do not have the required role.'
+                'success' => false,
+                'message' => 'Unauthorized action. You do not have the required role.',
+                'data' => null,
+                'errors' => null
             ], 403);
         }
 

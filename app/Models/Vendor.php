@@ -38,6 +38,14 @@ class Vendor extends Model
     }
 
     /**
+     * Reviews left for this vendor.
+     */
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    /**
      * Scope: only pending vendor applications.
      */
     public function scopePending($query)

@@ -7,11 +7,14 @@ use App\Http\Resources\CartItemResource;
 use App\Http\Resources\CartResource;
 use App\Models\CartItem;
 use App\Services\CartService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(private readonly CartService $cartService)
     {
     }
@@ -24,10 +27,7 @@ class CartController extends Controller
     {
         $cart = $this->cartService->getCartWithDetails($request->user());
 
-        return response()->json([
-            'status' => 'success',
-            'data'   => new CartResource($cart),
-        ]);
+        return $this->successResponse(new CartResource($cart), 'Cart retrieved successfully.');
     }
 
     // ─── POST /api/cart ───────────────────────────────────────────────────────
@@ -47,11 +47,7 @@ class CartController extends Controller
             $validated['quantity']
         );
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Item added to cart.',
-            'data'    => new CartItemResource($item),
-        ], 201);
+        return $this->successResponse(new CartItemResource($item), 'Item added to cart.', 201);
     }
 
     // ─── PUT /api/cart/{cartItem} ─────────────────────────────────────────────
@@ -68,11 +64,7 @@ class CartController extends Controller
 
         $item = $this->cartService->updateQuantity($cartItem, $validated['quantity']);
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Cart item updated.',
-            'data'    => new CartItemResource($item),
-        ]);
+        return $this->successResponse(new CartItemResource($item), 'Cart item updated.');
     }
 
     // ─── DELETE /api/cart/{cartItem} ─────────────────────────────────────────
@@ -85,10 +77,7 @@ class CartController extends Controller
 
         $this->cartService->removeItem($cartItem);
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Item removed from cart.',
-        ]);
+        return $this->successResponse(null, 'Item removed from cart.');
     }
 
     // ─── DELETE /api/cart ─────────────────────────────────────────────────────
@@ -99,10 +88,7 @@ class CartController extends Controller
     {
         $this->cartService->clearCart($request->user());
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Cart cleared.',
-        ]);
+        return $this->successResponse(null, 'Cart cleared.');
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

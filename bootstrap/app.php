@@ -18,5 +18,32 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*')) {
+                $statusCode = 500;
+                $message = $e->getMessage() ?: 'Server Error';
+                $errors = null;
+
+                if ($e instanceof \Illuminate\Validation\ValidationException) {
+                    $statusCode = 422;
+                    $message = 'Validation Error';
+                    $errors = $e->errors();
+                } elseif ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                    $statusCode = 404;
+                    $message = 'Resource not found';
+                } elseif ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                    $statusCode = $e->getStatusCode();
+                } elseif ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                    $statusCode = 401;
+                    $message = 'Unauthenticated.';
+                }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'data' => null,
+                    'errors' => $errors,
+                ], $statusCode);
+            }
+        });
     })->create();

@@ -9,11 +9,13 @@ use App\Services\ProductQueryService;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
+    use ApiResponse;
     public function __construct(
         protected ProductService $productService,
         protected ProductQueryService $productQueryService,
@@ -45,14 +47,17 @@ class ProductController extends Controller
             return $query->cursorPaginate($perPage);
         });
 
-        return ProductResource::collection($result)->additional([
+        $data = [
+            'products' => ProductResource::collection($result),
             'meta' => [
                 'per_page'    => $perPage,
                 'next_cursor' => $result->nextCursor()?->encode(),
                 'prev_cursor' => $result->previousCursor()?->encode(),
                 'has_more'    => $result->hasMorePages(),
             ],
-        ]);
+        ];
+
+        return $this->successResponse($data, 'Products retrieved successfully.');
     }
 
     /**
@@ -62,10 +67,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         if ($product->status !== 'active') {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Product not found.',
-            ], 404);
+            return $this->errorResponse('Product not found.', 404);
         }
 
         $cacheKey = "product:{$product->id}";
@@ -80,7 +82,7 @@ class ProductController extends Controller
             ])->loadAvg('reviews', 'rating')->loadCount('reviews');
         });
 
-        return new ProductResource($product);
+        return $this->successResponse(new ProductResource($product), 'Product retrieved successfully.');
     }
 
     /**
@@ -94,11 +96,7 @@ class ProductController extends Controller
         // Bust catalog cache so new product appears immediately
         Cache::flush(); // Simple strategy; use Tags if Redis is available
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Product created. Pending admin approval.',
-            'data'    => new ProductResource($product),
-        ], 201);
+        return $this->successResponse(new ProductResource($product), 'Product created. Pending admin approval.', 201);
     }
 
     /**
@@ -111,11 +109,7 @@ class ProductController extends Controller
         Cache::forget("product:{$product->id}");
         Cache::flush(); // Bust catalog
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Product updated successfully.',
-            'data'    => new ProductResource($product),
-        ]);
+        return $this->successResponse(new ProductResource($product), 'Product updated successfully.');
     }
 
     /**
@@ -126,10 +120,7 @@ class ProductController extends Controller
         $user = $request->user();
 
         if (! $user->vendor || $user->vendor->id !== $product->vendor_id) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Unauthorized. You do not own this product.',
-            ], 403);
+            return $this->errorResponse('Unauthorized. You do not own this product.', 403);
         }
 
         $product->delete();
@@ -137,10 +128,7 @@ class ProductController extends Controller
         Cache::forget("product:{$product->id}");
         Cache::flush();
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Product deleted successfully.',
-        ]);
+        return $this->successResponse(null, 'Product deleted successfully.');
     }
 
     /**
@@ -151,10 +139,7 @@ class ProductController extends Controller
         $user = $request->user();
 
         if (! $user->vendor) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Not a vendor.',
-            ], 403);
+            return $this->errorResponse('Not a vendor.', 403);
         }
 
         $products = Product::where('vendor_id', $user->vendor->id)
@@ -164,6 +149,6 @@ class ProductController extends Controller
             ->latest()
             ->get();
 
-        return ProductResource::collection($products);
+        return $this->successResponse(ProductResource::collection($products), 'Vendor products retrieved.');
     }
 }

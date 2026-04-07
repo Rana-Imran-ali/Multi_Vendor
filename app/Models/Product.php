@@ -10,7 +10,7 @@ class Product extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(User::class, 'vendor_id');
+        return $this->belongsTo(Vendor::class);
     }
 
     public function category()
@@ -30,7 +30,7 @@ class Product extends Model
 
     public function reviews()
     {
-        return $this->hasMany(Review::class);
+        return $this->morphMany(Review::class, 'reviewable');
     }
 
     /**

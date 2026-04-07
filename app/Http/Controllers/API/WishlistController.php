@@ -5,11 +5,14 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\WishlistResource;
 use App\Services\WishlistService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(private readonly WishlistService $wishlistService)
     {
     }
@@ -22,11 +25,10 @@ class WishlistController extends Controller
     {
         $items = $this->wishlistService->getWishlist($request->user());
 
-        return response()->json([
-            'status' => 'success',
-            'count'  => $items->count(),
-            'data'   => WishlistResource::collection($items),
-        ]);
+        return $this->successResponse([
+            'count' => $items->count(),
+            'items' => WishlistResource::collection($items),
+        ], 'Wishlist retrieved successfully.');
     }
 
     // ─── POST /api/wishlist ───────────────────────────────────────────────────
@@ -44,14 +46,10 @@ class WishlistController extends Controller
             $validated['product_id']
         );
 
-        $status  = $created ? 201 : 200;
+        $code    = $created ? 201 : 200;
         $message = $created ? 'Product added to wishlist.' : 'Product is already in your wishlist.';
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => $message,
-            'data'    => new WishlistResource($item),
-        ], $status);
+        return $this->successResponse(new WishlistResource($item), $message, $code);
     }
 
     // ─── DELETE /api/wishlist/{product} ──────────────────────────────────────
@@ -63,16 +61,10 @@ class WishlistController extends Controller
         $removed = $this->wishlistService->remove($request->user(), $productId);
 
         if (! $removed) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Product not found in your wishlist.',
-            ], 404);
+            return $this->errorResponse('Product not found in your wishlist.', 404);
         }
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Product removed from wishlist.',
-        ]);
+        return $this->successResponse(null, 'Product removed from wishlist.');
     }
 
     // ─── GET /api/wishlist/{product}/check ───────────────────────────────────
@@ -84,9 +76,6 @@ class WishlistController extends Controller
     {
         $inWishlist = $this->wishlistService->has($request->user(), $productId);
 
-        return response()->json([
-            'status'      => 'success',
-            'in_wishlist' => $inWishlist,
-        ]);
+        return $this->successResponse(['in_wishlist' => $inWishlist], 'Wishlist check complete.');
     }
 }
