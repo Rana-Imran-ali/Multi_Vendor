@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Product;
 use App\Services\ProductService;
-use App\Services\ProductQueryService;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
@@ -16,9 +16,10 @@ use Illuminate\Support\Facades\Cache;
 class ProductController extends Controller
 {
     use ApiResponse;
+    
     public function __construct(
         protected ProductService $productService,
-        protected ProductQueryService $productQueryService,
+        protected ProductRepositoryInterface $productRepository,
     ) {}
 
     /**
@@ -39,12 +40,11 @@ class ProductController extends Controller
             'cursor'      => 'nullable|string',
         ]);
 
-        $cacheKey = $this->productQueryService->buildCacheKey($request);
+        $cacheKey = $this->buildCacheKey($request);
         $perPage  = (int) $request->input('per_page', 15);
 
         $result = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($request, $perPage) {
-            $query = $this->productQueryService->buildCatalogQuery($request);
-            return $query->cursorPaginate($perPage);
+            return $this->productRepository->getApprovedCatalog($request->all(), $perPage);
         });
 
         $data = [
@@ -93,8 +93,7 @@ class ProductController extends Controller
     {
         $product = $this->productService->createProduct($request->validated(), $request->user());
 
-        // Bust catalog cache so new product appears immediately
-        Cache::flush(); // Simple strategy; use Tags if Redis is available
+        Cache::flush();
 
         return $this->successResponse(new ProductResource($product), 'Product created. Pending admin approval.', 201);
     }
@@ -107,7 +106,7 @@ class ProductController extends Controller
         $product = $this->productService->updateProduct($product, $request->validated());
 
         Cache::forget("product:{$product->id}");
-        Cache::flush(); // Bust catalog
+        Cache::flush();
 
         return $this->successResponse(new ProductResource($product), 'Product updated successfully.');
     }
@@ -142,13 +141,21 @@ class ProductController extends Controller
             return $this->errorResponse('Not a vendor.', 403);
         }
 
-        $products = Product::where('vendor_id', $user->vendor->id)
-            ->with(['category:id,name', 'variants', 'images'])
-            ->withAvg('reviews', 'rating')
-            ->withCount('reviews')
-            ->latest()
-            ->get();
+        $products = $this->productRepository->getByVendor($user->vendor->id);
 
         return $this->successResponse(ProductResource::collection($products), 'Vendor products retrieved.');
+    }
+
+    /**
+     * Helper to build a unique cache key based on query parameters.
+     */
+    private function buildCacheKey(Request $request): string
+    {
+        $params = $request->only([
+            'search', 'category_id', 'min_price', 'max_price',
+            'min_rating', 'vendor_id', 'sort', 'cursor', 'per_page',
+        ]);
+        ksort($params);
+        return 'products:' . md5(serialize($params));
     }
 }

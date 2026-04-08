@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Interfaces\CategoryRepositoryInterface;
 use App\Models\Category;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -13,18 +14,16 @@ class CategoryController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(protected CategoryRepositoryInterface $categoryRepository)
+    {
+    }
+
     /**
      * Public: list all categories (with child count), cached for 30 min.
      */
     public function index()
     {
-        $categories = Cache::remember('categories.all', now()->addMinutes(30), function () {
-            return Category::withCount('products')
-                ->with('children:id,parent_id,name,slug')
-                ->whereNull('parent_id')   // top-level only; children nested
-                ->orderBy('name')
-                ->get();
-        });
+        $categories = $this->categoryRepository->getAllNested();
 
         return $this->successResponse($categories, 'Categories retrieved successfully.');
     }
@@ -32,11 +31,9 @@ class CategoryController extends Controller
     /**
      * Public: show a single category with its products.
      */
-    public function show(Category $category)
+    public function show($id)
     {
-        $category->load([
-            'products' => fn($q) => $q->where('status', 'active')->with(['images', 'variants']),
-        ])->loadCount('products');
+        $category = $this->categoryRepository->findByIdWithProducts((int) $id);
 
         return $this->successResponse($category, 'Category retrieved successfully.');
     }

@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Interfaces\CategoryRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
 use App\Interfaces\PaymentGatewayInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\VendorRepositoryInterface;
+use App\Repositories\Eloquent\CategoryRepository;
 use App\Repositories\Eloquent\OrderRepository;
 use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\VendorRepository;
@@ -21,6 +23,7 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Core Repository Bindings
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);

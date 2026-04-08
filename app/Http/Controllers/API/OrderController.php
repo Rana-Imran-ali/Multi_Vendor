@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Interfaces\OrderRepositoryInterface;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -14,15 +15,16 @@ class OrderController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(protected OrderRepositoryInterface $orderRepository)
+    {
+    }
+
     /**
      * Customer: list their own orders.
      */
     public function index(Request $request)
     {
-        $orders = Order::where('user_id', $request->user()->id)
-            ->with('items.product')
-            ->latest()
-            ->paginate(15);
+        $orders = $this->orderRepository->getByUser($request->user()->id);
 
         return $this->successResponse($orders, 'Orders retrieved successfully.');
     }
@@ -120,17 +122,7 @@ class OrderController extends Controller
             return $this->errorResponse('Unauthorized.', 403);
         }
 
-        $vendorId = $user->vendor->id;
-
-        $orders = Order::whereHas('items.product', fn($q) => $q->where('vendor_id', $vendorId))
-            ->with([
-                'items' => fn($q) => $q
-                    ->whereHas('product', fn($q2) => $q2->where('vendor_id', $vendorId))
-                    ->with('product'),
-                'user:id,name,email',
-            ])
-            ->latest()
-            ->paginate(15);
+        $orders = $this->orderRepository->getByVendor($user->vendor->id);
 
         return $this->successResponse($orders, 'Vendor orders retrieved successfully.');
     }
@@ -140,9 +132,7 @@ class OrderController extends Controller
      */
     public function indexAll()
     {
-        $orders = Order::with(['user:id,name,email', 'items.product'])
-            ->latest()
-            ->paginate(20);
+        $orders = $this->orderRepository->getAllPaginated(20);
 
         return $this->successResponse($orders, 'All orders retrieved successfully.');
     }
@@ -156,7 +146,7 @@ class OrderController extends Controller
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
         ]);
 
-        $order->update(['status' => $validated['status']]);
+        $this->orderRepository->updateStatus($order->id, $validated['status']);
 
         return $this->successResponse($order->fresh(), 'Order status updated successfully.');
     }
