@@ -15,8 +15,10 @@ class OrderController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected OrderRepositoryInterface $orderRepository)
-    {
+    public function __construct(
+        protected OrderRepositoryInterface $orderRepository,
+        protected \App\Services\Payment\PaymentService $paymentService
+    ) {
     }
 
     /**
@@ -37,6 +39,9 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'shipping_address' => 'required|string',
+            'cart_item_ids'    => 'nullable|array',
+            'cart_item_ids.*'  => 'integer|exists:cart_items,id',
+            'payment_method'   => 'required|string|in:card,paypal,cod',
         ]);
 
         $user = $request->user();
@@ -46,13 +51,25 @@ class OrderController extends Controller
             return $this->errorResponse('Your cart is empty.', 400);
         }
 
+        // Filter items if cart_item_ids is provided
+        $itemsToCheckout = $cart->items;
+        if (!empty($validated['cart_item_ids'])) {
+            $itemsToCheckout = $cart->items->filter(function ($item) use ($validated) {
+                return in_array($item->id, $validated['cart_item_ids']);
+            });
+
+            if ($itemsToCheckout->isEmpty()) {
+                return $this->errorResponse('None of the selected items were found in your cart.', 400);
+            }
+        }
+
         try {
             DB::beginTransaction();
 
             $total = 0;
 
             // Validate stock and compute total
-            foreach ($cart->items as $item) {
+            foreach ($itemsToCheckout as $item) {
                 if ($item->product->stock < $item->quantity) {
                     throw new \Exception("Product \"{$item->product->name}\" has insufficient stock.");
                 }
@@ -69,7 +86,8 @@ class OrderController extends Controller
             ]);
 
             // Create order items and reduce stock
-            foreach ($cart->items as $item) {
+            $itemIds = [];
+            foreach ($itemsToCheckout as $item) {
                 OrderItem::create([
                     'order_id'   => $order->id,
                     'product_id' => $item->product_id,
@@ -78,18 +96,29 @@ class OrderController extends Controller
                 ]);
 
                 $item->product->decrement('stock', $item->quantity);
+                $itemIds[] = $item->id;
             }
 
-            // Clear cart
-            $cart->items()->delete();
+            // Clear checked out items only
+            $cart->items()->whereIn('id', $itemIds)->delete();
 
             DB::commit();
 
-            return $this->successResponse(
-                $order->load('items.product'),
-                'Order placed successfully.',
-                201
-            );
+            // Handle payment initiation if card is selected
+            $paymentUrl = null;
+            if ($validated['payment_method'] === 'card') {
+                $paymentResult = $this->paymentService->payForOrder($order);
+                if ($paymentResult['success'] && !empty($paymentResult['payment_url'])) {
+                    $paymentUrl = $paymentResult['payment_url'];
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Order placed successfully.',
+                'data' => $order->load('items.product'),
+                'payment_url' => $paymentUrl
+            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse($e->getMessage(), 400);

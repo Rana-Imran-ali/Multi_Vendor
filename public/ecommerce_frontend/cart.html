@@ -231,6 +231,7 @@
             
             <div class="cart-main">
                 <div class="cart-header">
+                    <input type="checkbox" id="selectAllCart" checked style="margin-right:1rem; cursor:pointer;" title="Select All">
                     <span style="flex:1">Product</span>
                     <span style="width:120px; text-align:right">Price</span>
                     <span style="width:100px; text-align:center; padding-left:2rem;">Quantity</span>
@@ -239,7 +240,8 @@
                 </div>
 
                 <!-- Item 1 -->
-                <div class="cart-item fade-in">
+                <div class="cart-item fade-in" data-item-id="1" data-price="1299.00">
+                    <input type="checkbox" class="cart-item-select" value="1" checked style="margin-right:1rem; cursor:pointer;">
                     <div class="item-img"><i class="fa-solid fa-laptop"></i></div>
                     <div class="item-details">
                         <span class="item-vendor">TechNova Store</span>
@@ -257,7 +259,8 @@
                 </div>
 
                 <!-- Item 2 -->
-                <div class="cart-item fade-in delay-1">
+                <div class="cart-item fade-in delay-1" data-item-id="2" data-price="199.99">
+                    <input type="checkbox" class="cart-item-select" value="2" checked style="margin-right:1rem; cursor:pointer;">
                     <div class="item-img"><i class="fa-solid fa-headphones"></i></div>
                     <div class="item-details">
                         <span class="item-vendor">AudioTech</span>
@@ -282,8 +285,8 @@
                     <h3>Order Summary</h3>
                     
                     <div class="summary-row">
-                        <span>Items (2)</span>
-                        <span>$1,498.99</span>
+                        <span id="summaryItemsCount">Items (2)</span>
+                        <span id="summaryItemsSubtotal">$1,498.99</span>
                     </div>
                     <div class="summary-row">
                         <span>Shipping Estimate</span>
@@ -291,7 +294,7 @@
                     </div>
                     <div class="summary-row">
                         <span>Tax Estimate</span>
-                        <span>$120.00</span>
+                        <span id="summaryTax">$120.00</span>
                     </div>
                     
                     <div class="promo-code">
@@ -301,10 +304,10 @@
 
                     <div class="summary-row summary-total">
                         <span>Total</span>
-                        <span>$1,618.99</span>
+                        <span id="summaryTotal">$1,618.99</span>
                     </div>
                     
-                    <a href="checkout.html" class="btn btn-primary checkout-btn">
+                    <a href="javascript:void(0)" class="btn btn-primary checkout-btn" id="proceedCheckoutBtn">
                         Proceed to Checkout <i class="fa-solid fa-arrow-right-long"></i>
                     </a>
                     

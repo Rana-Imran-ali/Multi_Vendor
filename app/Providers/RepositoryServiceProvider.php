@@ -28,8 +28,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
 
-        // Payment Gateway — swap MockPaymentGateway for StripePaymentGateway in production
-        $this->app->bind(PaymentGatewayInterface::class, MockPaymentGateway::class);
+        // Payment Gateway
+        $this->app->bind(PaymentGatewayInterface::class, \App\Services\Payment\StripePaymentGateway::class);
     }
 
     public function boot(): void

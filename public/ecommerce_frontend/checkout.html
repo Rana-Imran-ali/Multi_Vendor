@@ -220,7 +220,7 @@
 
     <!-- MAIN CHECKOUT -->
     <section class="container fade-in delay-1">
-        <form class="checkout-layout" onsubmit="event.preventDefault(); window.location.href='index.html';">
+        <form class="checkout-layout">
             
             <!-- Forms -->
             <div class="checkout-form-container">
@@ -393,6 +393,77 @@
                 this.querySelector('input').checked = true;
             });
         });
+
+        // Handle checkout form submission
+        const checkoutForm = document.querySelector('.checkout-layout');
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Get URL params for cart items
+                const urlParams = new URLSearchParams(window.location.search);
+                const itemsParam = urlParams.get('items');
+                if (!itemsParam) {
+                    alert("No items selected for checkout.");
+                    window.location.href = 'cart.html';
+                    return;
+                }
+                const cartItemIds = itemsParam.split(',').map(id => parseInt(id, 10));
+
+                // Get shipping address details
+                const inputs = checkoutForm.querySelectorAll('.form-control');
+                let addressParts = [];
+                inputs.forEach(input => {
+                    if (input.value) addressParts.push(input.value);
+                });
+                const shippingAddress = addressParts.join(', ');
+
+                const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+                try {
+                    const token = localStorage.getItem('auth_token');
+                    if (!token) {
+                        alert("You must be logged in to place an order.");
+                        window.location.href = 'auth.html';
+                        return;
+                    }
+
+                    // Place the order
+                    const response = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            shipping_address: shippingAddress,
+                            cart_item_ids: cartItemIds,
+                            payment_method: paymentMethod
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Failed to place order.');
+                    }
+
+                    // Payment handling
+                    if (paymentMethod === 'card' && data.payment_url) {
+                        // Redirect to Stripe Checkout
+                        window.location.href = data.payment_url;
+                    } else {
+                        // Success page for COD or PayPal
+                        alert("Order placed successfully!");
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    alert("Checkout Error: " + error.message);
+                }
+            });
+        }
     </script>
 </body>
 </html>

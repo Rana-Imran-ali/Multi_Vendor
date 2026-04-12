@@ -192,4 +192,63 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.fade-in').forEach(element => {
         observer.observe(element);
     });
+
+    // 6. Cart Selection & Total Logic
+    const selectAllCart = document.getElementById('selectAllCart');
+    const cartItemSelects = document.querySelectorAll('.cart-item-select');
+    const proceedCheckoutBtn = document.getElementById('proceedCheckoutBtn');
+
+    if (selectAllCart && cartItemSelects.length > 0) {
+        const updateCartTotals = () => {
+            let totalItems = 0;
+            let subtotal = 0;
+            let selectedIds = [];
+
+            cartItemSelects.forEach(cb => {
+                if (cb.checked) {
+                    totalItems++;
+                    const itemEl = cb.closest('.cart-item');
+                    subtotal += parseFloat(itemEl.getAttribute('data-price') || 0);
+                    selectedIds.push(cb.value);
+                }
+            });
+
+            // Update DOM
+            const tax = subtotal > 0 ? 120.00 : 0;
+            document.getElementById('summaryItemsCount').textContent = `Items (${totalItems})`;
+            document.getElementById('summaryItemsSubtotal').textContent = `$${subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('summaryTotal').textContent = `$${(subtotal + tax).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            
+            // Check selectAll state
+            selectAllCart.checked = (totalItems === cartItemSelects.length && totalItems > 0);
+            
+            return selectedIds;
+        };
+
+        selectAllCart.addEventListener('change', (e) => {
+            cartItemSelects.forEach(cb => cb.checked = e.target.checked);
+            updateCartTotals();
+        });
+
+        cartItemSelects.forEach(cb => {
+            cb.addEventListener('change', updateCartTotals);
+        });
+
+        proceedCheckoutBtn.addEventListener('click', () => {
+            const selectedIds = updateCartTotals();
+            if (selectedIds.length === 0) {
+                alert('Please select at least one item to proceed.');
+                return;
+            }
+            
+            // Note: in a real application, we would pass these to checkout 
+            // via URL params or session storage. For HTML demo:
+            const params = new URLSearchParams();
+            params.append('items', selectedIds.join(','));
+            window.location.href = `checkout.html?${params.toString()}`;
+        });
+        
+        updateCartTotals(); // Initial calc
+    }
 });
