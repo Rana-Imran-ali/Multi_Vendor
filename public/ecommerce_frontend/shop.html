@@ -3,345 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop | Vendo Premium</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Shop | Vendo Premium Marketplace</title>
+    <meta name="description" content="Browse our extensive collection of premium products from verified vendors.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Core CSS -->
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .shop-container { display: flex; gap: 2rem; align-items: flex-start; }
-        
-        /* Sidebar Filters */
-        .shop-sidebar { width: 280px; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; position: sticky; top: calc(var(--navbar-height) + 2rem); }
-        .filter-group { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
-        .filter-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .filter-group h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text); }
-        .filter-list li { margin-bottom: 0.75rem; }
-        .filter-list label { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-muted); font-size: 0.95rem; transition: var(--transition); }
+        .shop-layout { display: flex; gap: 1.5rem; align-items: flex-start; padding: 2rem 0 4rem; }
+
+        /* ── Sidebar ── */
+        .shop-sidebar {
+            width: 256px; flex-shrink: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            position: sticky; top: calc(var(--navbar-height) + 1rem);
+            overflow: hidden;
+        }
+        .sidebar-head {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .sidebar-head h3 { font-size: 0.875rem; font-weight: 700; color: var(--text); }
+        .filter-group { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); }
+        .filter-group:last-child { border-bottom: none; }
+        .filter-group-title {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--text-muted);
+            margin-bottom: 0.85rem; cursor: pointer;
+        }
+        .filter-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .filter-list label {
+            display: flex; align-items: center; gap: 0.65rem;
+            font-size: 0.85rem; color: var(--text-secondary);
+            cursor: pointer; transition: color var(--t-fast);
+        }
         .filter-list label:hover { color: var(--primary); }
-        .filter-list input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--primary); cursor: pointer; }
-        .filter-list span { margin-left: auto; background: var(--background); padding: 0.1rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; }
-        
-        /* Price Range */
-        .range-slider { width: 100%; accent-color: var(--primary); cursor: pointer; }
-        .price-inputs { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; }
-        .price-inputs input { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--background); color: var(--text); font-size: 0.9rem; }
+        .filter-list input[type="checkbox"],
+        .filter-list input[type="radio"] { accent-color: var(--primary); cursor: pointer; width: 14px; height: 14px; }
+        .filter-count {
+            margin-left: auto;
+            font-size: 0.7rem; font-weight: 700;
+            background: var(--background); color: var(--text-muted);
+            padding: 0.1rem 0.45rem; border-radius: var(--r-sm);
+        }
+        .price-inputs { display: flex; align-items: center; gap: 0.5rem; }
+        .price-inputs input {
+            flex: 1; padding: 0.5rem 0.65rem;
+            border: 1.5px solid var(--border-dark); border-radius: var(--r-sm);
+            background: var(--background); color: var(--text); font-size: 0.8rem;
+        }
         .price-inputs input:focus { outline: none; border-color: var(--primary); }
-        
-        /* Main Grid */
+        .sidebar-actions { padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
+
+        /* ── Main ── */
         .shop-main { flex: 1; min-width: 0; }
-        .shop-toolbar { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; margin-bottom: 2rem; }
-        .shop-toolbar p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
-        
-        /* Product Card Styles from index */
-        .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 1.25rem; overflow: hidden; transition: var(--transition); position: relative; display: flex; flex-direction: column; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
-        .product-img { position: relative; aspect-ratio: 1; background: var(--background); display: flex; align-items: center; justify-content: center; }
-        .product-img i { font-size: 3rem; color: var(--border); }
-        .product-badge { position: absolute; top: 1rem; left: 1rem; background: var(--accent); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 0.5rem; z-index: 2; }
-        .product-actions { position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; opacity: 0; transform: translateX(10px); transition: var(--transition); z-index: 2; }
-        .product-card:hover .product-actions { opacity: 1; transform: translateX(0); }
-        .product-action-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); transition: var(--transition); border: 1px solid var(--border); cursor: pointer; }
-        .product-action-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .product-info { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
-        .product-vendor { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.25rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-        .product-vendor:hover { color: var(--primary); }
-        .product-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .product-title:hover { color: var(--primary); }
-        .product-rating { color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem; display: flex; gap: 0.2rem; }
-        .product-rating span { color: var(--text-muted); margin-left: 0.25rem; }
-        .product-price-row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
-        .price-box { display: flex; align-items: baseline; gap: 0.5rem; }
-        .price { font-weight: 800; font-size: 1.25rem; color: var(--primary); }
-        .old-price { text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; }
-        
-        /* Pagination */
-        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 4rem; }
-        .page-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; transition: var(--transition); cursor: pointer; }
-        .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-        
-        /* Mobile Overlay */
-        .mobile-filter-btn { display: none; width: 100%; margin-bottom: 1.5rem; }
-        .mobile-sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 998; opacity: 0; visibility: hidden; transition: var(--transition); }
-        
+
+        .shop-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--r-lg); padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap;
+        }
+        .shop-toolbar-left { display: flex; align-items: center; gap: 0.75rem; }
+        .result-count { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+        .result-count strong { color: var(--text); }
+
+        .toolbar-search {
+            display: flex; align-items: center;
+            background: var(--background); border: 1.5px solid var(--border-dark);
+            border-radius: var(--r-sm); padding: 0.35rem 0.75rem; gap: 0.4rem;
+        }
+        .toolbar-search input {
+            border: none; background: transparent;
+            font-size: 0.82rem; color: var(--text); width: 180px;
+        }
+        .toolbar-search input:focus { outline: none; }
+        .toolbar-search i { color: var(--text-muted); font-size: 0.8rem; }
+
+        .view-toggle { display: flex; gap: 0.25rem; }
+        .view-btn {
+            width: 30px; height: 30px; border-radius: var(--r-sm);
+            border: 1px solid var(--border); background: var(--surface);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 0.8rem; cursor: pointer;
+            transition: var(--transition);
+        }
+        .view-btn.active, .view-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* Active filters chips */
+        .active-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .filter-chip {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            background: var(--primary-xlight); color: var(--primary);
+            border: 1px solid var(--primary-light);
+            padding: 0.25rem 0.65rem; border-radius: 100px;
+            font-size: 0.75rem; font-weight: 600; cursor: pointer;
+        }
+        .filter-chip:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent-light); }
+
+        /* Mobile filter */
+        .mobile-filter-btn { display: none; }
+        .mobile-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 998; }
+
         @media (max-width: 1024px) {
-            .shop-container { flex-direction: column; }
-            .shop-sidebar { position: fixed; left: -320px; top: 0; height: 100vh; width: 300px; z-index: 999; border-radius: 0; overflow-y: auto; transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin: 0; border: none; }
+            .shop-layout { flex-direction: column; }
+            .shop-sidebar {
+                position: fixed; top: 0; left: -300px; height: 100vh;
+                width: 280px; z-index: 999; border-radius: 0;
+                overflow-y: auto; transition: left 0.3s ease;
+            }
             .shop-sidebar.active { left: 0; }
             .mobile-filter-btn { display: flex; }
-            .mobile-sidebar-overlay.active { display: block; opacity: 1; visibility: visible; }
-            .shop-toolbar { flex-direction: column; gap: 1rem; align-items: flex-start; }
-            .shop-toolbar select { width: 100%; }
-            .shop-toolbar > div { width: 100%; justify-content: space-between; }
+            .mobile-sidebar-overlay { display: block; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+            .mobile-sidebar-overlay.active { opacity: 1; visibility: visible; }
+        }
+        @media (max-width: 640px) {
+            .toolbar-search { display: none; }
+            .shop-toolbar { padding: 0.65rem 0.85rem; }
         }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;">
+                    <option value="all">All</option><option value="product">Products</option><option value="category">Categories</option><option value="vendor">Vendors</option>
                 </select>
-                <input type="text" placeholder="Smart search...">
+                <input type="text" placeholder="Search products, brands and more…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle active">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
+                <li class="dropdown"><a href="shop.html" class="nav-link dropdown-toggle active">Shop <i class="fa-solid fa-chevron-down fa-xs"></i></a>
                     <ul class="dropdown-menu">
                         <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
                         <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
+                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--amber)"></i> Hot Deals</a></li>
                     </ul>
                 </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
+                <li class="dropdown mega-dropdown"><a href="#" class="nav-link dropdown-toggle">Categories <i class="fa-solid fa-chevron-down fa-xs"></i></a>
+                    <div class="dropdown-menu mega-menu"><div class="mega-menu-grid">
+                        <div class="mega-col"><h5><i class="fa-solid fa-laptop"></i> Electronics</h5><a href="shop.html">Smartphones</a><a href="shop.html">Laptops & PCs</a><a href="shop.html">Cameras</a><a href="shop.html">Accessories</a></div>
+                        <div class="mega-col"><h5><i class="fa-solid fa-shirt"></i> Fashion</h5><a href="shop.html">Men's Clothing</a><a href="shop.html">Women's Clothing</a><a href="shop.html">Shoes</a><a href="shop.html">Watches</a></div>
+                        <div class="mega-col"><h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5><a href="shop.html">Furniture</a><a href="shop.html">Decor</a><a href="shop.html">Kitchenware</a><a href="shop.html">Lighting</a></div>
+                        <div class="mega-banner"><img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400&q=80" alt="Sale"><div class="mega-banner-text">Up to 50% Off</div></div>
+                    </div></div>
                 </li>
-                
                 <li><a href="vendor.html" class="nav-link">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
+                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--accent)"><i class="fa-solid fa-fire"></i></span></a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="contact.html" class="nav-link">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login / Register</a></li>
+                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
+                <div class="dropdown desktop-only"><button class="icon-btn dropdown-toggle"><i class="fa-solid fa-globe"></i></button><ul class="dropdown-menu" style="min-width:130px;right:0;left:auto;"><li><a href="#" class="dropdown-item">English (EN)</a></li><li><a href="#" class="dropdown-item">Español (ES)</a></li></ul></div>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="product.html" class="icon-btn auth-only"><i class="fa-regular fa-heart"></i><span class="badge">3</span></a>
+                <a href="cart.html" class="icon-btn"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a><a href="auth.html" class="btn btn-primary btn-sm">Sign Up</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="seller.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-crown"></i> Become Seller</a></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="vendor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-gauge"></i> Vendor Panel</a></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="/admin" class="btn btn-sm" style="background:#0f172a;color:#fff;"><i class="fa-solid fa-shield-halved"></i> Admin</a></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;">
+                        <li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);margin-bottom:0.35rem;"><strong class="navUserName" style="display:block;font-size:0.9rem;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li>
                         <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
                         <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
+                        <li style="border-top:1px solid var(--border);margin-top:0.35rem;padding-top:0.35rem;"><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
                     </ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <!-- PAGE HEADER -->
+    <!-- ── PAGE HEADER ── -->
     <div class="page-header">
-        <div class="container fade-in">
-            <h1>Shop All Products</h1>
-            <p>Browse our extensive collection of premium items from top vendors around the world. Filter by category, price, and customer ratings.</p>
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i><span>Shop</span></div>
+            <h1>All Products</h1>
+            <p>Browse our extensive collection from verified vendors worldwide</p>
         </div>
     </div>
 
-    <!-- MAIN SHOP LISTING -->
-    <section class="section-padding container">
-        
-        <!-- Mobile Filter Button -->
-        <button class="btn btn-outline mobile-filter-btn" id="mobile-filter-open">
-            <i class="fa-solid fa-filter"></i> Filter Products
-        </button>
+    <div class="container">
+
+        <!-- Mobile filter button -->
+        <div style="padding: 1rem 0 0; display:flex; gap:0.75rem; align-items:center;">
+            <button class="btn btn-outline btn-sm mobile-filter-btn" id="mobile-filter-open">
+                <i class="fa-solid fa-sliders"></i> Filters
+            </button>
+            <div id="activeFiltersContainer" class="active-filters" style="flex:1;"></div>
+        </div>
         <div class="mobile-sidebar-overlay" id="filter-overlay"></div>
 
-        <div class="shop-container">
-            
-            <!-- SIDEBAR -->
+        <div class="shop-layout">
+
+            <!-- ── SIDEBAR ── -->
             <aside class="shop-sidebar" id="filter-sidebar">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;" class="mobile-only">
-                    <h3 style="font-size:1.25rem;">Filters</h3>
-                    <button class="icon-btn" id="mobile-filter-close" style="background:transparent;"><i class="fa-solid fa-xmark"></i></button>
+                <div class="sidebar-head">
+                    <h3><i class="fa-solid fa-sliders" style="color:var(--primary);margin-right:0.4rem;"></i> Filters</h3>
+                    <button class="icon-btn" id="mobile-filter-close" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                
+
                 <div class="filter-group">
-                    <h4>Categories</h4>
-                    <ul class="filter-list">
-                        <li><label><input type="radio" name="category_filter" value="1"> Electronics <span></span></label></li>
-                        <li><label><input type="radio" name="category_filter" value="2"> Fashion &amp; Apparels <span></span></label></li>
-                        <li><label><input type="radio" name="category_filter" value="3"> Home &amp; Living <span></span></label></li>
-                        <li><label><input type="radio" name="category_filter" value="4"> Sports &amp; Outdoors <span></span></label></li>
-                        <li><label><input type="radio" name="category_filter" value="5"> Jewelry &amp; Watches <span></span></label></li>
-                        <li><label><input type="radio" name="category_filter" value="6"> Beauty &amp; Health <span></span></label></li>
-                    </ul>
+                    <div class="filter-group-title">
+                        <span>Categories</span>
+                        <i class="fa-solid fa-chevron-down fa-xs"></i>
+                    </div>
+                    <div class="filter-list">
+                        <label><input type="radio" name="category_filter" value=""> All Categories</label>
+                        <label><input type="radio" name="category_filter" value="1"> Electronics <span class="filter-count">4.2k</span></label>
+                        <label><input type="radio" name="category_filter" value="2"> Fashion &amp; Apparel <span class="filter-count">8.5k</span></label>
+                        <label><input type="radio" name="category_filter" value="3"> Home &amp; Living <span class="filter-count">1.2k</span></label>
+                        <label><input type="radio" name="category_filter" value="4"> Sports &amp; Outdoors <span class="filter-count">2.1k</span></label>
+                        <label><input type="radio" name="category_filter" value="5"> Beauty &amp; Health <span class="filter-count">940</span></label>
+                    </div>
                 </div>
-                
+
                 <div class="filter-group">
-                    <h4>Price Range</h4>
+                    <div class="filter-group-title"><span>Price Range</span><i class="fa-solid fa-chevron-down fa-xs"></i></div>
                     <div class="price-inputs">
                         <input type="number" id="filterMinPrice" placeholder="Min $" min="0">
-                        <span style="color:var(--text-muted)">-</span>
+                        <span style="color:var(--text-muted);font-size:0.85rem;">—</span>
                         <input type="number" id="filterMaxPrice" placeholder="Max $" min="0">
                     </div>
                 </div>
 
                 <div class="filter-group">
-                    <h4>Customer Rating</h4>
-                    <ul class="filter-list">
-                        <li><label><input type="radio" name="rating_filter" value="5"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span> 5 stars</label></li>
-                        <li><label><input type="radio" name="rating_filter" value="4"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i> &amp; up</span></label></li>
-                        <li><label><input type="radio" name="rating_filter" value="3"> <span style="color:var(--accent);background:transparent;padding:0;font-size:0.9rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i> &amp; up</span></label></li>
-                    </ul>
+                    <div class="filter-group-title"><span>Customer Rating</span><i class="fa-solid fa-chevron-down fa-xs"></i></div>
+                    <div class="filter-list">
+                        <label><input type="radio" name="rating_filter" value="5"><span style="color:var(--amber);">★★★★★</span> 5 stars only</label>
+                        <label><input type="radio" name="rating_filter" value="4"><span style="color:var(--amber);">★★★★</span>☆ 4+ stars</label>
+                        <label><input type="radio" name="rating_filter" value="3"><span style="color:var(--amber);">★★★</span>☆☆ 3+ stars</label>
+                    </div>
                 </div>
 
                 <div class="filter-group">
-                    <h4>Vendor</h4>
-                    <ul class="filter-list">
-                        <li><label><input type="checkbox"> TechNova Store <span>18</span></label></li>
-                        <li><label><input type="checkbox"> Camerix Photography <span>12</span></label></li>
-                        <li><label><input type="checkbox"> Urban Threads <span>45</span></label></li>
-                    </ul>
+                    <div class="filter-group-title"><span>Top Vendors</span><i class="fa-solid fa-chevron-down fa-xs"></i></div>
+                    <div class="filter-list">
+                        <label><input type="checkbox"> TechNova Store <span class="filter-count">18</span></label>
+                        <label><input type="checkbox"> Camerix Photography <span class="filter-count">12</span></label>
+                        <label><input type="checkbox"> Urban Threads <span class="filter-count">45</span></label>
+                        <label><input type="checkbox"> AudioTech <span class="filter-count">8</span></label>
+                    </div>
                 </div>
-                
-                <div style="display:flex;gap:0.75rem;">
-                    <button class="btn btn-primary" id="applyFiltersBtn" style="flex:1;">Apply Filters</button>
-                    <button class="btn btn-outline" id="clearFiltersBtn">Clear</button>
+
+                <div class="sidebar-actions">
+                    <button class="btn btn-primary btn-sm w-full" id="applyFiltersBtn" style="flex:1;"><i class="fa-solid fa-check"></i> Apply</button>
+                    <button class="btn btn-outline btn-sm" id="clearFiltersBtn"><i class="fa-solid fa-xmark"></i> Clear</button>
                 </div>
             </aside>
 
-            <!-- PRODUCT GRID AREA -->
+            <!-- ── MAIN PRODUCT AREA ── -->
             <div class="shop-main">
+                <!-- Toolbar -->
                 <div class="shop-toolbar fade-in">
-                    <p id="shopResultCount">Loading products...</p>
-                    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
-                        <!-- Live search -->
-                        <input id="shopSearchInput" type="text" placeholder="&#x1F50D; Search products..." style="padding:0.5rem 1rem;border:1px solid var(--border);border-radius:2rem;background:var(--background);color:var(--text);font-size:0.9rem;outline:none;min-width:180px;">
-                        <label style="color:var(--text-muted);font-size:0.9rem;font-weight:600;">Sort by:</label>
-                        <select id="sortSelect" class="form-control" style="width:auto;padding:0.5rem 1rem;cursor:pointer;border-radius:2rem;">
+                    <div class="shop-toolbar-left">
+                        <p class="result-count" id="shopResultCount"><strong>Loading…</strong></p>
+                        <div class="toolbar-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input id="shopSearchInput" type="text" placeholder="Search within results…">
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <div class="view-toggle">
+                            <button class="view-btn active" id="gridViewBtn" title="Grid view"><i class="fa-solid fa-grip"></i></button>
+                            <button class="view-btn" id="listViewBtn" title="List view"><i class="fa-solid fa-list"></i></button>
+                        </div>
+                        <select id="sortSelect" class="form-control" style="width:auto;padding:0.45rem 0.85rem;font-size:0.82rem;cursor:pointer;">
                             <option value="latest">Latest</option>
-                            <option value="price_asc">Price: Low to High</option>
-                            <option value="price_desc">Price: High to Low</option>
+                            <option value="price_asc">Price: Low → High</option>
+                            <option value="price_desc">Price: High → Low</option>
                             <option value="rating">Top Rated</option>
                         </select>
                     </div>
                 </div>
 
+                <!-- Product Grid -->
                 <div class="product-grid" id="productGrid">
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                        <i class="fa-solid fa-spinner fa-spin fa-3x" style="color:var(--primary)"></i>
-                        <p style="margin-top: 1rem; color:var(--text-muted); font-weight:600;">Loading shop inventory...</p>
+                    <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
+                        <p style="margin-top:1rem;color:var(--text-muted);font-size:0.9rem;">Loading products…</p>
                     </div>
                 </div>
-                
-                <!-- Infinite Scroll Sentinel -->
-                <div id="scrollSentinel" style="width:100%;text-align:center;padding:2rem 0;grid-column:1/-1;"></div>
 
+                <!-- Pagination -->
+                <div id="paginationContainer" class="pagination"></div>
+
+                <!-- Sentinel for infinite scroll -->
+                <div id="scrollSentinel" style="width:100%;padding:1rem 0;"></div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- FOOTER -->
+    <!-- ── FOOTER ── -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
                     <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
-                    <p>The premium multi-vendor marketplace connecting you with independent creators and established brands worldwide.</p>
+                    <p>The premium multi-vendor marketplace connecting independent sellers with customers worldwide.</p>
+                    <div class="social-links"><a href="#"><i class="fa-brands fa-facebook-f"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a></div>
                 </div>
-                <!-- Mini placeholder footer for shop page -->
+                <div class="footer-links"><h4>Shop</h4><a href="shop.html">All Products</a><a href="shop.html">Hot Deals</a><a href="vendor.html">Top Vendors</a><a href="blog.html">Blog</a></div>
+                <div class="footer-links"><h4>Customer</h4><a href="auth.html">My Account</a><a href="#">Track Order</a><a href="#">Returns</a><a href="contact.html">Support</a></div>
+                <div class="footer-links"><h4>Sell</h4><a href="seller.html">Start Selling</a><a href="seller.html">Vendor Center</a><a href="#">Commission Info</a></div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Vendo Marketplace. All rights reserved.</p>
+                <p>© 2026 Vendo Marketplace. All rights reserved.</p>
+                <div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div>
             </div>
         </div>
     </footer>
@@ -350,28 +332,27 @@
     <script src="js/api.js"></script>
     <script src="js/shop.js"></script>
     <script>
-        // Shop specific mobile filter logic
         document.addEventListener('DOMContentLoaded', () => {
-            const filterOpenBtn = document.getElementById('mobile-filter-open');
-            const filterCloseBtn = document.getElementById('mobile-filter-close');
-            const sidebar = document.getElementById('filter-sidebar');
-            const filterOverlay = document.getElementById('filter-overlay');
+            // Mobile filter drawer
+            const openBtn = document.getElementById('mobile-filter-open');
+            const closeBtn = document.getElementById('mobile-filter-close');
+            const sidebar  = document.getElementById('filter-sidebar');
+            const overlay  = document.getElementById('filter-overlay');
 
-            if(filterOpenBtn && sidebar && filterOverlay) {
-                filterOpenBtn.addEventListener('click', () => {
-                    sidebar.classList.add('active');
-                    filterOverlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                });
+            const openFilter = () => { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; if(closeBtn) closeBtn.style.display='flex'; };
+            const closeFilter = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; };
 
-                const closeFilter = () => {
-                    sidebar.classList.remove('active');
-                    filterOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                };
+            if(openBtn) openBtn.addEventListener('click', openFilter);
+            if(closeBtn) closeBtn.addEventListener('click', closeFilter);
+            if(overlay)  overlay.addEventListener('click', closeFilter);
 
-                if(filterCloseBtn) filterCloseBtn.addEventListener('click', closeFilter);
-                filterOverlay.addEventListener('click', closeFilter);
+            // View toggle
+            const gridBtn = document.getElementById('gridViewBtn');
+            const listBtn = document.getElementById('listViewBtn');
+            const grid    = document.getElementById('productGrid');
+            if(gridBtn && listBtn && grid) {
+                gridBtn.addEventListener('click', () => { grid.style.gridTemplateColumns=''; gridBtn.classList.add('active'); listBtn.classList.remove('active'); });
+                listBtn.addEventListener('click', () => { grid.style.gridTemplateColumns='1fr'; gridBtn.classList.remove('active'); listBtn.classList.add('active'); });
             }
         });
     </script>

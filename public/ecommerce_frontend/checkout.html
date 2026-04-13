@@ -4,466 +4,380 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | Vendo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .checkout-layout { display: flex; gap: 4rem; align-items: flex-start; margin-top: 3rem; margin-bottom: 5rem; }
-        .checkout-form-container { flex: 1; }
-        
-        .checkout-step { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
-        .checkout-step h3 { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
-        .checkout-step h3 span { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-        .full-width { grid-column: 1 / -1; }
-        
-        /* Payment Methods */
-        .payment-methods { display: flex; flex-direction: column; gap: 1rem; }
-        .payment-option { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border: 1px solid var(--border); border-radius: 0.75rem; cursor: pointer; transition: var(--transition); background: var(--background); }
-        .payment-option:hover { border-color: var(--primary); }
-        .payment-option.active { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 1px var(--primary); }
-        
-        .radio-custom { width: 1.25rem; height: 1.25rem; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; }
-        .payment-option.active .radio-custom { border-color: var(--primary); }
-        .payment-option.active .radio-custom::after { content: ''; width: 0.6rem; height: 0.6rem; background: var(--primary); border-radius: 50%; }
-        
-        .payment-details { display: flex; align-items: center; }
-        .payment-details span { font-weight: 600; color: var(--text); font-size: 1.05rem; }
-        .payment-icons { display: flex; gap: 0.5rem; color: var(--text-muted); font-size: 1.5rem; }
-        .payment-icons i.fa-cc-visa { color: #1a1f71; }
-        .payment-icons i.fa-cc-mastercard { color: #eb001b; }
-        .payment-icons i.fa-cc-paypal { color: #00457c; }
+        .checkout-layout { display: grid; grid-template-columns: 1fr 360px; gap: 2rem; padding: 2rem 0 5rem; align-items: start; }
 
-        /* Summary Sidebar (similar to cart) */
-        .order-summary { width: 400px; flex-shrink: 0; position: sticky; top: calc(var(--navbar-height) + 2rem); }
-        .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow-lg); }
-        .summary-box h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
-        
-        .checkout-items { max-height: 300px; overflow-y: auto; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-        .c-item { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-        .c-item-img { width: 60px; height: 60px; background: var(--background); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-muted); border: 1px solid var(--border); position: relative; flex-shrink: 0;}
-        .c-item-qty { position: absolute; top: -8px; right: -8px; background: var(--secondary); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .c-item-details { flex: 1; }
-        .c-item-title { font-weight: 600; font-size: 0.95rem; color: var(--text); line-height: 1.3; margin-bottom: 0.25rem; }
-        .c-item-price { font-weight: 700; color: var(--primary); }
-        
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-muted); font-size: 1rem; }
-        .summary-row span:last-child { font-weight: 600; color: var(--text); }
-        .summary-total { border-top: 1px solid var(--border); margin-top: 1.5rem; padding-top: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text); }
-        .summary-total span:last-child { color: var(--primary); font-size: 1.5rem; }
-        
-        .place-order-btn { width: 100%; margin-top: 2rem; padding: 1.25rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 1.15rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
+        /* Steps */
+        .checkout-steps { display: flex; align-items: center; gap: 0; margin-bottom: 2rem; }
+        .step { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; background: var(--border); color: var(--text-muted); }
+        .step.active .step-num { background: var(--primary); color: #fff; }
+        .step.active { color: var(--primary); }
+        .step.done .step-num { background: var(--secondary); color: #fff; }
+        .step.done { color: var(--secondary); }
+        .step-sep { flex: 1; height: 1px; background: var(--border); margin: 0 0.5rem; min-width: 24px; }
 
-        @media (max-width: 1024px) {
-            .checkout-layout { flex-direction: column-reverse; gap: 2rem; }
-            .order-summary { width: 100%; position: static; }
-            .form-grid { grid-template-columns: 1fr; }
+        /* Section Cards */
+        .checkout-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); margin-bottom: 1rem; overflow: hidden; }
+        .checkout-section-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
         }
+        .checkout-section-head h3 { font-size: 0.9rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+        .checkout-section-head h3 i { color: var(--primary); }
+        .section-edit-btn { font-size: 0.78rem; color: var(--primary); font-weight: 600; cursor: pointer; }
+        .checkout-section-body { padding: 1.25rem; }
+
+        /* Form grid */
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; }
+
+        /* Payment methods */
+        .payment-methods { display: flex; flex-direction: column; gap: 0.6rem; }
+        .payment-option {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.85rem 1rem;
+            border: 1.5px solid var(--border-dark);
+            border-radius: var(--r-md); cursor: pointer;
+            transition: border-color var(--t-fast), background var(--t-fast);
+        }
+        .payment-option:hover { border-color: var(--primary); background: var(--primary-xlight); }
+        .payment-option.selected { border-color: var(--primary); background: var(--primary-xlight); }
+        .payment-option input[type="radio"] { accent-color: var(--primary); }
+        .payment-option-label { flex: 1; }
+        .payment-option-label span { display: block; font-size: 0.875rem; font-weight: 700; color: var(--text); }
+        .payment-option-label small { font-size: 0.75rem; color: var(--text-muted); }
+        .payment-option-icons { display: flex; gap: 0.35rem; align-items: center; }
+        .payment-option-icons i { font-size: 1.4rem; color: var(--text-muted); }
+
+        /* Order summary sidebar */
+        .order-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; position: sticky; top: calc(var(--navbar-height) + 1rem); }
+        .order-summary-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; font-weight: 800; display: flex; align-items: center; justify-content: space-between; }
+        .order-summary-items { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.75rem; max-height: 260px; overflow-y: auto; }
+        .order-item { display: flex; gap: 0.75rem; align-items: center; }
+        .order-item-img { width: 50px; height: 50px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-muted); font-size: 1.2rem; }
+        .order-item-info { flex: 1; min-width: 0; }
+        .order-item-info h4 { font-size: 0.8rem; font-weight: 700; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .order-item-info p { font-size: 0.72rem; color: var(--text-muted); }
+        .order-item-price { font-size: 0.875rem; font-weight: 800; color: var(--primary); flex-shrink: 0; }
+
+        .order-summary-calcs { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.6rem; }
+        .calc-row { display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .calc-row span:first-child { color: var(--text-muted); }
+        .calc-row span:last-child { font-weight: 600; }
+        .calc-row.total-row span { font-weight: 800; font-size: 1rem; color: var(--primary); }
+        .calc-row.total-row span:first-child { color: var(--text); }
+
+        .order-summary-foot { padding: 1.25rem; }
+        .place-order-btn { width: 100%; padding: 0.9rem; font-size: 0.95rem; font-weight: 800; }
+        .secure-text { text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.6rem; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
+        .secure-text i { color: var(--secondary); }
+
+        @media (max-width: 1024px) { .checkout-layout { grid-template-columns: 1fr; } .order-summary { position: static; } }
+        @media (max-width: 640px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR (minimal checkout nav) ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
-                </select>
-                <input type="text" placeholder="Smart search...">
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;"><option>All</option></select>
+                <input type="text" placeholder="Search…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
-                <li><a href="vendor.html" class="nav-link">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
-                <li><a href="blog.html" class="nav-link">Blog</a></li>
-                <li><a href="contact.html" class="nav-link">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li><a href="shop.html" class="nav-link">Shop</a></li>
+                <li><a href="cart.html" class="nav-link">Cart</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
-                    </ul>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="cart.html" class="icon-btn"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;"></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;"></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;"></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;"><li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);"><strong class="navUserName" style="display:block;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li><li><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li></ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <div class="page-header" style="padding: 4rem 0 2rem;">
-        <div class="container fade-in">
-            <h1 style="font-size:2.5rem;">Checkout</h1>
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i><a href="cart.html">Cart</a><i class="fa-solid fa-chevron-right"></i><span>Checkout</span></div>
+            <h1>Secure Checkout</h1>
+            <p>Complete your purchase safely & securely</p>
         </div>
     </div>
 
-    <!-- MAIN CHECKOUT -->
-    <section class="container fade-in delay-1">
-        <form class="checkout-layout">
-            
-            <!-- Forms -->
-            <div class="checkout-form-container">
-                
-                <!-- Step 1: Shipping -->
-                <div class="checkout-step fade-in">
-                    <h3><span>1</span> Shipping Address</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" required>
+    <div class="container">
+        <!-- Steps indicator -->
+        <div class="checkout-steps" style="margin-top:1.5rem;">
+            <div class="step done"><div class="step-num"><i class="fa-solid fa-check" style="font-size:0.6rem;"></i></div> Cart</div>
+            <div class="step-sep"></div>
+            <div class="step active"><div class="step-num">2</div> Details</div>
+            <div class="step-sep"></div>
+            <div class="step"><div class="step-num">3</div> Payment</div>
+            <div class="step-sep"></div>
+            <div class="step"><div class="step-num">4</div> Confirm</div>
+        </div>
+
+        <div class="checkout-layout">
+            <!-- ── Left: Forms ── -->
+            <div>
+                <!-- Contact -->
+                <div class="checkout-section">
+                    <div class="checkout-section-head">
+                        <h3><i class="fa-solid fa-user-circle"></i> Contact Information</h3>
+                    </div>
+                    <div class="checkout-section-body">
+                        <div class="form-grid-2">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" placeholder="John" id="firstName">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" placeholder="Doe" id="lastName">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="form-group full-width">
+                        <div class="form-group" style="margin-top:1rem;margin-bottom:0;">
                             <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" required>
+                            <input type="email" class="form-control" placeholder="john@example.com" id="emailAddress">
                         </div>
-                        <div class="form-group full-width">
+                        <div class="form-group" style="margin-top:1rem;margin-bottom:0;">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" placeholder="+1 (555) 000-0000" id="phone">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="checkout-section">
+                    <div class="checkout-section-head">
+                        <h3><i class="fa-solid fa-location-dot"></i> Shipping Address</h3>
+                    </div>
+                    <div class="checkout-section-body">
+                        <div class="form-group" style="margin-bottom:1rem;">
                             <label class="form-label">Street Address</label>
-                            <input type="text" class="form-control" placeholder="House number and street name" required>
+                            <input type="text" class="form-control" placeholder="123 Main Street, Apt 4B" id="shippingAddress">
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" class="form-control" required>
+                        <div class="form-grid-3">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" placeholder="New York">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-control" placeholder="NY">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" placeholder="10001">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">State / Province</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">ZIP / Postal Code</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-top:1rem;margin-bottom:0;">
                             <label class="form-label">Country</label>
-                            <select class="form-control" required>
+                            <select class="form-control">
                                 <option>United States</option>
-                                <option>United Kingdom</option>
                                 <option>Canada</option>
+                                <option>United Kingdom</option>
                                 <option>Australia</option>
+                                <option>Germany</option>
+                                <option>France</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Step 2: Payment Method -->
-                <div class="checkout-step fade-in delay-1">
-                    <h3><span>2</span> Payment Method</h3>
-                    <div class="payment-methods">
-                        
-                        <label class="payment-option active">
-                            <div class="payment-details">
-                                <span class="radio-custom"></span>
-                                <span>Credit / Debit Card</span>
-                            </div>
-                            <div class="payment-icons">
-                                <i class="fa-brands fa-cc-visa"></i>
-                                <i class="fa-brands fa-cc-mastercard"></i>
-                            </div>
-                            <input type="radio" name="payment" value="card" checked style="display:none">
-                        </label>
-                        
-                        <!-- Mini Credit Card Form (Visible if active) -->
-                        <div style="padding: 1rem 1.5rem; background: var(--background); border: 1px solid var(--border); border-top: none; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; margin-top: -1rem; margin-bottom: 1rem;">
-                            <div class="form-group full-width">
-                                <label class="form-label">Card Number</label>
-                                <input type="text" class="form-control" placeholder="0000 0000 0000 0000">
-                            </div>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Expiry Date</label>
-                                    <input type="text" class="form-control" placeholder="MM/YY">
+                <!-- Shipping Method -->
+                <div class="checkout-section">
+                    <div class="checkout-section-head"><h3><i class="fa-solid fa-truck-fast"></i> Shipping Method</h3></div>
+                    <div class="checkout-section-body">
+                        <div class="payment-methods">
+                            <label class="payment-option selected">
+                                <input type="radio" name="shipping_method" value="standard" checked>
+                                <div class="payment-option-label">
+                                    <span>Standard Shipping</span>
+                                    <small>Estimated arrival: 3–5 business days</small>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">CVC</label>
-                                    <input type="text" class="form-control" placeholder="123">
+                                <strong style="font-size:0.9rem;color:var(--secondary);">Free</strong>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="shipping_method" value="express">
+                                <div class="payment-option-label">
+                                    <span>Express Shipping</span>
+                                    <small>Estimated arrival: 1–2 business days</small>
                                 </div>
-                            </div>
+                                <strong style="font-size:0.9rem;color:var(--text);">$9.99</strong>
+                            </label>
                         </div>
-
-                        <label class="payment-option">
-                            <div class="payment-details">
-                                <span class="radio-custom"></span>
-                                <span>PayPal</span>
-                            </div>
-                            <div class="payment-icons">
-                                <i class="fa-brands fa-cc-paypal" style="color:var(--text);"></i>
-                            </div>
-                            <input type="radio" name="payment" value="paypal" style="display:none">
-                        </label>
-                        
-                        <label class="payment-option">
-                            <div class="payment-details">
-                                <span class="radio-custom"></span>
-                                <span>Cash on Delivery</span>
-                            </div>
-                            <div class="payment-icons">
-                                <i class="fa-solid fa-money-bill-wave" style="color:var(--secondary);"></i>
-                            </div>
-                            <input type="radio" name="payment" value="cod" style="display:none">
-                        </label>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- Order Summary -->
-            <div class="order-summary">
-                <div class="summary-box fade-in delay-2">
-                    <h3>Review Order</h3>
-                    
-                    <div class="checkout-items">
-                        <div class="c-item">
-                            <div class="c-item-img"><i class="fa-solid fa-laptop"></i><div class="c-item-qty">1</div></div>
-                            <div class="c-item-details">
-                                <div class="c-item-title">ProBook Z15 Ultra Slim Laptop</div>
-                                <div class="c-item-price">$1,299.00</div>
-                            </div>
+                <!-- Payment Method -->
+                <div class="checkout-section">
+                    <div class="checkout-section-head"><h3><i class="fa-solid fa-credit-card"></i> Payment Method</h3></div>
+                    <div class="checkout-section-body">
+                        <div class="payment-methods" id="paymentMethodsContainer">
+                            <label class="payment-option selected" id="optCard">
+                                <input type="radio" name="payment_method" value="card" checked>
+                                <div class="payment-option-label">
+                                    <span>Credit / Debit Card</span>
+                                    <small>Powered by Stripe — 256-bit encrypted</small>
+                                </div>
+                                <div class="payment-option-icons">
+                                    <i class="fa-brands fa-cc-visa"></i>
+                                    <i class="fa-brands fa-cc-mastercard"></i>
+                                </div>
+                            </label>
+                            <label class="payment-option" id="optPaypal">
+                                <input type="radio" name="payment_method" value="paypal">
+                                <div class="payment-option-label">
+                                    <span>PayPal</span>
+                                    <small>Redirect to PayPal to complete payment</small>
+                                </div>
+                                <i class="fa-brands fa-cc-paypal" style="font-size:1.5rem;color:var(--text-muted);"></i>
+                            </label>
+                            <label class="payment-option" id="optCOD">
+                                <input type="radio" name="payment_method" value="cod">
+                                <div class="payment-option-label">
+                                    <span>Cash on Delivery</span>
+                                    <small>Pay in cash when your order arrives</small>
+                                </div>
+                                <i class="fa-solid fa-money-bill-wave" style="font-size:1.2rem;color:var(--secondary);"></i>
+                            </label>
                         </div>
-                        <div class="c-item">
-                            <div class="c-item-img"><i class="fa-solid fa-headphones"></i><div class="c-item-qty">1</div></div>
-                            <div class="c-item-details">
-                                <div class="c-item-title">Noise Cancelling Headphones v3</div>
-                                <div class="c-item-price">$199.99</div>
-                            </div>
-                        </div>
                     </div>
-                    
-                    <div class="summary-row">
-                        <span>Subtotal</span>
-                        <span>$1,498.99</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span style="color:var(--secondary)">Free</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Tax</span>
-                        <span>$120.00</span>
-                    </div>
-
-                    <div class="summary-row summary-total">
-                        <span>Total to Pay</span>
-                        <span>$1,618.99</span>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary place-order-btn">
-                        <i class="fa-solid fa-lock"></i> Place Order
-                    </button>
-                    <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:1rem;">
-                        By placing your order, you agree to our Terms of Sale and Privacy Policy.
-                    </p>
                 </div>
             </div>
-            
-        </form>
-    </section>
 
-    <!-- App JS -->
+            <!-- ── Right: Order Summary ── -->
+            <div>
+                <div class="order-summary fade-in delay-1">
+                    <div class="order-summary-head">
+                        <span><i class="fa-solid fa-receipt" style="color:var(--primary);margin-right:0.4rem;"></i> Order Summary</span>
+                        <a href="cart.html" style="font-size:0.75rem;color:var(--primary);font-weight:600;">Edit Cart</a>
+                    </div>
+                    <div class="order-summary-items" id="checkoutItemsList">
+                        <div class="order-item">
+                            <div class="order-item-img"><i class="fa-solid fa-laptop"></i></div>
+                            <div class="order-item-info">
+                                <h4>ProBook Z15 Ultra Slim Laptop</h4>
+                                <p>Space Gray · 512GB · Qty: 1</p>
+                            </div>
+                            <div class="order-item-price">$1,299.00</div>
+                        </div>
+                        <div class="order-item">
+                            <div class="order-item-img"><i class="fa-solid fa-headphones"></i></div>
+                            <div class="order-item-info">
+                                <h4>Noise Cancelling Headphones Pro v3</h4>
+                                <p>Matte Black · Qty: 1</p>
+                            </div>
+                            <div class="order-item-price">$199.99</div>
+                        </div>
+                    </div>
+                    <div class="order-summary-calcs">
+                        <div class="calc-row"><span id="checkoutSubtotalLabel">Subtotal (2 items)</span><span id="checkoutSubtotal">$1,498.99</span></div>
+                        <div class="calc-row"><span>Shipping</span><span style="color:var(--secondary);">Free</span></div>
+                        <div class="calc-row"><span>Tax (8%)</span><span id="checkoutTax">$119.92</span></div>
+                        <hr class="summary-divider">
+                        <div class="calc-row total-row"><span>Total</span><span id="checkoutTotal">$1,618.91</span></div>
+                    </div>
+                    <div class="order-summary-foot">
+                        <button class="btn btn-primary place-order-btn" id="placeOrderBtn">
+                            <i class="fa-solid fa-lock"></i> Place Order
+                        </button>
+                        <div class="secure-text"><i class="fa-solid fa-shield-halved"></i> SSL Secured · Stripe Payments</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand"><a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a><p>The premium multi-vendor marketplace.</p></div>
+                <div class="footer-links"><h4>Shop</h4><a href="shop.html">All Products</a><a href="vendor.html">Top Vendors</a></div>
+                <div class="footer-links"><h4>Customer</h4><a href="auth.html">My Account</a><a href="#">Track Order</a></div>
+                <div class="footer-links"><h4>Sell</h4><a href="seller.html">Start Selling</a></div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 Vendo Marketplace. All rights reserved.</p><div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div></div>
+        </div>
+    </footer>
+
     <script src="js/app.js"></script>
     <script>
-        // Simple payment selection logic for visual
-        document.querySelectorAll('.payment-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
-                this.classList.add('active');
-                this.querySelector('input').checked = true;
-            });
-        });
-
-        // Handle checkout form submission
-        const checkoutForm = document.querySelector('.checkout-layout');
-        if (checkoutForm) {
-            checkoutForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                // Get URL params for cart items
-                const urlParams = new URLSearchParams(window.location.search);
-                const itemsParam = urlParams.get('items');
-                if (!itemsParam) {
-                    alert("No items selected for checkout.");
-                    window.location.href = 'cart.html';
-                    return;
-                }
-                const cartItemIds = itemsParam.split(',').map(id => parseInt(id, 10));
-
-                // Get shipping address details
-                const inputs = checkoutForm.querySelectorAll('.form-control');
-                let addressParts = [];
-                inputs.forEach(input => {
-                    if (input.value) addressParts.push(input.value);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Payment method selection UI
+            document.querySelectorAll('.payment-option input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    radio.closest('.payment-methods').querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    radio.closest('.payment-option').classList.add('selected');
                 });
-                const shippingAddress = addressParts.join(', ');
+            });
 
-                const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            // Shipping method selection UI
+            document.querySelectorAll('input[name="shipping_method"]').forEach(r => {
+                r.addEventListener('change', () => {
+                    r.closest('.payment-methods').querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    r.closest('.payment-option').classList.add('selected');
+                });
+            });
 
-                try {
-                    const token = localStorage.getItem('auth_token');
-                    if (!token) {
-                        alert("You must be logged in to place an order.");
-                        window.location.href = 'auth.html';
+            // Checkout form submission (original backend logic from app.js handles this)
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+            if (placeOrderBtn) {
+                placeOrderBtn.addEventListener('click', async () => {
+                    const shippingAddress = document.getElementById('shippingAddress')?.value?.trim();
+                    const firstName = document.getElementById('firstName')?.value?.trim();
+                    const lastName = document.getElementById('lastName')?.value?.trim();
+                    const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'cod';
+
+                    if (!shippingAddress || !firstName) {
+                        alert('Please fill in all required fields.');
                         return;
                     }
 
-                    // Place the order
-                    const response = await fetch('/api/orders', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            shipping_address: shippingAddress,
-                            cart_item_ids: cartItemIds,
-                            payment_method: paymentMethod
-                        })
-                    });
+                    const params = new URLSearchParams(window.location.search);
+                    const itemIds = params.get('items') ? params.get('items').split(',').map(Number) : [];
+                    const token = localStorage.getItem('auth_token');
 
-                    const data = await response.json();
+                    if (!token) { window.location.href = 'auth.html'; return; }
 
-                    if (!response.ok) {
-                        throw new Error(data.message || 'Failed to place order.');
-                    }
+                    placeOrderBtn.disabled = true;
+                    placeOrderBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
 
-                    // Payment handling
-                    if (paymentMethod === 'card' && data.payment_url) {
-                        // Redirect to Stripe Checkout
-                        window.location.href = data.payment_url;
-                    } else {
-                        // Success page for COD or PayPal
-                        alert("Order placed successfully!");
-                        window.location.href = 'index.html';
-                    }
-                } catch (error) {
-                    console.error('Checkout error:', error);
-                    alert("Checkout Error: " + error.message);
-                }
-            });
-        }
+                    try {
+                        const res = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+                            body: JSON.stringify({ shipping_address: `${firstName} ${lastName}, ${shippingAddress}`, cart_item_ids: itemIds.length > 0 ? itemIds : undefined, payment_method: paymentMethod })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.payment_url) { window.location.href = data.payment_url; }
+                        else if (res.ok) { window.location.href = 'index.html?payment=success&order_id=' + (data.data?.id || ''); }
+                        else { alert(data.message || 'Failed to place order.'); placeOrderBtn.disabled = false; placeOrderBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Order'; }
+                    } catch (e) { alert('A network error occurred. Please try again.'); placeOrderBtn.disabled = false; placeOrderBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Order'; }
+                });
+            }
+        });
     </script>
 </body>
 </html>

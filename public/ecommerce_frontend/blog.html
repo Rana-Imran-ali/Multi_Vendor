@@ -3,284 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog | Vendo</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Blog | Vendo Marketplace</title>
+    <meta name="description" content="Tips, trends, and insights for buyers and sellers on Vendo Marketplace.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Core CSS -->
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .blog-hero { background: var(--surface); border-bottom: 1px solid var(--border); padding: 5rem 0 3rem; text-align: center; }
-        .blog-hero h1 { font-size: 3rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; }
-        .blog-hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6; }
-        
-        .blog-categories { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
-        .cat-btn { padding: 0.5rem 1.25rem; border-radius: 2rem; border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); background: var(--background); }
-        .cat-btn:hover, .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        /* Blog Layout */
+        .blog-layout { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; padding: 2.5rem 0 5rem; align-items: start; }
+        .blog-main { min-width: 0; }
+        .blog-aside { position: sticky; top: calc(var(--navbar-height) + 1rem); display: flex; flex-direction: column; gap: 1rem; }
 
-        .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 4rem; }
-        
-        .blog-card { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; overflow: hidden; transition: var(--transition); display: flex; flex-direction: column; }
-        .blog-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
-        
-        .blog-img { height: 220px; background: var(--background); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--border); position: relative; }
-        .blog-badge { position: absolute; top: 1rem; left: 1rem; background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        
-        .blog-content { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
-        .blog-meta { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
-        .blog-title { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; line-height: 1.4; text-decoration: none; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .blog-title:hover { color: var(--primary); }
-        .blog-excerpt { color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; flex: 1; }
-        
-        .blog-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto; }
-        .read-more { color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: var(--transition); }
-        .read-more:hover { gap: 0.75rem; }
-        
-        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 4rem; margin-bottom: 5rem; }
-        .page-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; transition: var(--transition); cursor: pointer; }
-        .page-btn:hover, .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        @media (max-width: 768px) {
-            .blog-hero h1 { font-size: 2.25rem; }
+        /* Featured post */
+        .featured-post {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--r-xl); overflow: hidden; margin-bottom: 2rem;
+            display: grid; grid-template-columns: 1fr 1fr; min-height: 340px;
+            transition: box-shadow var(--t-base);
         }
+        .featured-post:hover { box-shadow: var(--shadow-lg); }
+        .featured-post-img {
+            background: linear-gradient(135deg, #1E3A8A, #1e40af);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 6rem; color: rgba(255,255,255,0.2); position: relative; overflow: hidden;
+        }
+        .featured-label { position: absolute; top: 1rem; left: 1rem; background: var(--primary); color: #fff; font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.65rem; border-radius: var(--r-sm); letter-spacing: 0.06em; text-transform: uppercase; }
+        .featured-post-body { padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+        .post-category { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.75rem; }
+        .featured-post-body h2 { font-size: 1.35rem; font-weight: 900; color: var(--text); line-height: 1.3; margin-bottom: 0.75rem; }
+        .featured-post-body h2 a { color: inherit; }
+        .featured-post-body h2 a:hover { color: var(--primary); }
+        .post-excerpt { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.25rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; }
+        .post-meta-author { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; color: var(--text-secondary); }
+        .post-meta-author .avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 800; }
+
+        /* Blog grid */
+        .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+        .blog-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; transition: box-shadow var(--t-base), transform var(--t-base); display: flex; flex-direction: column; }
+        .blog-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .blog-card-img { height: 180px; background: linear-gradient(135deg, var(--primary-xlight), #e0f2fe); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--primary); position: relative; }
+        .blog-card-img-2 { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+        .blog-card-img-2 i { color: var(--secondary); }
+        .blog-card-img-3 { background: linear-gradient(135deg, var(--amber-light), #fef9c3); }
+        .blog-card-img-3 i { color: var(--amber); }
+        .blog-card-img-4 { background: linear-gradient(135deg, var(--accent-light), #ffe4e6); }
+        .blog-card-img-4 i { color: var(--accent); }
+        .blog-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+        .blog-card-body .post-category { margin-bottom: 0.4rem; }
+        .blog-card-body h3 { font-size: 0.975rem; font-weight: 800; color: var(--text); line-height: 1.4; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .blog-card-body h3 a:hover { color: var(--primary); }
+        .blog-card-body p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; margin-bottom: 1rem; }
+        .blog-card-footer { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); }
+        .read-time { display: flex; align-items: center; gap: 0.3rem; }
+
+        /* Aside widgets */
+        .aside-widget { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+        .aside-widget-head { padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--border); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+        .aside-widget-body { padding: 1rem 1.1rem; }
+
+        /* Search widget */
+        .blog-search { display: flex; border: 1.5px solid var(--border-dark); border-radius: var(--r-md); overflow: hidden; }
+        .blog-search input { flex: 1; padding: 0.6rem 0.85rem; border: none; background: transparent; color: var(--text); font-size: 0.85rem; }
+        .blog-search input:focus { outline: none; }
+        .blog-search button { padding: 0 0.85rem; background: var(--primary); color: #fff; border: none; cursor: pointer; font-size: 0.85rem; transition: background var(--t-fast); }
+        .blog-search button:hover { background: var(--primary-hover); }
+
+        /* Category list */
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .tag { display: inline-block; padding: 0.3rem 0.75rem; background: var(--background); color: var(--text-secondary); border: 1px solid var(--border); border-radius: 100px; font-size: 0.75rem; font-weight: 600; transition: var(--transition); cursor: pointer; }
+        .tag:hover { background: var(--primary-xlight); color: var(--primary); border-color: var(--primary-light); }
+
+        /* Popular posts */
+        .pop-post { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+        .pop-post:last-child { border-bottom: none; }
+        .pop-num { width: 24px; height: 24px; border-radius: var(--r-sm); background: var(--primary-xlight); color: var(--primary); font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+        .pop-post-info h4 { font-size: 0.8rem; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 0.2rem; }
+        .pop-post-info h4 a:hover { color: var(--primary); }
+        .pop-post-info span { font-size: 0.68rem; color: var(--text-muted); }
+
+        @media (max-width: 1024px) { .blog-layout { grid-template-columns: 1fr; } .blog-aside { position: static; } }
+        @media (max-width: 768px) { .featured-post { grid-template-columns: 1fr; } .featured-post-img { min-height: 180px; } .blog-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
-                </select>
-                <input type="text" placeholder="Smart search...">
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;"><option>All</option><option>Products</option></select>
+                <input type="text" placeholder="Search products, brands…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
+                <li class="dropdown"><a href="shop.html" class="nav-link dropdown-toggle">Shop <i class="fa-solid fa-chevron-down fa-xs"></i></a><ul class="dropdown-menu"><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--amber)"></i> Deals</a></li></ul></li>
                 <li><a href="vendor.html" class="nav-link">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
                 <li><a href="blog.html" class="nav-link active">Blog</a></li>
                 <li><a href="contact.html" class="nav-link">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login</a></li>
+                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
-                    </ul>
+                <div class="dropdown desktop-only"><button class="icon-btn dropdown-toggle"><i class="fa-solid fa-globe"></i></button><ul class="dropdown-menu" style="min-width:130px;right:0;left:auto;"><li><a href="#" class="dropdown-item">English (EN)</a></li></ul></div>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="product.html" class="icon-btn auth-only"><i class="fa-regular fa-heart"></i><span class="badge">3</span></a>
+                <a href="cart.html" class="icon-btn"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a><a href="auth.html" class="btn btn-primary btn-sm">Sign Up</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="seller.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-crown"></i> Become Seller</a></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="vendor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-gauge"></i> Vendor Panel</a></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;"><a href="/admin" class="btn btn-sm" style="background:#0f172a;color:#fff;"><i class="fa-solid fa-shield-halved"></i> Admin</a></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;"><li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);"><strong class="navUserName" style="display:block;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li><li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li><li><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li></ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <!-- BLOG HERO -->
-    <div class="blog-hero">
-        <div class="container fade-in">
-            <h1>Vendo Journal</h1>
-            <p>Get the latest news, ecommerce tips, product reviews, and exclusive interviews with top vendors on our platform.</p>
-            
-            <div class="blog-categories">
-                <button class="cat-btn active">All Topics</button>
-                <button class="cat-btn">Commerce Tips</button>
-                <button class="cat-btn">Product Reviews</button>
-                <button class="cat-btn">Vendor Spotlights</button>
-                <button class="cat-btn">Tech News</button>
-            </div>
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i><span>Blog</span></div>
+            <h1>Vendo Blog</h1>
+            <p>Tips, guides, and trends for buyers and sellers</p>
         </div>
     </div>
 
-    <!-- MAIN BLOG GRID -->
-    <section class="container fade-in delay-1">
-        <div class="blog-grid">
-            
-            <article class="blog-card fade-in">
-                <div class="blog-img">
-                    <div class="blog-badge">Tech News</div>
-                    <i class="fa-solid fa-vr-cardboard"></i>
-                </div>
-                <div class="blog-content">
-                    <span class="blog-meta">October 24, 2026 • 5 min read</span>
-                    <a href="#" class="blog-title">The Future of AR and VR in Online Shopping Experiences</a>
-                    <p class="blog-excerpt">Discover how augmented and virtual reality are reshaping the way consumers interact with products before making a purchase decision online.</p>
-                    <div class="blog-footer">
-                        <a href="#" class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </article>
+    <div class="container">
+        <div class="blog-layout">
 
-            <article class="blog-card fade-in delay-1">
-                <div class="blog-img" style="font-size: 5rem;">
-                    <div class="blog-badge" style="background:var(--secondary)">Commerce Tips</div>
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                <div class="blog-content">
-                    <span class="blog-meta">October 18, 2026 • 8 min read</span>
-                    <a href="#" class="blog-title">10 Proven Strategies to Boost Your Online Sales During Holidays</a>
-                    <p class="blog-excerpt">As the holiday season approaches, optimizing your storefront and marketing funnels can lead to incredible conversion rate increases.</p>
-                    <div class="blog-footer">
-                        <a href="#" class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            <!-- ── Blog Main ── -->
+            <div class="blog-main">
+                <!-- Featured Post -->
+                <div class="featured-post fade-in">
+                    <div class="featured-post-img">
+                        <i class="fa-solid fa-rocket"></i>
+                        <div class="featured-label">Featured</div>
+                    </div>
+                    <div class="featured-post-body">
+                        <div class="post-category"><i class="fa-solid fa-circle-dot"></i> Vendor Guide</div>
+                        <h2><a href="#">10 Proven Strategies to Boost Your Online Store Sales in 2026</a></h2>
+                        <p class="post-excerpt">The e-commerce landscape is evolving faster than ever. We've gathered insights from our top-performing vendors and compiled the most effective strategies that have driven consistent growth for independent sellers on Vendo.</p>
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                            <div class="post-meta">
+                                <span class="post-meta-author"><div class="avatar">JD</div> James Davis</span>
+                                <span><i class="fa-regular fa-calendar"></i> Apr 10, 2026</span>
+                                <span><i class="fa-regular fa-clock"></i> 8 min read</span>
+                            </div>
+                            <a href="#" class="btn btn-primary btn-sm">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+                        </div>
                     </div>
                 </div>
-            </article>
 
-            <article class="blog-card fade-in delay-2">
-                <div class="blog-img">
-                    <div class="blog-badge" style="background:var(--accent)">Vendor Spotlight</div>
-                    <i class="fa-solid fa-camera"></i>
+                <!-- Recent Posts Grid -->
+                <div style="margin-bottom:1.5rem;">
+                    <div class="section-label" style="margin-bottom:1rem;"><i class="fa-solid fa-newspaper"></i> Latest Articles</div>
                 </div>
-                <div class="blog-content">
-                    <span class="blog-meta">October 12, 2026 • 6 min read</span>
-                    <a href="#" class="blog-title">How Camerix Built a Million-Dollar Photography Store on Vendo</a>
-                    <p class="blog-excerpt">We sat down with the founder of Camerix to learn how they utilized our platform to globally scale their niche camera lens business.</p>
-                    <div class="blog-footer">
-                        <a href="#" class="read-more">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+                <div class="blog-grid">
+                    <div class="blog-card fade-in delay-1">
+                        <div class="blog-card-img"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="blog-card-body">
+                            <div class="post-category">Analytics</div>
+                            <h3><a href="#">Understanding Your Store Analytics: A Complete Beginner's Guide</a></h3>
+                            <p>Data is the backbone of any successful business. Learn how to read your Vendo analytics dashboard and turn numbers into actionable insights.</p>
+                            <div class="blog-card-footer">
+                                <span class="post-meta-author"><div class="avatar">SK</div> Sarah Kim</span>
+                                <span class="read-time"><i class="fa-regular fa-clock"></i> 5 min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-card fade-in delay-2">
+                        <div class="blog-card-img blog-card-img-2"><i class="fa-solid fa-camera"></i></div>
+                        <div class="blog-card-body">
+                            <div class="post-category">Product Photography</div>
+                            <h3><a href="#">How to Take Professional Product Photos With Just Your Phone</a></h3>
+                            <p>Great photos increase click-through rates by up to 90%. Discover simple techniques used by our best-performing vendors.</p>
+                            <div class="blog-card-footer">
+                                <span class="post-meta-author"><div class="avatar">ML</div> Maria Lopez</span>
+                                <span class="read-time"><i class="fa-regular fa-clock"></i> 6 min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-card fade-in delay-1">
+                        <div class="blog-card-img blog-card-img-3"><i class="fa-solid fa-tags"></i></div>
+                        <div class="blog-card-body">
+                            <div class="post-category">Pricing Strategy</div>
+                            <h3><a href="#">The Art of Competitive Pricing: How to Win Without Underselling</a></h3>
+                            <p>Pricing is one of the hardest parts of selling online. We break down the psychology of pricing and strategies that protect your margins.</p>
+                            <div class="blog-card-footer">
+                                <span class="post-meta-author"><div class="avatar">AC</div> Alex Chen</span>
+                                <span class="read-time"><i class="fa-regular fa-clock"></i> 7 min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-card fade-in delay-2">
+                        <div class="blog-card-img blog-card-img-4"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="blog-card-body">
+                            <div class="post-category">Buyer Tips</div>
+                            <h3><a href="#">Buyer's Guide: How to Shop Safely on Multi-Vendor Marketplaces</a></h3>
+                            <p>With thousands of sellers, knowing what to look for keeps you protected. Here's how to identify verified sellers and avoid common pitfalls.</p>
+                            <div class="blog-card-footer">
+                                <span class="post-meta-author"><div class="avatar">TR</div> Tom Reed</span>
+                                <span class="read-time"><i class="fa-regular fa-clock"></i> 4 min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-card fade-in delay-1">
+                        <div class="blog-card-img"><i class="fa-solid fa-box-open"></i></div>
+                        <div class="blog-card-body">
+                            <div class="post-category">Shipping</div>
+                            <h3><a href="#">Packaging That Protects and Impresses: The Complete Vendor Checklist</a></h3>
+                            <p>Your packaging is the first physical touchpoint with your customer. Make it count with these proven approaches from our top vendors.</p>
+                            <div class="blog-card-footer">
+                                <span class="post-meta-author"><div class="avatar">JD</div> James Davis</span>
+                                <span class="read-time"><i class="fa-regular fa-clock"></i> 5 min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-card fade-in delay-2">
+                        <div class="blog-card-img blog-card-img-2"><i class="fa-solid fa-star"></i></div>
+                        <div class="blog-card-body">
+                            <div class="post-category">Reviews</div>
+                            <h3><a href="#">Getting More 5-Star Reviews: What Top Sellers Do Differently</a></h3>
+                            <p>Positive reviews build trust and drive conversions. Learn the strategies top Vendo vendors use to maintain stellar ratings consistently.</p>
+                            <div class="blog-card-footer">
+                                <span class="post-meta-author"><div class="avatar">SK</div> Sarah Kim</span>
+                                <span class="read-time"><i class="fa-regular fa-clock"></i> 6 min</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </article>
-            
+
+                <!-- Pagination -->
+                <div class="pagination" style="margin-top:2.5rem;">
+                    <button class="page-btn"><i class="fa-solid fa-angle-left"></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn"><i class="fa-solid fa-angle-right"></i></button>
+                </div>
+            </div>
+
+            <!-- ── Blog Aside ── -->
+            <aside class="blog-aside">
+                <div class="aside-widget fade-in">
+                    <div class="aside-widget-head">Search</div>
+                    <div class="aside-widget-body">
+                        <div class="blog-search">
+                            <input type="text" placeholder="Search articles…">
+                            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="aside-widget fade-in delay-1">
+                    <div class="aside-widget-head">Categories</div>
+                    <div class="aside-widget-body">
+                        <div class="tag-cloud">
+                            <span class="tag">Vendor Guide</span>
+                            <span class="tag">Buyer Tips</span>
+                            <span class="tag">Analytics</span>
+                            <span class="tag">Shipping</span>
+                            <span class="tag">Pricing</span>
+                            <span class="tag">Photography</span>
+                            <span class="tag">Reviews</span>
+                            <span class="tag">Marketing</span>
+                            <span class="tag">Platform News</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="aside-widget fade-in delay-2">
+                    <div class="aside-widget-head">Popular Articles</div>
+                    <div class="aside-widget-body" style="padding-top:0.25rem;padding-bottom:0.25rem;">
+                        <div class="pop-post">
+                            <div class="pop-num">1</div>
+                            <div class="pop-post-info"><h4><a href="#">10 Proven Strategies to Boost Sales</a></h4><span><i class="fa-regular fa-clock"></i> 8 min &middot; 4.2k reads</span></div>
+                        </div>
+                        <div class="pop-post">
+                            <div class="pop-num">2</div>
+                            <div class="pop-post-info"><h4><a href="#">Professional Product Photos With Your Phone</a></h4><span><i class="fa-regular fa-clock"></i> 6 min &middot; 3.1k reads</span></div>
+                        </div>
+                        <div class="pop-post">
+                            <div class="pop-num">3</div>
+                            <div class="pop-post-info"><h4><a href="#">The Art of Competitive Pricing</a></h4><span><i class="fa-regular fa-clock"></i> 7 min &middot; 2.8k reads</span></div>
+                        </div>
+                        <div class="pop-post">
+                            <div class="pop-num">4</div>
+                            <div class="pop-post-info"><h4><a href="#">Getting More 5-Star Reviews</a></h4><span><i class="fa-regular fa-clock"></i> 6 min &middot; 2.4k reads</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="aside-widget fade-in delay-3" style="background:linear-gradient(135deg,var(--primary),#1e40af);border-color:transparent;">
+                    <div class="aside-widget-body" style="padding:1.5rem;text-align:center;">
+                        <i class="fa-solid fa-envelope" style="font-size:1.75rem;color:#93c5fd;margin-bottom:0.75rem;"></i>
+                        <h4 style="color:#fff;font-size:0.95rem;font-weight:800;margin-bottom:0.4rem;">Get Our Weekly Digest</h4>
+                        <p style="color:rgba(255,255,255,0.75);font-size:0.78rem;margin-bottom:1rem;">The best vendor and buyer tips delivered to your inbox.</p>
+                        <input type="email" placeholder="your@email.com" style="width:100%;padding:0.55rem 0.9rem;border-radius:var(--r-sm);border:none;font-size:0.82rem;margin-bottom:0.5rem;background:rgba(255,255,255,0.15);color:#fff;">
+                        <button class="btn w-full btn-sm" style="background:#fff;color:var(--primary);font-weight:700;">Subscribe</button>
+                    </div>
+                </div>
+            </aside>
         </div>
-        
-        <!-- Pagination -->
-        <div class="pagination fade-in">
-            <button class="page-btn"><i class="fa-solid fa-angle-left"></i></button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">...</button>
-            <button class="page-btn"><i class="fa-solid fa-angle-right"></i></button>
-        </div>
-    </section>
+    </div>
 
-    <!-- FOOTER -->
+    <!-- ── FOOTER ── -->
     <footer class="footer">
         <div class="container">
-            <p style="text-align:center;color:var(--text-muted)">&copy; 2026 Vendo Marketplace. All rights reserved.</p>
+            <div class="footer-grid">
+                <div class="footer-brand"><a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a><p>The premium multi-vendor marketplace.</p><div class="social-links"><a href="#"><i class="fa-brands fa-facebook-f"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a></div></div>
+                <div class="footer-links"><h4>Shop</h4><a href="shop.html">All Products</a><a href="vendor.html">Top Vendors</a><a href="shop.html">Deals</a></div>
+                <div class="footer-links"><h4>Customer</h4><a href="auth.html">My Account</a><a href="#">Track Order</a><a href="contact.html">Support</a></div>
+                <div class="footer-links"><h4>Sell</h4><a href="seller.html">Start Selling</a><a href="seller.html">Vendor Center</a></div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 Vendo Marketplace. All rights reserved.</p><div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div></div>
         </div>
     </footer>
 
-    <!-- App JS -->
     <script src="js/app.js"></script>
 </body>
 </html>

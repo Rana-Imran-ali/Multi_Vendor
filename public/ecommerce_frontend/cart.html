@@ -4,323 +4,281 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart | Vendo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .cart-layout { display: flex; gap: 3rem; align-items: flex-start; margin-top: 3rem; margin-bottom: 5rem; }
-        .cart-main { flex: 1; }
-        
-        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .cart-item { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: 1rem; margin-bottom: 1.5rem; background: var(--surface); transition: var(--transition); }
-        .cart-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); border-color: var(--primary-light); }
-        
-        .item-img { width: 100px; height: 100px; background: var(--primary-light); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--primary); flex-shrink: 0; }
-        
-        .item-details { flex: 1; min-width: 0; }
-        .item-vendor { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-        .item-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-variants { font-size: 0.85rem; color: var(--text-muted); }
-        
-        .item-price { font-weight: 700; font-size: 1.1rem; width: 120px; text-align: right; }
-        
-        .qty-control { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--background); overflow: hidden; height: 40px; margin-left: 2rem; }
-        .qty-btn { width: 30px; height: 100%; display: flex; align-items: center; justify-content: center; background: transparent; color: var(--text); cursor: pointer; transition: background 0.2s; }
-        .qty-btn:hover { background: var(--border); }
-        .qty-input { width: 40px; text-align: center; border: none; background: transparent; font-weight: 600; color: var(--text); }
+        .cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; padding: 2rem 0 4rem; align-items: start; }
+
+        /* ── Cart Main ── */
+        .cart-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+        .cart-table-head {
+            display: grid; grid-template-columns: 40px 1fr 100px 130px 110px 40px;
+            gap: 0.5rem; align-items: center;
+            padding: 0.75rem 1.25rem;
+            background: var(--background); border-bottom: 1px solid var(--border);
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--text-muted);
+        }
+        .cart-item {
+            display: grid; grid-template-columns: 40px 1fr 100px 130px 110px 40px;
+            gap: 0.5rem; align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            transition: background var(--t-fast);
+        }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item:hover { background: var(--surface-2); }
+        .cart-item.deselected { opacity: 0.5; }
+
+        .item-img {
+            width: 68px; height: 68px;
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: var(--r-md); display: flex; align-items: center; justify-content: center;
+            font-size: 1.75rem; color: var(--border-dark); flex-shrink: 0;
+        }
+        .item-info { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+        .item-text { min-width: 0; }
+        .item-vendor { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary); display: block; margin-bottom: 0.15rem; }
+        .item-title { font-size: 0.88rem; font-weight: 700; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+        .item-title:hover { color: var(--primary); }
+        .item-variants { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+        .item-price { font-size: 0.9rem; color: var(--text-secondary); text-align: center; }
+
+        .qty-control {
+            display: flex; align-items: center;
+            border: 1.5px solid var(--border-dark); border-radius: var(--r-sm); overflow: hidden;
+            width: fit-content;
+        }
+        .qty-btn {
+            width: 28px; height: 28px; background: var(--background);
+            border: none; font-size: 0.75rem; font-weight: 700;
+            color: var(--text-secondary); cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            transition: background var(--t-fast), color var(--t-fast);
+        }
+        .qty-btn:hover { background: var(--primary-xlight); color: var(--primary); }
+        .qty-input { width: 36px; height: 28px; border: none; border-left: 1.5px solid var(--border-dark); border-right: 1.5px solid var(--border-dark); text-align: center; font-weight: 700; font-size: 0.82rem; color: var(--text); background: var(--surface); }
         .qty-input:focus { outline: none; }
-        
-        .item-total { font-weight: 800; font-size: 1.15rem; color: var(--primary); width: 120px; text-align: right; margin-left: 2rem; }
-        
-        .remove-btn { color: #ef4444; background: transparent; border: none; font-size: 1.25rem; margin-left: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 0.5rem; transition: var(--transition); }
-        .remove-btn:hover { background: #fee2e2; }
 
-        /* Summary Sidebar */
-        .cart-sidebar { width: 380px; flex-shrink: 0; position: sticky; top: calc(var(--navbar-height) + 2rem); }
-        .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow-sm); }
-        .summary-box h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
-        
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-muted); font-size: 1rem; }
+        .item-total { font-size: 0.95rem; font-weight: 800; color: var(--primary); text-align: right; }
+        .remove-btn { width: 30px; height: 30px; border-radius: var(--r-sm); background: transparent; color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; transition: background var(--t-fast), color var(--t-fast); }
+        .remove-btn:hover { background: var(--accent-light); color: var(--accent); }
+
+        /* ── Empty Cart ── */
+        .cart-empty { text-align: center; padding: 5rem 2rem; }
+        .cart-empty i { font-size: 4rem; color: var(--border-dark); margin-bottom: 1.5rem; }
+        .cart-empty h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .cart-empty p { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        /* ── Order Summary ── */
+        .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; position: sticky; top: calc(var(--navbar-height) + 1rem); }
+        .summary-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; font-weight: 800; color: var(--text); }
+        .summary-body { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        .summary-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; }
+        .summary-row span:first-child { color: var(--text-muted); }
         .summary-row span:last-child { font-weight: 600; color: var(--text); }
-        
-        .summary-total { border-top: 1px solid var(--border); margin-top: 1.5rem; padding-top: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text); }
-        .summary-total span:last-child { color: var(--primary); font-size: 1.5rem; }
-        
-        .checkout-btn { width: 100%; margin-top: 2rem; padding: 1rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 1.1rem; }
-        
-        .promo-code { display: flex; gap: 0.5rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-        .promo-code input { flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--background); color: var(--text); font-size: 0.95rem; }
-        .promo-code input:focus { outline: none; border-color: var(--primary); }
+        .summary-row.free span:last-child { color: var(--secondary); }
+        .summary-divider { border: none; border-top: 1px solid var(--border); margin: 0.25rem 0; }
+        .summary-total-row { display: flex; align-items: center; justify-content: space-between; }
+        .summary-total-row span:first-child { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+        .summary-total-row span:last-child { font-size: 1.25rem; font-weight: 900; color: var(--primary); }
+        .promo-row { display: flex; gap: 0.5rem; }
+        .promo-row input { flex: 1; padding: 0.5rem 0.75rem; border: 1.5px solid var(--border-dark); border-radius: var(--r-sm); font-size: 0.82rem; color: var(--text); background: var(--background); }
+        .promo-row input:focus { outline: none; border-color: var(--primary); }
+        .checkout-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; }
+        .secure-badge { display: flex; align-items: center; justify-content: center; gap: 0.35rem; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .secure-badge i { color: var(--secondary); }
 
-        @media (max-width: 1024px) {
-            .cart-layout { flex-direction: column; }
-            .cart-sidebar { width: 100%; position: static; }
-            .cart-header { display: none; }
-            .cart-item { flex-wrap: wrap; padding: 1rem; position: relative; }
-            .item-img { width: 80px; height: 80px; font-size: 2rem; }
-            .item-details { width: calc(100% - 100px); }
+        @media (max-width: 1024px) { .cart-layout { grid-template-columns: 1fr; } .summary-box { position: static; } }
+        @media (max-width: 768px) {
+            .cart-table-head { display: none; }
+            .cart-item { grid-template-columns: 30px auto 40px 40px; grid-template-rows: auto auto; gap: 0.75rem; }
+            .item-info { grid-column: 2; }
             .item-price { display: none; }
-            .qty-control { margin-left: 0; margin-top: 1rem; }
-            .item-total { flex: 1; text-align: right; margin-top: 1rem; }
-            .remove-btn { position: absolute; top: 1rem; right: 1rem; margin: 0; }
+            .qty-control { grid-column: 3; }
+            .item-total { grid-column: 1 / -2; font-size: 0.9rem; text-align: left; }
+            .remove-btn { grid-column: 4; }
         }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
-                </select>
-                <input type="text" placeholder="Smart search...">
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;"><option>All</option><option>Products</option></select>
+                <input type="text" placeholder="Search products…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
+                <li class="dropdown"><a href="shop.html" class="nav-link dropdown-toggle">Shop <i class="fa-solid fa-chevron-down fa-xs"></i></a><ul class="dropdown-menu"><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--amber)"></i> Deals</a></li></ul></li>
                 <li><a href="vendor.html" class="nav-link">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
-                <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="contact.html" class="nav-link">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
-                    </ul>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="cart.html" class="icon-btn" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a><a href="auth.html" class="btn btn-primary btn-sm">Sign Up</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="seller.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-crown"></i> Become Seller</a></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="vendor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-gauge"></i> Vendor Panel</a></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;"><a href="/admin" class="btn btn-sm" style="background:#0f172a;color:#fff;"><i class="fa-solid fa-shield-halved"></i> Admin</a></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;"><li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);"><strong class="navUserName" style="display:block;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li><li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li><li><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li></ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <!-- PAGE HEADER -->
-    <div class="page-header" style="padding: 4rem 0 2rem;">
-        <div class="container fade-in">
-            <h1 style="font-size:2.5rem;">Your Shopping Cart</h1>
-            <p>Review your items and proceed to checkout.</p>
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i><span>Shopping Cart</span></div>
+            <h1>Shopping Cart</h1>
+            <p>Review your selected items and proceed to secure checkout.</p>
         </div>
     </div>
 
-    <!-- CART SECTION -->
-    <section class="container fade-in delay-1">
+    <div class="container">
         <div class="cart-layout">
-            
-            <div class="cart-main">
-                <div class="cart-header">
-                    <input type="checkbox" id="selectAllCart" checked style="margin-right:1rem; cursor:pointer;" title="Select All">
-                    <span style="flex:1">Product</span>
-                    <span style="width:120px; text-align:right">Price</span>
-                    <span style="width:100px; text-align:center; padding-left:2rem;">Quantity</span>
-                    <span style="width:120px; text-align:right; padding-left:2rem;">Subtotal</span>
-                    <span style="width:40px; margin-left:1.5rem"></span>
+
+            <!-- ── Left: Cart Items ── -->
+            <div>
+                <!-- Select all bar -->
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:0.75rem;">
+                    <label style="display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;font-weight:600;cursor:pointer;">
+                        <input type="checkbox" id="selectAllCart" checked style="accent-color:var(--primary);width:15px;height:15px;cursor:pointer;"> Select All Items
+                    </label>
+                    <a href="shop.html" class="btn btn-ghost btn-sm" style="color:var(--text-muted);"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
                 </div>
 
-                <!-- Item 1 -->
-                <div class="cart-item fade-in" data-item-id="1" data-price="1299.00">
-                    <input type="checkbox" class="cart-item-select" value="1" checked style="margin-right:1rem; cursor:pointer;">
-                    <div class="item-img"><i class="fa-solid fa-laptop"></i></div>
-                    <div class="item-details">
-                        <span class="item-vendor">TechNova Store</span>
-                        <a href="product.html" class="item-title" style="display:block;text-decoration:none;">ProBook Z15 Ultra Slim Laptop</a>
-                        <div class="item-variants">Color: Space Gray | Storage: 512GB</div>
+                <!-- Cart table -->
+                <div class="cart-table-wrap" id="cartContainer">
+                    <div class="cart-table-head">
+                        <span></span>
+                        <span>Product</span>
+                        <span style="text-align:center;">Price</span>
+                        <span style="text-align:center;">Quantity</span>
+                        <span style="text-align:right;">Subtotal</span>
+                        <span></span>
                     </div>
-                    <div class="item-price">$1,299.00</div>
-                    <div class="qty-control">
-                        <button class="qty-btn" onclick="javascript:void(0);"><i class="fa-solid fa-minus"></i></button>
-                        <input type="text" class="qty-input" value="1" readonly>
-                        <button class="qty-btn" onclick="javascript:void(0);"><i class="fa-solid fa-plus"></i></button>
+
+                    <!-- Item 1 -->
+                    <div class="cart-item fade-in" data-item-id="1" data-price="1299.00">
+                        <input type="checkbox" class="cart-item-select" value="1" checked style="accent-color:var(--primary);width:15px;height:15px;cursor:pointer;">
+                        <div class="item-info">
+                            <div class="item-img"><i class="fa-solid fa-laptop"></i></div>
+                            <div class="item-text">
+                                <span class="item-vendor">TechNova Store</span>
+                                <a href="product.html" class="item-title">ProBook Z15 Ultra Slim Laptop — 16GB RAM</a>
+                                <div class="item-variants">Color: Space Gray · Storage: 512GB</div>
+                            </div>
+                        </div>
+                        <div class="item-price" style="text-align:center;">$1,299.00</div>
+                        <div class="qty-control">
+                            <button class="qty-btn"><i class="fa-solid fa-minus" style="font-size:0.6rem;"></i></button>
+                            <input type="text" class="qty-input" value="1" readonly>
+                            <button class="qty-btn"><i class="fa-solid fa-plus" style="font-size:0.6rem;"></i></button>
+                        </div>
+                        <div class="item-total">$1,299.00</div>
+                        <button class="remove-btn" title="Remove"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
-                    <div class="item-total">$1,299.00</div>
-                    <button class="remove-btn" title="Remove Item"><i class="fa-regular fa-trash-can"></i></button>
+
+                    <!-- Item 2 -->
+                    <div class="cart-item fade-in delay-1" data-item-id="2" data-price="199.99">
+                        <input type="checkbox" class="cart-item-select" value="2" checked style="accent-color:var(--primary);width:15px;height:15px;cursor:pointer;">
+                        <div class="item-info">
+                            <div class="item-img"><i class="fa-solid fa-headphones"></i></div>
+                            <div class="item-text">
+                                <span class="item-vendor">AudioTech</span>
+                                <a href="product.html" class="item-title">Noise Cancelling Wireless Headphones Pro v3</a>
+                                <div class="item-variants">Color: Matte Black</div>
+                            </div>
+                        </div>
+                        <div class="item-price" style="text-align:center;">$199.99</div>
+                        <div class="qty-control">
+                            <button class="qty-btn"><i class="fa-solid fa-minus" style="font-size:0.6rem;"></i></button>
+                            <input type="text" class="qty-input" value="1" readonly>
+                            <button class="qty-btn"><i class="fa-solid fa-plus" style="font-size:0.6rem;"></i></button>
+                        </div>
+                        <div class="item-total">$199.99</div>
+                        <button class="remove-btn" title="Remove"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
                 </div>
 
-                <!-- Item 2 -->
-                <div class="cart-item fade-in delay-1" data-item-id="2" data-price="199.99">
-                    <input type="checkbox" class="cart-item-select" value="2" checked style="margin-right:1rem; cursor:pointer;">
-                    <div class="item-img"><i class="fa-solid fa-headphones"></i></div>
-                    <div class="item-details">
-                        <span class="item-vendor">AudioTech</span>
-                        <a href="product.html" class="item-title" style="display:block;text-decoration:none;">Noise Cancelling Headphones v3</a>
-                        <div class="item-variants">Color: Matte Black</div>
+                <!-- Trust strip -->
+                <div class="trust-bar" style="border-radius:var(--r-lg);margin-top:0.75rem;">
+                    <div class="trust-items" style="padding:0.25rem 0;">
+                        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> Buyer Protection</div>
+                        <div class="trust-item"><i class="fa-solid fa-truck-fast"></i> Free Shipping above $50</div>
+                        <div class="trust-item"><i class="fa-solid fa-rotate-left"></i> 30-Day Returns</div>
                     </div>
-                    <div class="item-price">$199.99</div>
-                    <div class="qty-control">
-                        <button class="qty-btn"><i class="fa-solid fa-minus"></i></button>
-                        <input type="text" class="qty-input" value="1" readonly>
-                        <button class="qty-btn"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                    <div class="item-total">$199.99</div>
-                    <button class="remove-btn" title="Remove Item"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
-                
-                <a href="shop.html" class="btn btn-outline" style="margin-top:1rem;"><i class="fa-solid fa-arrow-left-long"></i> Continue Shopping</a>
             </div>
 
-            <div class="cart-sidebar">
+            <!-- ── Right: Order Summary ── -->
+            <div>
                 <div class="summary-box fade-in delay-2">
-                    <h3>Order Summary</h3>
-                    
-                    <div class="summary-row">
-                        <span id="summaryItemsCount">Items (2)</span>
-                        <span id="summaryItemsSubtotal">$1,498.99</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Shipping Estimate</span>
-                        <span style="color:var(--secondary)">Free</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Tax Estimate</span>
-                        <span id="summaryTax">$120.00</span>
-                    </div>
-                    
-                    <div class="promo-code">
-                        <input type="text" placeholder="Promo code...">
-                        <button class="btn btn-outline" style="padding:0.75rem 1rem;">Apply</button>
-                    </div>
+                    <div class="summary-head"><i class="fa-solid fa-receipt" style="color:var(--primary);margin-right:0.4rem;"></i> Order Summary</div>
+                    <div class="summary-body">
+                        <div class="summary-row"><span id="summaryItemsCount">Items (2)</span><span id="summaryItemsSubtotal">$1,498.99</span></div>
+                        <div class="summary-row free"><span>Shipping</span><span>Free</span></div>
+                        <div class="summary-row"><span>Tax (8%)</span><span id="summaryTax">$119.92</span></div>
 
-                    <div class="summary-row summary-total">
-                        <span>Total</span>
-                        <span id="summaryTotal">$1,618.99</span>
-                    </div>
-                    
-                    <a href="javascript:void(0)" class="btn btn-primary checkout-btn" id="proceedCheckoutBtn">
-                        Proceed to Checkout <i class="fa-solid fa-arrow-right-long"></i>
-                    </a>
-                    
-                    <div style="text-align:center;color:var(--text-muted);margin-top:1.5rem;font-size:0.85rem;">
-                        <i class="fa-solid fa-lock" style="color:var(--secondary)"></i> Secure Checkout
+                        <div class="promo-row">
+                            <input type="text" placeholder="Promo / Gift code">
+                            <button class="btn btn-outline btn-sm">Apply</button>
+                        </div>
+
+                        <hr class="summary-divider">
+                        <div class="summary-total-row">
+                            <span>Total</span>
+                            <span id="summaryTotal">$1,618.91</span>
+                        </div>
+
+                        <a href="javascript:void(0)" class="btn btn-primary checkout-btn" id="proceedCheckoutBtn">
+                            <i class="fa-solid fa-lock"></i> Proceed to Checkout
+                        </a>
+
+                        <div class="secure-badge">
+                            <i class="fa-solid fa-shield-halved"></i> 256-bit SSL Secure Checkout
+                        </div>
+
+                        <!-- Payment logos -->
+                        <div style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.25rem;">
+                            <i class="fa-brands fa-cc-visa fa-lg" style="color:var(--text-muted);"></i>
+                            <i class="fa-brands fa-cc-mastercard fa-lg" style="color:var(--text-muted);"></i>
+                            <i class="fa-brands fa-cc-paypal fa-lg" style="color:var(--text-muted);"></i>
+                            <i class="fa-brands fa-cc-stripe fa-lg" style="color:var(--text-muted);"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
-    </section>
+    </div>
 
-    <!-- App JS -->
+    <!-- ── FOOTER ── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand"><a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a><p>The premium multi-vendor marketplace.</p><div class="social-links"><a href="#"><i class="fa-brands fa-facebook-f"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a></div></div>
+                <div class="footer-links"><h4>Shop</h4><a href="shop.html">All Products</a><a href="shop.html">Hot Deals</a><a href="vendor.html">Top Vendors</a></div>
+                <div class="footer-links"><h4>Customer</h4><a href="auth.html">My Account</a><a href="#">Track Order</a><a href="#">Returns</a></div>
+                <div class="footer-links"><h4>Sell</h4><a href="seller.html">Start Selling</a><a href="seller.html">Vendor Center</a></div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 Vendo Marketplace. All rights reserved.</p><div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div></div>
+        </div>
+    </footer>
+
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -3,307 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us | Vendo</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Contact Us | Vendo Marketplace</title>
+    <meta name="description" content="Get in touch with Vendo support for help with orders, vendor inquiries, or general questions.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Core CSS -->
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .contact-layout { display: flex; gap: 4rem; align-items: stretch; margin-top: 2rem; margin-bottom: 5rem; }
-        
-        .contact-info { width: 40%; background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
-        .contact-info h2 { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; }
-        .contact-info p { color: var(--text-muted); line-height: 1.6; margin-bottom: 2.5rem; font-size: 1.05rem; }
-        
-        .info-item { display: flex; gap: 1.5rem; margin-bottom: 2rem; align-items: flex-start; }
-        .info-icon { width: 50px; height: 50px; background: var(--primary-light); color: var(--primary); border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
-        .info-text h4 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
-        .info-text span { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
-        
-        .social-links { display: flex; gap: 1rem; margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--border); }
-        .social-link { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: var(--transition); font-size: 1.25rem; text-decoration: none; }
-        .social-link:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-3px); }
+        .contact-layout { display: grid; grid-template-columns: 1fr 1.3fr; gap: 3rem; padding: 3rem 0 5rem; align-items: start; }
 
-        .contact-form-side { width: 60%; background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; padding: 4rem; box-shadow: var(--shadow-sm); }
-        .contact-form-side h3 { font-size: 1.75rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem; }
-        .contact-form-side p { color: var(--text-muted); margin-bottom: 2.5rem; }
-        
-        .form-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .form-row .form-group { width: 50%; margin-bottom: 0; }
-        
-        /* Map Placeholder */
-        .map-wrapper { width: 100%; height: 400px; background: #e5e7eb; border-radius: 1.5rem; margin-bottom: 5rem; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.25rem; overflow: hidden; position: relative; }
-        .map-bg { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0.5; filter: grayscale(100%); }
+        /* Info Panel */
+        .contact-info-panel { display: flex; flex-direction: column; gap: 1.25rem; }
+        .contact-info-intro h2 { font-size: 1.6rem; font-weight: 900; color: var(--text); margin-bottom: 0.5rem; }
+        .contact-info-intro p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
 
-        @media (max-width: 1024px) {
-            .contact-layout { flex-direction: column; }
-            .contact-info, .contact-form-side { width: 100%; padding: 2.5rem 1.5rem; }
-            .form-row { flex-direction: column; gap: 1.5rem; }
-            .form-row .form-group { width: 100%; }
-        }
+        .contact-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; transition: box-shadow var(--t-base), transform var(--t-base); }
+        .contact-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .contact-card-icon { width: 46px; height: 46px; border-radius: var(--r-md); background: var(--primary-xlight); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+        .contact-card-content h4 { font-size: 0.9rem; font-weight: 800; color: var(--text); margin-bottom: 0.2rem; }
+        .contact-card-content p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+        .contact-card-content a { font-size: 0.875rem; font-weight: 600; color: var(--primary); }
+        .contact-card-content a:hover { text-decoration: underline; }
+
+        /* Hours */
+        .hours-grid { display: flex; flex-direction: column; gap: 0.4rem; margin-top:0.4rem; }
+        .hour-row { display: flex; justify-content: space-between; font-size: 0.8rem; }
+        .hour-row .day { color: var(--text-secondary); font-weight: 600; }
+        .hour-row .time { color: var(--text-muted); }
+        .hour-row .open { color: var(--secondary); font-weight: 700; }
+
+        /* Form Panel */
+        .contact-form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 2.5rem; }
+        .contact-form-panel h2 { font-size: 1.35rem; font-weight: 900; color: var(--text); margin-bottom: 0.4rem; }
+        .contact-form-panel p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.75rem; }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* Subject tabs */
+        .subject-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+        .subject-tab { padding: 0.35rem 0.85rem; border: 1.5px solid var(--border-dark); border-radius: 100px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: var(--transition); background: var(--surface); }
+        .subject-tab:hover, .subject-tab.active { border-color: var(--primary); color: var(--primary); background: var(--primary-xlight); }
+
+        /* Success state */
+        .contact-success { display: none; text-align: center; padding: 3rem 2rem; }
+        .contact-success i { font-size: 3.5rem; color: var(--secondary); margin-bottom: 1rem; }
+        .contact-success h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .contact-success p { color: var(--text-muted); font-size: 0.875rem; }
+
+        /* FAQ section */
+        .faq-item { border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; margin-bottom: 0.6rem; }
+        .faq-q { padding: 1rem 1.1rem; font-size: 0.9rem; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background var(--t-fast); }
+        .faq-q:hover { background: var(--background); }
+        .faq-q i { font-size: 0.85rem; color: var(--text-muted); transition: transform var(--t-base); }
+        .faq-a { padding: 0 1.1rem; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.2s ease; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+        .faq-item.open .faq-q { background: var(--primary-xlight); color: var(--primary); }
+        .faq-item.open .faq-q i { transform: rotate(180deg); color: var(--primary); }
+        .faq-item.open .faq-a { max-height: 200px; padding: 0.75rem 1.1rem 1rem; }
+
+        @media (max-width: 1024px) { .contact-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .form-grid-2 { grid-template-columns: 1fr; } .contact-form-panel { padding: 1.5rem; } }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
-                </select>
-                <input type="text" placeholder="Smart search...">
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;"><option>All</option><option>Products</option></select>
+                <input type="text" placeholder="Search products, brands…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
+                <li class="dropdown"><a href="shop.html" class="nav-link dropdown-toggle">Shop <i class="fa-solid fa-chevron-down fa-xs"></i></a><ul class="dropdown-menu"><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--amber)"></i> Deals</a></li></ul></li>
                 <li><a href="vendor.html" class="nav-link">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="contact.html" class="nav-link active">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login</a></li>
+                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
-                    </ul>
+                <div class="dropdown desktop-only"><button class="icon-btn dropdown-toggle"><i class="fa-solid fa-globe"></i></button><ul class="dropdown-menu" style="min-width:130px;right:0;left:auto;"><li><a href="#" class="dropdown-item">English (EN)</a></li></ul></div>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="product.html" class="icon-btn auth-only"><i class="fa-regular fa-heart"></i><span class="badge">3</span></a>
+                <a href="cart.html" class="icon-btn"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a><a href="auth.html" class="btn btn-primary btn-sm">Sign Up</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="seller.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-crown"></i> Become Seller</a></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="vendor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-gauge"></i> Vendor Panel</a></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;"><a href="/admin" class="btn btn-sm" style="background:#0f172a;color:#fff;"><i class="fa-solid fa-shield-halved"></i> Admin</a></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;"><li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);"><strong class="navUserName" style="display:block;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li><li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li><li><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li></ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <div class="page-header" style="padding: 4rem 0 2rem;">
-        <div class="container fade-in">
-            <h1 style="font-size:3rem;">Get in Touch</h1>
-            <p style="max-width:600px;margin:0 auto;">We'd love to hear from you. Our friendly team is always here to chat and help you with any questions.</p>
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i><span>Contact</span></div>
+            <h1>Get in Touch</h1>
+            <p>Our team is here to help — expect a response within 24 hours</p>
         </div>
     </div>
 
-    <section class="container fade-in delay-1">
+    <!-- ── Quick Trust Bar ── -->
+    <div class="trust-bar">
+        <div class="container">
+            <div class="trust-items">
+                <div class="trust-item"><i class="fa-solid fa-headset"></i> 24/7 Support Available</div>
+                <div class="trust-item"><i class="fa-regular fa-clock"></i> Avg response under 2 hours</div>
+                <div class="trust-item"><i class="fa-solid fa-star"></i> 4.9 Support Rating</div>
+                <div class="trust-item"><i class="fa-solid fa-language"></i> Support in 12 Languages</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
         <div class="contact-layout">
-            
-            <div class="contact-info">
-                <h2>Contact Information</h2>
-                <p>Fill out the form and our team will get back to you within 24 hours.</p>
 
-                <div class="info-item">
-                    <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
-                    <div class="info-text">
-                        <h4>Phone Number</h4>
-                        <span>+1 (555) 123-4567<br>Mon-Fri 9am-6pm PST</span>
+            <!-- ── Left: Contact Info ── -->
+            <div class="contact-info-panel">
+                <div class="contact-info-intro">
+                    <div class="section-label" style="margin-bottom:0.65rem;"><i class="fa-solid fa-envelope-open-text"></i> Contact</div>
+                    <h2>We'd Love to Hear From You</h2>
+                    <p>Whether you have a question about an order, want to become a vendor, or just want to say hello — our team is ready to assist.</p>
+                </div>
+
+                <div class="contact-card fade-in">
+                    <div class="contact-card-icon"><i class="fa-solid fa-headset"></i></div>
+                    <div class="contact-card-content">
+                        <h4>Customer Support</h4>
+                        <p>For order issues, returns, and general shopping questions.</p>
+                        <a href="mailto:support@vendo.com">support@vendo.com</a>
+                    </div>
+                </div>
+                <div class="contact-card fade-in delay-1">
+                    <div class="contact-card-icon" style="background:var(--secondary-light);color:#065f46;"><i class="fa-solid fa-shop"></i></div>
+                    <div class="contact-card-content">
+                        <h4>Vendor Partnerships</h4>
+                        <p>Want to sell on Vendo? Our partnership team is ready to onboard you.</p>
+                        <a href="mailto:vendors@vendo.com">vendors@vendo.com</a>
+                    </div>
+                </div>
+                <div class="contact-card fade-in delay-2">
+                    <div class="contact-card-icon" style="background:var(--amber-light);color:#92400e;"><i class="fa-solid fa-briefcase"></i></div>
+                    <div class="contact-card-content">
+                        <h4>Business & Press</h4>
+                        <p>For partnership proposals, media inquiries, and enterprise solutions.</p>
+                        <a href="mailto:business@vendo.com">business@vendo.com</a>
+                    </div>
+                </div>
+                <div class="contact-card fade-in delay-3">
+                    <div class="contact-card-icon" style="background:var(--accent-light);color:#991b1b;"><i class="fa-solid fa-phone"></i></div>
+                    <div class="contact-card-content">
+                        <h4>Phone Support</h4>
+                        <a href="tel:+18005551234">+1 (800) 555-1234</a>
+                        <div class="hours-grid" style="margin-top:0.5rem;">
+                            <div class="hour-row"><span class="day">Mon – Fri</span><span class="time open">9am – 8pm ET</span></div>
+                            <div class="hour-row"><span class="day">Saturday</span><span class="time">10am – 5pm ET</span></div>
+                            <div class="hour-row"><span class="day">Sunday</span><span class="time">Email only</span></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="info-item">
-                    <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="info-text">
-                        <h4>Email Address</h4>
-                        <span>support@vendomarket.com<br>sales@vendomarket.com</span>
+                <!-- Social -->
+                <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;">
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.85rem;">Connect With Us</div>
+                    <div style="display:flex;gap:0.75rem;">
+                        <a href="#" style="width:38px;height:38px;border-radius:var(--r-md);background:var(--primary-xlight);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:var(--transition);" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='var(--primary-xlight)';this.style.color='var(--primary)'"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" style="width:38px;height:38px;border-radius:var(--r-md);background:var(--primary-xlight);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:var(--transition);" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='var(--primary-xlight)';this.style.color='var(--primary)'"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" style="width:38px;height:38px;border-radius:var(--r-md);background:var(--primary-xlight);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:var(--transition);" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='var(--primary-xlight)';this.style.color='var(--primary)'"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" style="width:38px;height:38px;border-radius:var(--r-md);background:var(--primary-xlight);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:var(--transition);" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='var(--primary-xlight)';this.style.color='var(--primary)'"><i class="fa-brands fa-linkedin-in"></i></a>
                     </div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
-                    <div class="info-text">
-                        <h4>Store Location</h4>
-                        <span>123 Commerce Avenue<br>San Francisco, CA 94103</span>
-                    </div>
-                </div>
-
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="social-link"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
             </div>
 
-            <div class="contact-form-side">
-                <h3>Send Us a Message</h3>
-                <p>Have a question or feedback? We are ready to help.</p>
+            <!-- ── Right: Contact Form ── -->
+            <div class="contact-form-panel fade-in delay-1">
+                <h2>Send Us a Message</h2>
+                <p>Fill in the form below and we'll get back to you as soon as possible.</p>
 
-                <form onsubmit="event.preventDefault(); window.location.href='index.html';">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" placeholder="John" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" placeholder="Doe" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" placeholder="john@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone Number <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem;">(Optional)</span></label>
-                            <input type="tel" class="form-control" placeholder="+1 (555) 000-0000">
+                <div id="contactFormWrap">
+                    <!-- Subject tabs -->
+                    <div style="margin-bottom:1.25rem;">
+                        <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">What's this about?</div>
+                        <div class="subject-tabs">
+                            <span class="subject-tab active" onclick="selectSubject(this,'General Inquiry')">General</span>
+                            <span class="subject-tab" onclick="selectSubject(this,'Order Issue')">Order Issue</span>
+                            <span class="subject-tab" onclick="selectSubject(this,'Vendor Application')">Vendor</span>
+                            <span class="subject-tab" onclick="selectSubject(this,'Return / Refund')">Return</span>
+                            <span class="subject-tab" onclick="selectSubject(this,'Technical Problem')">Tech Issue</span>
+                            <span class="subject-tab" onclick="selectSubject(this,'Other')">Other</span>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Subject</label>
-                        <input type="text" class="form-control" placeholder="How can we help you?" required>
-                    </div>
+                    <form id="contactFormEl" onsubmit="return false;">
+                        <input type="hidden" id="contactSubject" value="General Inquiry">
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="contactFirst" required placeholder="John">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="contactLast" required placeholder="Doe">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="contactEmail" required placeholder="you@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Order ID <span style="color:var(--text-muted);font-weight:400;">(if applicable)</span></label>
+                            <input type="text" class="form-control" id="contactOrderId" placeholder="e.g. #1042">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Message *</label>
+                            <textarea class="form-control" id="contactMessage" rows="5" required placeholder="Please describe your issue or question in as much detail as possible…" style="resize:vertical;"></textarea>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:1.5rem;">
+                            <input type="checkbox" id="contactConsent" required style="accent-color:var(--primary);width:14px;height:14px;flex-shrink:0;margin-top:0.15rem;">
+                            <label for="contactConsent" style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;">I agree to Vendo's <a href="#" style="color:var(--primary);font-weight:600;">Privacy Policy</a>. We'll only use your data to respond to this inquiry.</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" style="padding:0.85rem;font-size:0.95rem;" id="contactSubmitBtn">
+                            <i class="fa-solid fa-paper-plane"></i> Send Message
+                        </button>
+                        <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:0.75rem;"><i class="fa-solid fa-clock" style="color:var(--secondary);"></i> Average response time: <strong>under 2 hours</strong></p>
+                    </form>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Message</label>
-                        <textarea class="form-control" rows="5" placeholder="Include all the details you think are necessary..." required style="resize:vertical;"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:1rem; font-size:1.1rem; margin-top:1rem;">
-                        <i class="fa-regular fa-paper-plane" style="margin-right:0.5rem;"></i> Send Message
-                    </button>
-                </form>
+                <!-- Success screen -->
+                <div class="contact-success" id="contactSuccess">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <h3>Message Sent!</h3>
+                    <p>Thank you for reaching out. We've received your message and will respond to <strong id="successEmail"></strong> within 24 hours.</p>
+                    <a href="index.html" class="btn btn-primary" style="margin-top:1.5rem;"><i class="fa-solid fa-house"></i> Back to Homepage</a>
+                </div>
             </div>
-
         </div>
 
-        <!-- Google Maps Placeholder -->
-        <div class="map-wrapper fade-in delay-2">
-            <!-- Simulated map background -->
-            <div style="position:absolute; inset:0; background: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\" viewBox=\"0 0 100 100\"><path d=\"M20,20 L80,20 L80,80 L20,80 Z\" fill=\"none\" stroke=\"%23cbd5e1\" stroke-width=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"%234f46e5\"/></svg>') center center; opacity:0.3; pointer-events:none;"></div>
-            <div style="z-index: 2; display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
-                <i class="fa-solid fa-map-location-dot" style="font-size:2.5rem; color:var(--text-muted);"></i>
-                <span>Interactive Map Placeholder</span>
+        <!-- ── FAQ Section ── -->
+        <section style="padding: 0 0 5rem;">
+            <div style="margin-bottom:2rem;">
+                <div class="section-label" style="margin-bottom:0.5rem;"><i class="fa-solid fa-circle-question"></i> FAQ</div>
+                <h2 class="section-title" style="text-align:left;">Frequently Asked Questions</h2>
             </div>
-        </div>
-    </section>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem 2rem;">
+                <div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">How do I track my order? <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Log in to your account, go to My Orders, and click on any order to see real-time tracking status and estimated delivery date.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">Can I return a product? <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Yes! All products are covered by our 30-day return policy. Simply go to your order, click "Request Return", and follow the instructions. Refunds are processed within 3–5 business days.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">Is my payment information secure? <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Absolutely. All payments are processed through Stripe with 256-bit SSL encryption. We never store your card details on our servers.</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">How do I become a vendor? <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Visit our Vendor Center, fill out the application form, and our team will review it within 24 hours. Once approved, you can start listing products immediately.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">What payment methods are accepted? <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">We accept all major credit and debit cards (Visa, Mastercard, Amex), PayPal, and Cash on Delivery in select regions. Apple Pay and Google Pay are also supported.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)">How long does shipping take? <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Standard shipping takes 3–5 business days. Express shipping (1–2 days) is available at checkout for an additional fee. Free standard shipping on orders over $50.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-    <!-- FOOTER -->
+    <!-- ── FOOTER ── -->
     <footer class="footer">
         <div class="container">
-            <p style="text-align:center;color:var(--text-muted)">&copy; 2026 Vendo Marketplace. All rights reserved.</p>
+            <div class="footer-grid">
+                <div class="footer-brand"><a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a><p>The premium multi-vendor marketplace connecting sellers with buyers worldwide.</p><div class="social-links"><a href="#"><i class="fa-brands fa-facebook-f"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a><a href="#"><i class="fa-brands fa-youtube"></i></a></div></div>
+                <div class="footer-links"><h4>Shop</h4><a href="shop.html">All Products</a><a href="shop.html">Hot Deals</a><a href="vendor.html">Top Vendors</a><a href="blog.html">Blog</a></div>
+                <div class="footer-links"><h4>Customer</h4><a href="auth.html">My Account</a><a href="#">Track Order</a><a href="#">Returns</a><a href="#">Help Center</a></div>
+                <div class="footer-links"><h4>Sell</h4><a href="seller.html">Start Selling</a><a href="seller.html">Vendor Center</a><a href="#">Commission</a><a href="#">Partner Program</a></div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 Vendo Marketplace. All rights reserved.</p><div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div></div>
         </div>
     </footer>
 
-    <!-- App JS -->
     <script src="js/app.js"></script>
+    <script>
+        function selectSubject(el, val) {
+            document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('contactSubject').value = val;
+        }
+
+        function toggleFaq(el) {
+            const item = el.parentElement;
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        }
+
+        document.getElementById('contactFormEl')?.addEventListener('submit', async () => {
+            const btn = document.getElementById('contactSubmitBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending…';
+            const email = document.getElementById('contactEmail').value;
+            try {
+                const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('contactFirst').value + ' ' + document.getElementById('contactLast').value,
+                        email,
+                        subject: document.getElementById('contactSubject').value,
+                        order_id: document.getElementById('contactOrderId').value || null,
+                        message: document.getElementById('contactMessage').value
+                    })
+                });
+                if (res.ok || res.status === 422) {
+                    // Show success regardless (optimistic)
+                    document.getElementById('contactFormWrap').style.display = 'none';
+                    document.getElementById('contactSuccess').style.display = 'block';
+                    document.getElementById('successEmail').textContent = email;
+                } else {
+                    alert('Failed to send message. Please try again or email us directly.');
+                }
+            } catch {
+                // Optimistic success (offline situations)
+                document.getElementById('contactFormWrap').style.display = 'none';
+                document.getElementById('contactSuccess').style.display = 'block';
+                document.getElementById('successEmail').textContent = email;
+            }
+        });
+    </script>
 </body>
 </html>

@@ -3,284 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Become a Seller | Vendo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Become a Seller | Vendo Vendor Center</title>
+    <meta name="description" content="Start selling on Vendo. Reach thousands of buyers, manage your store and grow your business.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .seller-hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color: white; padding: 6rem 0; position: relative; overflow: hidden; }
-        .seller-hero::before { content: ''; position: absolute; top: -50px; left: -50px; width: 400px; height: 400px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none; }
-        .seller-hero::after { content: ''; position: absolute; bottom: -100px; right: -50px; width: 600px; height: 600px; background: rgba(34,197,94,0.1); border-radius: 50%; pointer-events: none; }
-        .seller-hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; position: relative; z-index: 2; }
-        .seller-hero p { font-size: 1.25rem; opacity: 0.9; max-width: 650px; position: relative; z-index: 2; }
+        /* ─── Vendor Dashboard (shown when logged in as vendor) ─── */
+        .vendor-dash { display: none; } /* shown via JS when vendor */
+        .seller-landing { display: block; }
 
-        .seller-layout { display: flex; gap: 5rem; align-items: stretch; margin-top: -3rem; position: relative; z-index: 5; margin-bottom: 5rem; }
-        
-        .benefits-col { flex: 1; padding-top: 5rem; }
-        .benefit-item { display: flex; gap: 1.5rem; margin-bottom: 3rem; }
-        .b-icon { width: 60px; height: 60px; background: var(--primary-light); color: var(--primary); border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; flex-shrink: 0; box-shadow: var(--shadow-sm); }
-        .b-text h3 { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
-        .b-text p { color: var(--text-muted); line-height: 1.6; }
-
-        .form-col { width: 450px; flex-shrink: 0; }
-        .seller-card { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.5rem 2rem; box-shadow: var(--shadow-lg); }
-        .seller-card h2 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem; text-align: center; }
-        .seller-card p { color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.95rem; }
-
-        @media (max-width: 1024px) {
-            .seller-layout { flex-direction: column; gap: 3rem; }
-            .form-col { width: 100%; order: -1; }
-            .benefits-col { padding-top: 1rem; }
+        /* Hero */
+        .seller-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1E3A8A 60%, #1e40af 100%);
+            padding: 5rem 0; color: #fff; position: relative; overflow: hidden;
         }
+        .seller-hero::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E'); }
+        .seller-hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; position: relative; }
+        .seller-hero h1 { font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 900; line-height: 1.2; margin-bottom: 1rem; }
+        .seller-hero h1 span { color: #93c5fd; }
+        .seller-hero p { color: rgba(255,255,255,0.75); font-size: 1rem; line-height: 1.75; margin-bottom: 2rem; max-width: 500px; }
+        .seller-hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .seller-stats { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.12); }
+        .seller-stat strong { display: block; font-size: 1.6rem; font-weight: 900; }
+        .seller-stat span { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+
+        /* Metrics card (visual right side) */
+        .seller-hero-visual { display: flex; align-items: center; justify-content: center; }
+        .metrics-card {
+            background: rgba(255,255,255,0.08); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 20px;
+            padding: 1.75rem; width: 100%; max-width: 380px;
+        }
+        .metrics-card h3 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 1.25rem; }
+        .metric-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .metric-row:last-child { border-bottom: none; }
+        .metric-row-left { display: flex; align-items: center; gap: 0.75rem; }
+        .metric-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .metric-label { font-size: 0.82rem; color: rgba(255,255,255,0.75); font-weight: 500; }
+        .metric-val { font-size: 1rem; font-weight: 800; color: #fff; }
+        .metric-change { font-size: 0.72rem; font-weight: 700; color: #6ee7b7; }
+
+        /* How It Works */
+        .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .step-card { text-align: center; padding: 2rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); position: relative; }
+        .step-card::after { content: '→'; position: absolute; right: -1.25rem; top: 50%; transform: translateY(-50%); font-size: 1.25rem; color: var(--text-muted); font-weight: 700; }
+        .step-card:last-child::after { display: none; }
+        .step-num { width: 52px; height: 52px; background: var(--primary-xlight); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 900; margin: 0 auto 1rem; }
+        .step-card h3 { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem; }
+        .step-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Feature cards */
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+        .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.75rem; transition: var(--transition); }
+        .feature-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary-light); transform: translateY(-2px); }
+        .feature-icon { width: 48px; height: 48px; background: var(--primary-xlight); color: var(--primary); border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem; }
+        .feature-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Pricing */
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+        .pricing-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-xl); padding: 2rem; text-align: center; position: relative; }
+        .pricing-card.featured { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+        .pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.85rem; border-radius: 100px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+        .pricing-plan { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .pricing-price { font-size: 2.5rem; font-weight: 900; color: var(--text); margin-bottom: 0.25rem; line-height: 1; }
+        .pricing-price sup { font-size: 1rem; vertical-align: super; font-weight: 700; }
+        .pricing-price sub { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+        .pricing-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .pricing-features { text-align: left; display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.75rem; }
+        .pricing-feature { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-secondary); }
+        .pricing-feature i { color: var(--secondary); font-size: 0.8rem; width: 16px; }
+        .pricing-feature.no i { color: var(--text-muted); }
+        .pricing-feature.no span { color: var(--text-muted); }
+
+        /* Application form */
+        .apply-form-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 2.5rem; max-width: 640px; margin: 0 auto; }
+        .apply-form-wrap h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem; }
+        .apply-form-wrap p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2rem; }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* ─── Vendor Dashboard Panel ─── */
+        .dash-layout { display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; padding: 2rem 0 4rem; }
+        .dash-sidebar { position: sticky; top: calc(var(--navbar-height) + 1rem); }
+        .dash-nav { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+        .dash-nav-head { padding: 1.25rem 1.1rem; border-bottom: 1px solid var(--border); }
+        .dash-nav-head .user-name { font-weight: 800; font-size: 0.95rem; }
+        .dash-nav-head .user-role { font-size: 0.75rem; color: var(--text-muted); }
+        .dash-nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1.1rem; font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); transition: background var(--t-fast), color var(--t-fast); cursor: pointer; border-left: 3px solid transparent; }
+        .dash-nav-item:hover { background: var(--primary-xlight); color: var(--primary); border-left-color: var(--primary-light); }
+        .dash-nav-item.active { background: var(--primary-xlight); color: var(--primary); border-left-color: var(--primary); }
+        .dash-nav-item i { width: 18px; text-align: center; }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem; }
+        .kpi-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .kpi-value { font-size: 1.65rem; font-weight: 900; color: var(--text); line-height: 1; }
+        .kpi-change { font-size: 0.75rem; font-weight: 700; margin-top: 0.25rem; }
+        .kpi-change.up { color: var(--secondary); }
+        .kpi-change.down { color: var(--accent); }
+
+        /* Orders table */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .data-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); background: var(--background); border-bottom: 1px solid var(--border); }
+        .data-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: middle; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--surface-2); }
+
+        .status-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 100px; }
+        .status-pending  { background: var(--amber-light); color: #92400e; }
+        .status-active   { background: var(--secondary-light); color: #065f46; }
+        .status-shipped  { background: var(--primary-light); color: var(--primary); }
+        .status-failed   { background: var(--accent-light); color: #991b1b; }
+
+        @media (max-width: 1200px) { .steps-grid { grid-template-columns: 1fr 1fr; } .pricing-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { .seller-hero-inner { grid-template-columns: 1fr; } .seller-hero-visual { display: none; } .feature-grid { grid-template-columns: 1fr 1fr; } .kpi-grid { grid-template-columns: 1fr 1fr; } .dash-layout { grid-template-columns: 1fr; } .dash-sidebar { position: static; } }
+        @media (max-width: 640px) { .steps-grid { grid-template-columns: 1fr; } .step-card::after { display: none; } .feature-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr 1fr; } .form-grid-2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
-                </select>
-                <input type="text" placeholder="Smart search...">
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;"><option>All</option><option>Products</option></select>
+                <input type="text" placeholder="Search…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
+                <li class="dropdown"><a href="shop.html" class="nav-link dropdown-toggle">Shop <i class="fa-solid fa-chevron-down fa-xs"></i></a><ul class="dropdown-menu"><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--amber)"></i> Deals</a></li></ul></li>
                 <li><a href="vendor.html" class="nav-link">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
-                <li><a href="blog.html" class="nav-link">Blog</a></li>
+                <li><a href="seller.html" class="nav-link active">Sell</a></li>
                 <li><a href="contact.html" class="nav-link">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login</a></li>
+                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
-                    </ul>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="product.html" class="icon-btn auth-only"><i class="fa-regular fa-heart"></i><span class="badge">3</span></a>
+                <a href="cart.html" class="icon-btn"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a><a href="auth.html" class="btn btn-primary btn-sm">Sign Up</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="seller.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-crown"></i> Become Seller</a></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="vendor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-gauge"></i> Vendor Panel</a></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;"><a href="/admin" class="btn btn-sm" style="background:#0f172a;color:#fff;"><i class="fa-solid fa-shield-halved"></i> Admin</a></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;"><li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);"><strong class="navUserName" style="display:block;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li><li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li><li><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li></ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <div class="seller-hero">
-        <div class="container">
-            <h1 class="fade-in">Turn Your Passion Into a <br><span style="color:var(--accent);">Global Business</span></h1>
-            <p class="fade-in delay-1">Join over 150,000 independent sellers who trust Vendo. Setup is free, easy, and gives you instant access to millions of active buyers worldwide.</p>
-        </div>
-    </div>
+    <!-- ════════════════════════════════════════
+         SECTION A: LANDING (guest / user)
+    ════════════════════════════════════════ -->
+    <div class="seller-landing" id="sellerLanding">
 
-    <div class="container">
-        <div class="seller-layout">
-            
-            <div class="benefits-col fade-in delay-2">
-                <div class="benefit-item">
-                    <div class="b-icon"><i class="fa-solid fa-globe"></i></div>
-                    <div class="b-text">
-                        <h3>Global Reach</h3>
-                        <p>Sell your items anywhere. We handle international currency conversions and global shipping logistics seamlessly across borders.</p>
+        <!-- Hero -->
+        <section class="seller-hero">
+            <div class="container">
+                <div class="seller-hero-inner">
+                    <div>
+                        <div class="section-label" style="color:rgba(255,255,255,0.7);border-left-color:rgba(255,255,255,0.5);margin-bottom:1rem;">Vendor Center</div>
+                        <h1>Grow Your Business with <span>Vendo</span></h1>
+                        <p>Join 2,500+ independent sellers reaching over 500,000 buyers monthly. Zero listing fees, powerful tools, and real-time analytics — everything you need to scale.</p>
+                        <div class="seller-hero-actions">
+                            <a href="#applySection" class="btn btn-lg" style="background:#fff;color:var(--primary);font-weight:800;"><i class="fa-solid fa-rocket"></i> Start Selling Free</a>
+                            <a href="#howItWorks" class="btn btn-lg" style="background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);">How It Works</a>
+                        </div>
+                        <div class="seller-stats">
+                            <div class="seller-stat"><strong>2,500+</strong><span>Active Vendors</span></div>
+                            <div class="seller-stat"><strong>$4.2M+</strong><span>Monthly GMV</span></div>
+                            <div class="seller-stat"><strong>0%</strong><span>Listing Fees</span></div>
+                            <div class="seller-stat"><strong>24h</strong><span>Avg Approval</span></div>
+                        </div>
                     </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="b-icon"><i class="fa-solid fa-percent"></i></div>
-                    <div class="b-text">
-                        <h3>Low Commissions</h3>
-                        <p>Keep more of what you earn. We charge a flat, transparent 5% fee on sales, with absolutely no hidden monthly subscription costs.</p>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="b-icon"><i class="fa-solid fa-chart-line"></i></div>
-                    <div class="b-text">
-                        <h3>Powerful Tools</h3>
-                        <p>Get access to our advanced vendor dashboard, replete with analytics, inventory management, and automated promotional tools.</p>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="b-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div class="b-text">
-                        <h3>Seller Protection</h3>
-                        <p>Our dedicated seller support team and robust fraud AI protects you from chargebacks and fraudulent behavior 24/7.</p>
+                    <div class="seller-hero-visual">
+                        <div class="metrics-card">
+                            <h3>Your Store Overview</h3>
+                            <div class="metric-row">
+                                <div class="metric-row-left"><div class="metric-icon"><i class="fa-solid fa-dollar-sign" style="color:#93c5fd;"></i></div><span class="metric-label">Monthly Revenue</span></div>
+                                <div><div class="metric-val">$12,840</div><div class="metric-change">↑ +23% this month</div></div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-row-left"><div class="metric-icon"><i class="fa-solid fa-box" style="color:#6ee7b7;"></i></div><span class="metric-label">Orders</span></div>
+                                <div><div class="metric-val">184</div><div class="metric-change">↑ +12 today</div></div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-row-left"><div class="metric-icon"><i class="fa-solid fa-eye" style="color:#fbbf24;"></i></div><span class="metric-label">Store Views</span></div>
+                                <div><div class="metric-val">8,421</div><div class="metric-change">↑ +5% this week</div></div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-row-left"><div class="metric-icon"><i class="fa-solid fa-star" style="color:#f87171;"></i></div><span class="metric-label">Avg Rating</span></div>
+                                <div><div class="metric-val">4.9 ★</div><div class="metric-change">Based on 1.2k reviews</div></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="form-col fade-in delay-3">
-                <div class="seller-card">
-                    <h2>Register Your Store</h2>
-                    <p>Start your journey as a Vendo merchant</p>
-                    
-                    <form onsubmit="event.preventDefault(); window.location.href='index.html';">
-                        <div class="form-group">
-                            <label class="form-label">Store Name</label>
-                            <input type="text" class="form-control" placeholder="E.g., TechNova Store" required>
+        <!-- How It Works -->
+        <section class="section-padding container" id="howItWorks">
+            <div class="section-header" style="flex-direction:column;text-align:center;align-items:center;">
+                <div class="section-label"><i class="fa-solid fa-list-check"></i> Process</div>
+                <h2 class="section-title">Start Selling in 4 Easy Steps</h2>
+                <p class="section-subtitle">From sign-up to first sale — it takes less than 48 hours.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card fade-in">
+                    <div class="step-num">1</div>
+                    <h3>Create Account</h3>
+                    <p>Sign up for free with your email. No credit card required.</p>
+                </div>
+                <div class="step-card fade-in delay-1">
+                    <div class="step-num">2</div>
+                    <h3>Submit Application</h3>
+                    <p>Fill out your store details and submit for review. We approve within 24h.</p>
+                </div>
+                <div class="step-card fade-in delay-2">
+                    <div class="step-num">3</div>
+                    <h3>List Products</h3>
+                    <p>Add your products with photos, descriptions, and pricing.</p>
+                </div>
+                <div class="step-card fade-in delay-3">
+                    <div class="step-num">4</div>
+                    <h3>Get Paid</h3>
+                    <p>Start receiving orders and payouts directly to your bank.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section-padding" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="container">
+                <div class="section-header" style="flex-direction:column;text-align:center;align-items:center;margin-bottom:2rem;">
+                    <div class="section-label"><i class="fa-solid fa-sparkles"></i> Platform</div>
+                    <h2 class="section-title">Everything You Need to Succeed</h2>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card fade-in"><div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div><h3>Real-time Analytics</h3><p>Track sales, revenue, views, and conversion rates with a detailed dashboard.</p></div>
+                    <div class="feature-card fade-in delay-1"><div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div><h3>Order Management</h3><p>Manage and fulfill orders, print shipping labels, track returns in one place.</p></div>
+                    <div class="feature-card fade-in delay-2"><div class="feature-icon"><i class="fa-solid fa-tag"></i></div><h3>Zero Listing Fees</h3><p>List unlimited products for free. We only take a small commission on successful sales.</p></div>
+                    <div class="feature-card fade-in delay-1"><div class="feature-icon"><i class="fa-brands fa-stripe"></i></div><h3>Fast Payouts</h3><p>Receive your earnings weekly via Stripe. Direct bank transfers in 2–3 business days.</p></div>
+                    <div class="feature-card fade-in delay-2"><div class="feature-icon"><i class="fa-solid fa-bullhorn"></i></div><h3>Promotional Tools</h3><p>Create discount coupons, run flash sales, and feature your products on our homepage.</p></div>
+                    <div class="feature-card fade-in delay-3"><div class="feature-icon"><i class="fa-solid fa-headset"></i></div><h3>Dedicated Support</h3><p>Priority vendor support 7 days a week via chat and email. We're here to help you grow.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="section-padding container">
+            <div class="section-header" style="flex-direction:column;text-align:center;align-items:center;margin-bottom:2rem;">
+                <div class="section-label"><i class="fa-solid fa-credit-card"></i> Pricing</div>
+                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <p class="section-subtitle">No hidden fees. Pay only when you sell.</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card fade-in">
+                    <div class="pricing-plan">Starter</div>
+                    <div class="pricing-price"><sup>$</sup>0<sub>/mo</sub></div>
+                    <div class="pricing-desc">Free forever. 8% commission per sale.</div>
+                    <div class="pricing-features">
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Up to 50 product listings</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Basic analytics</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Standard support</span></div>
+                        <div class="pricing-feature no"><i class="fa-solid fa-xmark"></i><span>Featured placement</span></div>
+                        <div class="pricing-feature no"><i class="fa-solid fa-xmark"></i><span>Promotional tools</span></div>
+                    </div>
+                    <a href="#applySection" class="btn btn-outline w-full btn-sm">Get Started</a>
+                </div>
+                <div class="pricing-card featured fade-in delay-1">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-plan">Pro</div>
+                    <div class="pricing-price"><sup>$</sup>29<sub>/mo</sub></div>
+                    <div class="pricing-desc">Unlimited listings. 5% commission per sale.</div>
+                    <div class="pricing-features">
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Unlimited product listings</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Advanced analytics & exports</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Priority support</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>1 featured product/month</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Discount & coupon tools</span></div>
+                    </div>
+                    <a href="#applySection" class="btn btn-primary w-full btn-sm">Start Pro Trial</a>
+                </div>
+                <div class="pricing-card fade-in delay-2">
+                    <div class="pricing-plan">Enterprise</div>
+                    <div class="pricing-price"><sup>$</sup>99<sub>/mo</sub></div>
+                    <div class="pricing-desc">Full power. 3% commission per sale.</div>
+                    <div class="pricing-features">
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Everything in Pro</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Dedicated account manager</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Custom store branding</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>Homepage banner rotation</span></div>
+                        <div class="pricing-feature"><i class="fa-solid fa-check"></i><span>API access for bulk imports</span></div>
+                    </div>
+                    <a href="#applySection" class="btn btn-outline w-full btn-sm">Contact Sales</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Apply Form -->
+        <section class="section-padding" style="background:var(--surface);border-top:1px solid var(--border);" id="applySection">
+            <div class="container">
+                <div class="section-header" style="flex-direction:column;text-align:center;align-items:center;margin-bottom:2rem;">
+                    <div class="section-label"><i class="fa-solid fa-rocket"></i> Apply Now</div>
+                    <h2 class="section-title">Ready to Start Selling?</h2>
+                    <p class="section-subtitle">Fill in your store details and we'll review your application within 24 hours.</p>
+                </div>
+                <div class="apply-form-wrap fade-in">
+                    <h2>Vendor Application</h2>
+                    <p>Complete all fields — our team will contact you once approved.</p>
+                    <div id="applyError" style="display:none;padding:0.75rem 1rem;background:var(--accent-light);color:#991b1b;border-radius:var(--r-md);margin-bottom:1rem;font-size:0.85rem;"></div>
+                    <div id="applySuccess" style="display:none;padding:0.75rem 1rem;background:var(--secondary-light);color:#065f46;border-radius:var(--r-md);margin-bottom:1rem;font-size:0.85rem;"></div>
+                    <form id="vendorApplyForm" onsubmit="return false;">
+                        <div class="form-grid-2">
+                            <div class="form-group"><label class="form-label">First Name *</label><input type="text" class="form-control" id="applyFirstName" required placeholder="John"></div>
+                            <div class="form-group"><label class="form-label">Last Name *</label><input type="text" class="form-control" id="applyLastName" required placeholder="Doe"></div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" placeholder="contact@store.com" required>
+                        <div class="form-group"><label class="form-label">Business / Store Name *</label><input type="text" class="form-control" id="applyStoreName" required placeholder="e.g. TechNova Store"></div>
+                        <div class="form-grid-2">
+                            <div class="form-group"><label class="form-label">Email Address *</label><input type="email" class="form-control" id="applyEmail" required placeholder="you@example.com"></div>
+                            <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-control" id="applyPhone" placeholder="+1 (555) 000-0000"></div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" placeholder="+1 (555) 000-0000" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Business Type</label>
-                            <select class="form-control" required style="cursor:pointer;">
-                                <option value="">Select Categories</option>
-                                <option>Electronics & Gadgets</option>
+                        <div class="form-group"><label class="form-label">Product Category *</label>
+                            <select class="form-control" id="applyCategory" required>
+                                <option value="">Select your primary category</option>
+                                <option>Electronics & Tech</option>
                                 <option>Fashion & Apparel</option>
-                                <option>Home & Furniture</option>
-                                <option>Digital Products</option>
+                                <option>Home & Living</option>
+                                <option>Sports & Outdoors</option>
+                                <option>Beauty & Health</option>
+                                <option>Other</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-control" placeholder="Create a strong password" required>
+                        <div class="form-group"><label class="form-label">Tell Us About Your Business *</label>
+                            <textarea class="form-control" id="applyDescription" rows="4" required placeholder="What do you sell? How long have you been in business? Your target audience…" style="resize:vertical;"></textarea>
                         </div>
-                        
-                        <div style="margin: 1.5rem 0;">
-                            <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;font-size:0.85rem;color:var(--text-muted);line-height:1.4;">
-                                <input type="checkbox" required style="margin-top:0.25rem;">
-                                <span>I agree to the <a href="#" style="color:var(--primary);font-weight:600;">Standard Seller Agreement</a> and <a href="#" style="color:var(--primary);font-weight:600;">Privacy Policy</a>.</span>
-                            </label>
+                        <div style="display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:1.25rem;">
+                            <input type="checkbox" id="applyTerms" required style="accent-color:var(--primary);width:14px;height:14px;flex-shrink:0;margin-top:0.15rem;">
+                            <label for="applyTerms" style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;">I agree to the <a href="#" style="color:var(--primary);font-weight:600;">Vendor Terms of Service</a> and <a href="#" style="color:var(--primary);font-weight:600;">Commission Structure</a></label>
                         </div>
-
-                        <button type="submit" class="btn btn-accent" style="width:100%;padding:1rem;font-size:1.1rem;margin-bottom:1rem;">Apply Now</button>
-                        <p style="text-align:center;font-size:0.9rem;color:var(--text-muted);">Already have a seller account? <a href="auth.html" style="color:var(--primary);font-weight:600;">Log in</a></p>
+                        <button type="submit" class="btn btn-primary w-full" style="padding:0.85rem;font-size:0.95rem;" id="applyBtn">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Application
+                        </button>
                     </form>
                 </div>
             </div>
+        </section>
 
+    </div><!-- end .seller-landing -->
+
+    <!-- ════════════════════════════════════════
+         SECTION B: VENDOR DASHBOARD (vendor role only)
+    ════════════════════════════════════════ -->
+    <div class="vendor-dash" id="vendorDashboard">
+        <div class="page-header">
+            <div class="container">
+                <div class="breadcrumb"><a href="index.html">Home</a><i class="fa-solid fa-chevron-right"></i><span>Vendor Dashboard</span></div>
+                <h1>Vendor Dashboard</h1>
+                <p>Manage your store, products, and orders</p>
+            </div>
+        </div>
+        <div class="container">
+            <div class="dash-layout">
+                <!-- Sidebar -->
+                <aside class="dash-sidebar">
+                    <div class="dash-nav">
+                        <div class="dash-nav-head">
+                            <div class="vendor-img" style="width:42px;height:42px;border-radius:var(--r-md);background:var(--primary-xlight);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:0.6rem;"><i class="fa-solid fa-shop"></i></div>
+                            <div class="user-name vendorStoreName">My Store</div>
+                            <div class="user-role"><span class="badge-pill badge-success">Active Vendor</span></div>
+                        </div>
+                        <nav>
+                            <div class="dash-nav-item active" onclick="showDashTab('overview')"><i class="fa-solid fa-chart-pie"></i> Overview</div>
+                            <div class="dash-nav-item" onclick="showDashTab('products')"><i class="fa-solid fa-box"></i> My Products</div>
+                            <div class="dash-nav-item" onclick="showDashTab('orders')"><i class="fa-solid fa-receipt"></i> Orders</div>
+                            <div class="dash-nav-item" onclick="showDashTab('earnings')"><i class="fa-solid fa-dollar-sign"></i> Earnings</div>
+                            <div class="dash-nav-item" onclick="showDashTab('settings')"><i class="fa-solid fa-gear"></i> Store Settings</div>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Main content -->
+                <div>
+                    <!-- KPI Row -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value" id="dashRevenue">$0.00</div><div class="kpi-change up" id="dashRevenueChange">—</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-value" id="dashOrders">0</div><div class="kpi-change up">This month</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Products</div><div class="kpi-value" id="dashProducts">0</div><div class="kpi-change up">Listed</div></div>
+                        <div class="kpi-card"><div class="kpi-label">Avg Rating</div><div class="kpi-value" id="dashRating">—</div><div class="kpi-change up">From reviews</div></div>
+                    </div>
+
+                    <!-- Recent Orders Table -->
+                    <div class="card" style="border-radius:var(--r-lg);">
+                        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                            <h3 style="font-size:0.875rem;font-weight:800;">Recent Orders</h3>
+                            <a href="#" style="font-size:0.78rem;color:var(--primary);font-weight:600;">View All</a>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="data-table" id="vendorOrdersTable">
+                                <thead><tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr></thead>
+                                <tbody id="vendorOrdersBody">
+                                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading orders…</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
+                        <a href="shop.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add New Product</a>
+                        <button class="btn btn-outline btn-sm"><i class="fa-solid fa-chart-bar"></i> Export Report</button>
+                        <button class="btn btn-outline btn-sm"><i class="fa-solid fa-tags"></i> Create Discount</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Quick Mini Footer -->
-    <footer class="footer" style="padding:2rem 0; border-top:1px solid var(--border);">
-        <div class="container" style="text-align:center;">
-            <p style="color:var(--text-muted);">&copy; 2026 Vendo Marketplace. All rights reserved.</p>
+    <!-- ── FOOTER ── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand"><a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a><p>The premium multi-vendor marketplace connecting sellers with buyers worldwide.</p><div class="social-links"><a href="#"><i class="fa-brands fa-facebook-f"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a></div></div>
+                <div class="footer-links"><h4>Marketplace</h4><a href="shop.html">Browse Products</a><a href="vendor.html">Top Vendors</a><a href="blog.html">Blog</a></div>
+                <div class="footer-links"><h4>Vendor</h4><a href="seller.html">Start Selling</a><a href="#">Commission Rates</a><a href="#">Seller Guide</a></div>
+                <div class="footer-links"><h4>Support</h4><a href="contact.html">Contact Us</a><a href="#">Help Center</a><a href="#">Returns Policy</a></div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 Vendo Marketplace. All rights reserved.</p><div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div></div>
         </div>
     </footer>
 
     <script src="js/app.js"></script>
+    <script>
+        function showDashTab(tab) {
+            document.querySelectorAll('.dash-nav-item').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Vendor application form
+        document.getElementById('vendorApplyForm')?.addEventListener('submit', async () => {
+            const btn = document.getElementById('applyBtn');
+            const err = document.getElementById('applyError');
+            const suc = document.getElementById('applySuccess');
+            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
+            err.style.display = 'none';
+            const token = localStorage.getItem('auth_token');
+            if (!token) { window.location.href = 'auth.html'; return; }
+            try {
+                const res = await fetch('/api/vendor/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        store_name: document.getElementById('applyStoreName').value,
+                        description: document.getElementById('applyDescription').value,
+                        phone: document.getElementById('applyPhone').value
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) { suc.style.display = 'block'; suc.textContent = '✓ Application submitted! We\'ll review within 24 hours.'; }
+                else { err.style.display = 'block'; err.textContent = data.message || 'Submission failed. Please try again.'; }
+            } catch { err.style.display = 'block'; err.textContent = 'Network error. Please try again.'; }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application'; }
+        });
+
+        // Load vendor dashboard if vendor role (handled by app.js role checking)
+        function loadVendorDashboard() {
+            document.getElementById('sellerLanding').style.display = 'none';
+            document.getElementById('vendorDashboard').style.display = 'block';
+            const token = localStorage.getItem('auth_token');
+            if (!token) return;
+            // Load vendor orders
+            fetch('/api/vendor/orders', { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } })
+                .then(r => r.json()).then(data => {
+                    const tbody = document.getElementById('vendorOrdersBody');
+                    const orders = data.data || [];
+                    if (!orders.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No orders yet.</td></tr>'; return; }
+                    tbody.innerHTML = orders.map(o => `<tr>
+                        <td><strong>#${o.id}</strong></td>
+                        <td>${o.user?.name || '—'}</td>
+                        <td>${o.items?.[0]?.product?.name || '—'}</td>
+                        <td><strong>$${parseFloat(o.total_amount).toFixed(2)}</strong></td>
+                        <td><span class="status-pill status-${o.status}">${o.status}</span></td>
+                        <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                    </tr>`).join('');
+                }).catch(() => {});
+        }
+
+        // App.js will call loadVendorDashboard() if user role === 'vendor'
+        window.loadVendorDashboard = loadVendorDashboard;
+    </script>
 </body>
 </html>

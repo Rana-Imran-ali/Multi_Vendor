@@ -3,319 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Profile | Vendo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Vendor Storefront | Vendo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    
     <style>
-        .vendor-banner { height: 350px; background: linear-gradient(135deg, rgba(79, 70, 229, 0.8) 0%, rgba(34, 197, 94, 0.8) 100%), url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="100" height="100" fill="%23ffffff" fill-opacity="0.1"/></svg>'); background-size: cover; border-radius: 1.5rem; margin-top: 2rem; position: relative; }
-        .vendor-profile { display: flex; align-items: flex-end; gap: 2rem; position: absolute; bottom: -4rem; left: 3rem; }
-        .vendor-avatar { width: 140px; height: 140px; border-radius: 50%; border: 6px solid var(--background); background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--primary); box-shadow: var(--shadow-sm); z-index: 2; }
-        .vendor-name { padding-bottom: 0.5rem; }
-        .vendor-name h1 { font-size: 2.25rem; font-weight: 800; color: var(--text); line-height: 1; }
-        .vendor-metrics { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 0.75rem; color: var(--text-muted); font-size: 1rem; font-weight: 500; }
-        
-        .vendor-layout { display: flex; gap: 2.5rem; align-items: flex-start; margin-top: 6rem; margin-bottom: 5rem; }
-        .vendor-sidebar { width: 280px; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; position: sticky; top: calc(var(--navbar-height) + 2rem); }
-        .shop-main { flex: 1; min-width: 0; }
-        
-        .v-about { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
-        .v-about h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text); }
-        .v-about p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
-        
-        @media (max-width: 1024px) {
-            .vendor-layout { flex-direction: column; }
-            .vendor-sidebar { width: 100%; position: static; }
-            .vendor-banner { height: 250px; }
-            .vendor-profile { flex-direction: column; align-items: center; left: 0; right: 0; text-align: center; }
-            .vendor-metrics { justify-content: center; }
+        /* ── Vendor Banner ── */
+        .vendor-banner {
+            height: 220px;
+            background: linear-gradient(135deg, #1E3A8A 0%, #1e40af 60%, #1d4ed8 100%);
+            position: relative; overflow: hidden;
         }
+        .vendor-banner::before { content:''; position:absolute; inset:0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E"); }
+        .vendor-banner-actions { position: absolute; top: 1.25rem; right: 1.25rem; display: flex; gap: 0.5rem; }
+
+        /* ── Vendor Profile Row ── */
+        .vendor-profile-row {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        .vendor-profile-inner {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            padding: 0 0 1.25rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .vendor-profile-left { display: flex; align-items: flex-end; gap: 1.25rem; }
+        .vendor-avatar-wrap { margin-top: -3rem; position: relative; }
+        .vendor-avatar {
+            width: 96px; height: 96px; border-radius: var(--r-lg);
+            background: var(--primary-xlight); border: 4px solid var(--surface);
+            box-shadow: var(--shadow-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: var(--primary);
+        }
+        .vendor-verified { position: absolute; bottom: -4px; right: -4px; width: 22px; height: 22px; background: var(--secondary); border-radius: 50%; border: 2px solid var(--surface); display: flex; align-items: center; justify-content: center; }
+        .vendor-verified i { font-size: 0.55rem; color: #fff; }
+
+        .vendor-profile-info h1 { font-size: 1.5rem; font-weight: 900; color: var(--text); margin-bottom: 0.3rem; }
+        .vendor-metrics { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); }
+        .vendor-metrics span { display: flex; align-items: center; gap: 0.3rem; }
+
+        .vendor-profile-actions { display: flex; gap: 0.5rem; padding-bottom: 0; }
+
+        /* ── Storefront Layout ── */
+        .vendor-layout { display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; padding: 1.5rem 0 4rem; align-items: start; }
+        .vendor-aside { position: sticky; top: calc(var(--navbar-height) + 1rem); display: flex; flex-direction: column; gap: 1rem; }
+        .aside-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+        .aside-card-head { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+        .aside-card-body { padding: 1rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; }
+
+        /* Stat grid inside aside */
+        .stat-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .stat-mini { background: var(--background); border-radius: var(--r-md); padding: 0.75rem 0.5rem; text-align: center; }
+        .stat-mini .num { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
+        .stat-mini .lbl { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Filter sidebar */
+        .filter-list-compact { display: flex; flex-direction: column; gap: 0.5rem; }
+        .filter-list-compact label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-secondary); cursor: pointer; }
+        .filter-list-compact input { accent-color: var(--primary); }
+
+        /* Toolbar */
+        .vendor-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+        .vendor-toolbar h2 { font-size: 1.1rem; font-weight: 800; }
+
+        @media (max-width: 1024px) { .vendor-layout { grid-template-columns: 1fr; } .vendor-aside { position: static; } .vendor-profile-row { display: none; } }
     </style>
 </head>
 <body>
 
-        <!-- NAVBAR -->
+    <!-- ── NAVBAR ── -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-store"></i> <span>Vendo</span>
-            </a>
-
-            <!-- Search Bar (Desktop) -->
+            <a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a>
             <div class="nav-search desktop-only">
-                <select class="search-category" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; padding-right:0.5rem; border-right:1px solid var(--border); margin-right:0.5rem; color:var(--text); outline:none; cursor:pointer;">
-                    <option value="all">All</option>
-                    <option value="product">Products</option>
-                    <option value="category">Categories</option>
-                    <option value="vendor">Vendors</option>
-                </select>
-                <input type="text" placeholder="Smart search...">
+                <select style="border:none;background:transparent;font-weight:600;font-size:0.8rem;padding-right:0.5rem;border-right:1px solid var(--border);margin-right:0.4rem;color:var(--text);outline:none;cursor:pointer;"><option>All</option><option>Products</option><option>Vendors</option></select>
+                <input type="text" placeholder="Search products, brands and more…">
                 <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li class="dropdown">
-                    <a href="shop.html" class="nav-link dropdown-toggle">
-                        Shop <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-layer-group fa-fw"></i> Categories</a></li>
-                        <li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--accent)"></i> Hot Deals</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Mega Menu -->
-                <li class="dropdown mega-dropdown">
-                    <a href="#" class="nav-link dropdown-toggle">
-                        Categories <i class="fa-solid fa-chevron-down fa-xs mt-1"></i>
-                    </a>
-                    <div class="dropdown-menu mega-menu">
-                        <div class="mega-menu-grid">
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-laptop"></i> Electronics</h5>
-                                <a href="shop.html">Smartphones</a>
-                                <a href="shop.html">Laptops & PCs</a>
-                                <a href="shop.html">Cameras</a>
-                                <a href="shop.html">Accessories</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-shirt"></i> Fashion</h5>
-                                <a href="shop.html">Men's Clothing</a>
-                                <a href="shop.html">Women's Clothing</a>
-                                <a href="shop.html">Shoes</a>
-                                <a href="shop.html">Watches</a>
-                            </div>
-                            <div class="mega-col">
-                                <h5><i class="fa-solid fa-house-chimney"></i> Home & Living</h5>
-                                <a href="shop.html">Furniture</a>
-                                <a href="shop.html">Decor</a>
-                                <a href="shop.html">Kitchenware</a>
-                                <a href="shop.html">Lighting</a>
-                            </div>
-                            <div class="mega-banner">
-                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80" alt="Sale" style="border-radius:0.5rem; width:100%; height:120px; object-fit:cover;">
-                                <div class="mega-banner-text">Up to 50% Off</div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
+                <li class="dropdown"><a href="shop.html" class="nav-link dropdown-toggle">Shop <i class="fa-solid fa-chevron-down fa-xs"></i></a><ul class="dropdown-menu"><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-box-open fa-fw"></i> All Products</a></li><li><a href="shop.html" class="dropdown-item"><i class="fa-solid fa-bolt fa-fw" style="color:var(--amber)"></i> Deals</a></li></ul></li>
+                <li class="dropdown mega-dropdown"><a href="#" class="nav-link dropdown-toggle">Categories <i class="fa-solid fa-chevron-down fa-xs"></i></a><div class="dropdown-menu mega-menu"><div class="mega-menu-grid"><div class="mega-col"><h5><i class="fa-solid fa-laptop"></i> Electronics</h5><a href="shop.html">Smartphones</a><a href="shop.html">Laptops</a><a href="shop.html">Cameras</a></div><div class="mega-col"><h5><i class="fa-solid fa-shirt"></i> Fashion</h5><a href="shop.html">Men's</a><a href="shop.html">Women's</a><a href="shop.html">Shoes</a></div><div class="mega-col"><h5><i class="fa-solid fa-house-chimney"></i> Home</h5><a href="shop.html">Furniture</a><a href="shop.html">Decor</a><a href="shop.html">Kitchenware</a></div><div class="mega-banner"><img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400&q=80" alt="Sale"><div class="mega-banner-text">Up to 50% Off</div></div></div></div></li>
                 <li><a href="vendor.html" class="nav-link active">Vendors</a></li>
-                <li><a href="shop.html" class="nav-link">Deals <span style="color:var(--secondary);"><i class="fa-solid fa-fire"></i></span></a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="contact.html" class="nav-link">Contact</a></li>
-                
-                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:1rem;"><i class="fa-regular fa-user"></i> Login / Register</a></li>
-                <li class="mobile-only auth-only auth-user-only"><a href="seller.html" class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;"><i class="fa-solid fa-crown"></i> Become a Seller</a></li>
-                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="width:100%;justify-content:center;margin-top:0.5rem;color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li class="mobile-only guest-only"><a href="auth.html" class="btn btn-primary"><i class="fa-regular fa-user"></i> Login</a></li>
+                <li class="mobile-only auth-only"><a href="javascript:void(0)" class="btn btn-outline mobileLogoutBtn" style="color:#ef4444;border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
             </ul>
-
             <div class="nav-actions">
-                <!-- Multi-Language Dropdown -->
-                <div class="dropdown desktop-only">
-                    <button class="icon-btn dropdown-toggle" title="Language" style="border:none;background:transparent;display:flex;">
-                        <i class="fa-solid fa-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu" style="min-width:120px; right:0; left:auto;">
-                        <li><a href="#" class="dropdown-item">English (EN)</a></li>
-                        <li><a href="#" class="dropdown-item">Español (ES)</a></li>
-                        <li><a href="#" class="dropdown-item">Français (FR)</a></li>
-                    </ul>
-                </div>
-
-                <a href="#" class="icon-btn theme-toggle" title="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </a>
-                
-                <a href="product.html" class="icon-btn auth-only" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="badge">3</span>
-                </a>
-                <a href="cart.html" class="icon-btn" title="Cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="badge badge-primary">2</span>
-                </a>
-                
-                <!-- Unauthenticated Options -->
-                <div class="guest-only desktop-only" style="display: flex; gap: 1rem; align-items:center;">
-                    <a href="auth.html" class="btn btn-outline">Login</a>
-                </div>
-
-                <!-- Authenticated User (Non-Vendor) Options -->
-                <div class="auth-only auth-user-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="seller.html" class="btn btn-accent"><i class="fa-solid fa-crown"></i> Become Seller</a>
-                </div>
-                
-                <!-- Vendor Options -->
-                <div class="auth-only vendor-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="vendor.html" class="btn btn-primary"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>
-                </div>
-                
-                <!-- Admin Options -->
-                <div class="auth-only admin-only desktop-only" style="display: none; gap: 1rem; align-items:center;">
-                    <a href="/admin" class="btn btn-primary" style="background:#111827;border-color:#111827;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown auth-only desktop-only" style="display: none;">
-                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-light); color:var(--primary);">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:200px;">
-                        <li style="padding:1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem;">
-                            <strong style="display:block; color:var(--text);" class="navUserName">John Doe</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted);" class="navUserRole">User</span>
-                        </li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-table-columns fa-fw"></i> My Dashboard</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li>
-                        <li><a href="#" class="dropdown-item"><i class="fa-regular fa-address-card fa-fw"></i> Profile Settings</a></li>
-                        <li style="border-top:1px solid var(--border); margin-top:0.5rem; padding-top:0.5rem;"><a href="javascript:void(0)" class="dropdown-item text-danger desktopLogoutBtn" style="color:#ef4444;"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li>
-                    </ul>
+                <div class="dropdown desktop-only"><button class="icon-btn dropdown-toggle"><i class="fa-solid fa-globe"></i></button><ul class="dropdown-menu" style="min-width:130px;right:0;left:auto;"><li><a href="#" class="dropdown-item">English (EN)</a></li></ul></div>
+                <a href="#" class="icon-btn theme-toggle"><i class="fa-solid fa-moon"></i></a>
+                <a href="product.html" class="icon-btn auth-only"><i class="fa-regular fa-heart"></i><span class="badge">3</span></a>
+                <a href="cart.html" class="icon-btn"><i class="fa-solid fa-bag-shopping"></i><span class="badge badge-primary">0</span></a>
+                <div class="guest-only desktop-only" style="display:flex;gap:0.75rem;align-items:center;"><a href="auth.html" class="btn btn-outline btn-sm">Login</a><a href="auth.html" class="btn btn-primary btn-sm">Sign Up</a></div>
+                <div class="auth-only auth-user-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="seller.html" class="btn btn-accent btn-sm"><i class="fa-solid fa-crown"></i> Become Seller</a></div>
+                <div class="auth-only vendor-only desktop-only" style="display:none;gap:0.75rem;align-items:center;"><a href="vendor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-gauge"></i> Vendor Panel</a></div>
+                <div class="auth-only admin-only desktop-only" style="display:none;"><a href="/admin" class="btn btn-sm" style="background:#0f172a;color:#fff;"><i class="fa-solid fa-shield-halved"></i> Admin</a></div>
+                <div class="dropdown auth-only desktop-only" style="display:none;">
+                    <a href="#" class="icon-btn dropdown-toggle" style="background:var(--primary-xlight);color:var(--primary);"><i class="fa-regular fa-user"></i></a>
+                    <ul class="dropdown-menu" style="right:0;left:auto;min-width:210px;"><li style="padding:0.9rem 1rem;border-bottom:1px solid var(--border);"><strong class="navUserName" style="display:block;">User</strong><span class="navUserRole" style="font-size:0.75rem;color:var(--text-muted);">Customer</span></li><li><a href="#" class="dropdown-item"><i class="fa-solid fa-box fa-fw"></i> My Orders</a></li><li><a href="javascript:void(0)" class="dropdown-item desktopLogoutBtn" style="color:var(--accent);"><i class="fa-solid fa-right-from-bracket fa-fw"></i> Logout</a></li></ul>
                 </div>
             </div>
-
             <button class="hamburger"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
     <div class="mobile-overlay"></div>
 
-    <div class="container fade-in">
-        <!-- VENDOR BANNER -->
-        <div class="vendor-banner">
-            <div class="vendor-profile">
-                <div class="vendor-avatar"><i class="fa-solid fa-microchip"></i></div>
-                <div class="vendor-name">
-                    <div style="display:flex;align-items:center;gap:0.75rem;">
-                        <h1>TechNova Store</h1>
-                        <span class="badge" style="position:static;width:auto;height:auto;padding:0.25rem 0.6rem;border-radius:1rem;font-size:0.75rem;margin-top:0.25rem;">PRO SELLER <i class="fa-solid fa-check-circle"></i></span>
+    <!-- ── VENDOR BANNER ── -->
+    <div class="vendor-banner">
+        <div class="vendor-banner-actions">
+            <button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25);"><i class="fa-solid fa-plus"></i> Follow</button>
+            <button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25);"><i class="fa-solid fa-comment-dots"></i> Message</button>
+        </div>
+    </div>
+
+    <!-- ── VENDOR PROFILE ROW ── -->
+    <div class="vendor-profile-row">
+        <div class="container">
+            <div class="vendor-profile-inner">
+                <div class="vendor-profile-left">
+                    <div class="vendor-avatar-wrap">
+                        <div class="vendor-avatar"><i class="fa-solid fa-microchip"></i></div>
+                        <div class="vendor-verified"><i class="fa-solid fa-check"></i></div>
                     </div>
-                    <div class="vendor-metrics">
-                        <span><i class="fa-solid fa-star" style="color:var(--accent);"></i> 4.9 (1,240 Reviews)</span>
-                        <span><i class="fa-solid fa-box"></i> 342 Products</span>
-                        <span><i class="fa-solid fa-clock-rotate-left"></i> 98% On-time Delivery</span>
+                    <div class="vendor-profile-info" style="padding-bottom:0.25rem;">
+                        <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                            <h1>TechNova Store</h1>
+                            <span class="badge-pill badge-success"><i class="fa-solid fa-badge-check"></i> Verified</span>
+                            <span class="badge-pill badge-primary">Pro Seller</span>
+                        </div>
+                        <div class="vendor-metrics" style="margin-top:0.35rem;">
+                            <span><i class="fa-solid fa-star" style="color:var(--amber);"></i> 4.9 Rating</span>
+                            <span><i class="fa-solid fa-comment"></i> 1,240 Reviews</span>
+                            <span><i class="fa-solid fa-box"></i> 342 Products</span>
+                            <span><i class="fa-solid fa-truck-fast"></i> 98% On-time</span>
+                            <span><i class="fa-solid fa-calendar"></i> Member since 2022</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="desktop-only" style="position:absolute; right:2rem; bottom:1.5rem; display:flex; gap:1rem;">
-                <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Follow Store</button>
-                <button class="btn btn-outline" style="background:var(--surface);"><i class="fa-solid fa-comment-dots"></i> Message</button>
+                <div class="vendor-profile-actions desktop-only">
+                    <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Follow Store</button>
+                    <button class="btn btn-outline btn-sm"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                </div>
             </div>
         </div>
+    </div>
 
-        <section class="vendor-layout">
-            
-            <!-- VENDOR SIDEBAR W/ FILTERS -->
-            <aside class="vendor-sidebar fade-in delay-1">
-                <div class="v-about">
-                    <h4>About Store</h4>
-                    <p>TechNova is a premier provider of high-quality electronics, laptops, and accessories. We guarantee authentic products and top-notch customer support.</p>
-                    <div style="display:flex;gap:0.75rem;margin-top:1rem;">
-                        <a href="#" style="color:var(--text-muted);font-size:1.25rem;"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="#" style="color:var(--text-muted);font-size:1.25rem;"><i class="fa-brands fa-twitter"></i></a>
-                        <a href="#" style="color:var(--text-muted);font-size:1.25rem;"><i class="fa-solid fa-globe"></i></a>
+    <!-- ── STOREFRONT LAYOUT ── -->
+    <div class="container">
+        <div class="vendor-layout">
+
+            <!-- Aside -->
+            <aside class="vendor-aside fade-in">
+                <div class="aside-card">
+                    <div class="aside-card-head">About Store</div>
+                    <div class="aside-card-body">
+                        <p>TechNova is a premier provider of high-quality electronics, laptops, and accessories. We guarantee authentic products and top-notch customer support.</p>
+                        <div style="margin-top:0.75rem;display:flex;gap:0.6rem;">
+                            <a href="#" style="color:var(--text-muted);font-size:1rem;transition:color 0.15s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-brands fa-facebook"></i></a>
+                            <a href="#" style="color:var(--text-muted);font-size:1rem;transition:color 0.15s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-brands fa-twitter"></i></a>
+                            <a href="#" style="color:var(--text-muted);font-size:1rem;transition:color 0.15s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-solid fa-globe"></i></a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Typical filters from shop page -->
-                <div style="margin-bottom:1.5rem;">
-                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text);">Categories</h4>
-                    <ul style="list-style:none;line-height:2;">
-                        <li><label style="display:flex;align-items:center;gap:0.5rem;color:var(--text-muted);cursor:pointer;"><input type="checkbox" checked> Laptops</label></li>
-                        <li><label style="display:flex;align-items:center;gap:0.5rem;color:var(--text-muted);cursor:pointer;"><input type="checkbox"> PC Components</label></li>
-                        <li><label style="display:flex;align-items:center;gap:0.5rem;color:var(--text-muted);cursor:pointer;"><input type="checkbox"> Accessories</label></li>
-                        <li><label style="display:flex;align-items:center;gap:0.5rem;color:var(--text-muted);cursor:pointer;"><input type="checkbox"> Audio</label></li>
-                    </ul>
+                <div class="aside-card">
+                    <div class="aside-card-head">Store Stats</div>
+                    <div class="aside-card-body" style="padding:0.85rem;">
+                        <div class="stat-mini-grid">
+                            <div class="stat-mini"><div class="num">342</div><div class="lbl">Products</div></div>
+                            <div class="stat-mini"><div class="num">4.9★</div><div class="lbl">Avg Rating</div></div>
+                            <div class="stat-mini"><div class="num">98%</div><div class="lbl">On-time</div></div>
+                            <div class="stat-mini"><div class="num">1.2k</div><div class="lbl">Reviews</div></div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="v-about" style="border:none;margin-bottom:0;padding-bottom:0;">
-                    <h4>Store Location</h4>
-                    <p><i class="fa-solid fa-location-dot" style="color:var(--primary);margin-right:0.5rem;"></i> San Francisco, CA<br>United States</p>
+
+                <div class="aside-card">
+                    <div class="aside-card-head">Filter Products</div>
+                    <div class="aside-card-body">
+                        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">Category</div>
+                        <div class="filter-list-compact">
+                            <label><input type="checkbox" style="accent-color:var(--primary);"> Laptops</label>
+                            <label><input type="checkbox" style="accent-color:var(--primary);"> PC Components</label>
+                            <label><input type="checkbox" style="accent-color:var(--primary);"> Accessories</label>
+                            <label><input type="checkbox" style="accent-color:var(--primary);"> Audio & Monitors</label>
+                        </div>
+                        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin:0.85rem 0 0.6rem;">Price Range</div>
+                        <div style="display:flex;gap:0.4rem;align-items:center;">
+                            <input type="number" placeholder="Min" style="flex:1;padding:0.45rem 0.6rem;border:1.5px solid var(--border-dark);border-radius:var(--r-sm);font-size:0.78rem;background:var(--background);color:var(--text);">
+                            <span style="color:var(--text-muted);font-size:0.8rem;">—</span>
+                            <input type="number" placeholder="Max" style="flex:1;padding:0.45rem 0.6rem;border:1.5px solid var(--border-dark);border-radius:var(--r-sm);font-size:0.78rem;background:var(--background);color:var(--text);">
+                        </div>
+                        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin:0.85rem 0 0.6rem;">Location</div>
+                        <p style="font-size:0.82rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> San Francisco, CA · United States</p>
+                    </div>
                 </div>
             </aside>
 
-            <!-- VENDOR PRODUCTS -->
-            <div class="shop-main">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;" class="fade-in delay-2">
-                    <h2 style="font-size:1.5rem;font-weight:800;color:var(--text);">All Products</h2>
-                    <select class="form-control" style="width:auto;padding:0.5rem 1rem;border-radius:2rem;">
-                        <option>Sort by: Latest</option>
-                        <option>Sort by: Popularity</option>
-                        <option>Sort by: Rating</option>
-                    </select>
+            <!-- Vendor Products -->
+            <div>
+                <div class="vendor-toolbar fade-in delay-1">
+                    <h2>All Products <span style="font-size:0.8rem;font-weight:500;color:var(--text-muted);margin-left:0.5rem;">342 items</span></h2>
+                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <select class="form-control" style="width:auto;padding:0.45rem 0.85rem;font-size:0.82rem;">
+                            <option>Sort: Latest</option>
+                            <option>Sort: Price (Low → High)</option>
+                            <option>Sort: Price (High → Low)</option>
+                            <option>Sort: Top Rated</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem;">
-                    
+                <div class="product-grid">
                     <div class="product-card fade-in">
-                        <div class="product-badge">NEW</div>
+                        <div class="product-badge badge-new">New</div>
+                        <button class="product-wishlist"><i class="fa-regular fa-heart"></i></button>
                         <div class="product-img"><i class="fa-solid fa-laptop"></i>
-                            <div class="product-actions">
-                                <button class="product-action-btn"><i class="fa-regular fa-heart"></i></button>
-                            </div>
+                            <div class="product-actions"><button class="product-action-btn add-to-cart"><i class="fa-solid fa-cart-plus"></i> Add</button><button class="product-action-btn" onclick="location.href='product.html'"><i class="fa-regular fa-eye"></i> View</button></div>
                         </div>
                         <div class="product-info">
-                            <a href="product.html" class="product-title" style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;text-decoration:none;">ProBook Z15 Ultra Slim Laptop - 16GB RAM</a>
-                            <div style="color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem; display: flex; gap: 0.2rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><span style="color: var(--text-muted); margin-left: 0.25rem;">(124)</span></div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
-                                <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                                    <span style="font-weight: 800; font-size: 1.25rem; color: var(--primary);">$1,299.00</span>
-                                </div>
-                                <button class="btn btn-sm btn-primary"><i class="fa-solid fa-cart-shopping"></i></button>
-                            </div>
+                            <a href="product.html" class="product-title">ProBook Z15 Ultra Slim Laptop — 16GB</a>
+                            <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i><span>(124)</span></div>
+                            <div class="product-price-row"><div class="price-box"><span class="price">$1,299.00</span></div><button class="btn btn-xs btn-primary"><i class="fa-solid fa-plus"></i> Add</button></div>
                         </div>
                     </div>
-
                     <div class="product-card fade-in delay-1">
-                        <div class="product-badge" style="background:var(--secondary)">SALE</div>
+                        <div class="product-badge badge-sale">−25%</div>
+                        <button class="product-wishlist"><i class="fa-regular fa-heart"></i></button>
                         <div class="product-img"><i class="fa-solid fa-keyboard"></i>
-                            <div class="product-actions"><button class="product-action-btn"><i class="fa-regular fa-heart"></i></button></div>
+                            <div class="product-actions"><button class="product-action-btn add-to-cart"><i class="fa-solid fa-cart-plus"></i> Add</button><button class="product-action-btn" onclick="location.href='product.html'"><i class="fa-regular fa-eye"></i> View</button></div>
                         </div>
                         <div class="product-info">
-                            <a href="product.html" class="product-title" style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;text-decoration:none;">Mechanical Gaming Keyboard RGB - Blue Switches</a>
-                            <div style="color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem; display: flex; gap: 0.2rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span style="color: var(--text-muted); margin-left: 0.25rem;">(89)</span></div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
-                                <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                                    <span style="font-weight: 800; font-size: 1.25rem; color: var(--primary);">$89.99</span>
-                                    <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem;">$120.00</span>
-                                </div>
-                                <button class="btn btn-sm btn-primary"><i class="fa-solid fa-cart-shopping"></i></button>
-                            </div>
+                            <a href="product.html" class="product-title">Mechanical Gaming Keyboard RGB — Blue Switches</a>
+                            <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span>(89)</span></div>
+                            <div class="product-price-row"><div class="price-box"><span class="price">$89.99</span><span class="old-price">$120.00</span></div><button class="btn btn-xs btn-primary"><i class="fa-solid fa-plus"></i> Add</button></div>
                         </div>
                     </div>
-
                     <div class="product-card fade-in delay-2">
-                        <div class="product-img"><i class="fa-solid fa-desktop"></i>
-                            <div class="product-actions"><button class="product-action-btn"><i class="fa-regular fa-heart"></i></button></div>
+                        <button class="product-wishlist"><i class="fa-regular fa-heart"></i></button>
+                        <div class="product-img"><i class="fa-solid fa-display"></i>
+                            <div class="product-actions"><button class="product-action-btn add-to-cart"><i class="fa-solid fa-cart-plus"></i> Add</button><button class="product-action-btn" onclick="location.href='product.html'"><i class="fa-regular fa-eye"></i> View</button></div>
                         </div>
                         <div class="product-info">
-                            <a href="product.html" class="product-title" style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;text-decoration:none;">27" 4K UHD IPS Monitor Borderless</a>
-                            <div style="color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem; display: flex; gap: 0.2rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span style="color: var(--text-muted); margin-left: 0.25rem;">(211)</span></div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
-                                <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                                    <span style="font-weight: 800; font-size: 1.25rem; color: var(--primary);">$345.00</span>
-                                </div>
-                                <button class="btn btn-sm btn-primary"><i class="fa-solid fa-cart-shopping"></i></button>
-                            </div>
+                            <a href="product.html" class="product-title">27" 4K UHD IPS Monitor — Borderless Design</a>
+                            <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span>(211)</span></div>
+                            <div class="product-price-row"><div class="price-box"><span class="price">$345.00</span></div><button class="btn btn-xs btn-primary"><i class="fa-solid fa-plus"></i> Add</button></div>
                         </div>
                     </div>
-
+                    <div class="product-card fade-in delay-3">
+                        <button class="product-wishlist"><i class="fa-regular fa-heart"></i></button>
+                        <div class="product-img"><i class="fa-solid fa-headphones"></i>
+                            <div class="product-actions"><button class="product-action-btn add-to-cart"><i class="fa-solid fa-cart-plus"></i> Add</button><button class="product-action-btn" onclick="location.href='product.html'"><i class="fa-regular fa-eye"></i> View</button></div>
+                        </div>
+                        <div class="product-info">
+                            <a href="product.html" class="product-title">Studio Headphones Pro — 40mm Drivers</a>
+                            <div class="product-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><span>(56)</span></div>
+                            <div class="product-price-row"><div class="price-box"><span class="price">$149.99</span></div><button class="btn btn-xs btn-primary"><i class="fa-solid fa-plus"></i> Add</button></div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 4rem;">
-                    <button style="width: 40px; height: 40px; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer;"><i class="fa-solid fa-angle-left"></i></button>
-                    <button style="width: 40px; height: 40px; border-radius: 0.5rem; border: 1px solid var(--primary); background: var(--primary); color: #fff; font-weight: 600; cursor: pointer;">1</button>
-                    <button style="width: 40px; height: 40px; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer;">2</button>
-                    <button style="width: 40px; height: 40px; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer;"><i class="fa-solid fa-angle-right"></i></button>
+
+                <!-- Pagination -->
+                <div class="pagination" style="margin-top:2rem;">
+                    <button class="page-btn"><i class="fa-solid fa-angle-left"></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span style="padding:0 0.25rem;color:var(--text-muted);">…</span>
+                    <button class="page-btn">12</button>
+                    <button class="page-btn"><i class="fa-solid fa-angle-right"></i></button>
                 </div>
             </div>
-
-        </section>
+        </div>
     </div>
 
-    <!-- App JS -->
+    <!-- ── FOOTER ── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand"><a href="index.html" class="logo"><i class="fa-solid fa-store"></i> <span>Vendo</span></a><p>The premium multi-vendor marketplace.</p><div class="social-links"><a href="#"><i class="fa-brands fa-facebook-f"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a></div></div>
+                <div class="footer-links"><h4>Shop</h4><a href="shop.html">All Products</a><a href="vendor.html">All Vendors</a><a href="shop.html">Deals</a></div>
+                <div class="footer-links"><h4>Customer</h4><a href="auth.html">My Account</a><a href="#">Track Order</a><a href="contact.html">Support</a></div>
+                <div class="footer-links"><h4>Sell</h4><a href="seller.html">Start Selling</a><a href="seller.html">Vendor Center</a></div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 Vendo Marketplace. All rights reserved.</p><div class="footer-payment"><i class="fa-brands fa-cc-visa fa-xl"></i><i class="fa-brands fa-cc-mastercard fa-xl"></i><i class="fa-brands fa-cc-paypal fa-xl"></i><i class="fa-brands fa-cc-stripe fa-xl"></i></div></div>
+        </div>
+    </footer>
+
     <script src="js/app.js"></script>
 </body>
 </html>
