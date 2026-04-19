@@ -28,8 +28,13 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
 
-        // Payment Gateway
-        $this->app->bind(PaymentGatewayInterface::class, \App\Services\Payment\StripePaymentGateway::class);
+        // Payment Gateway — swap between real Stripe and Mock based on env
+        $gateway = config('services.stripe.gateway', 'mock');
+        if ($gateway === 'stripe') {
+            $this->app->bind(PaymentGatewayInterface::class, \App\Services\Payment\StripePaymentGateway::class);
+        } else {
+            $this->app->bind(PaymentGatewayInterface::class, \App\Services\Payment\MockPaymentGateway::class);
+        }
     }
 
     public function boot(): void

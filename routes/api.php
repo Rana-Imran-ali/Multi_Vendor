@@ -20,6 +20,10 @@ use App\Http\Controllers\Admin\AdminController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 
+// ── Stripe Webhook (NO auth — Stripe signs the payload instead) ──────────────
+Route::post('/stripe/webhook', [\App\Http\Controllers\API\StripeWebhookController::class, 'handle']);
+
+
 // Browse
 Route::get('/categories',           [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
@@ -27,7 +31,9 @@ Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::get('/products',             [ProductController::class, 'index']);
 Route::get('/products/{product}',   [ProductController::class, 'show']);
 
-Route::get('/{type}/{id}/reviews', [ReviewController::class, 'index'])->whereIn('type', ['products', 'vendors']);
+Route::get('/{type}/{id}/reviews',         [ReviewController::class, 'index'])->whereIn('type', ['products', 'vendors']);
+Route::get('/{type}/{id}/reviews/summary', [ReviewController::class, 'summary'])->whereIn('type', ['products', 'vendors']);
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PROTECTED ROUTES (auth:sanctum required for everything below)
@@ -39,6 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout',  [AuthController::class, 'logout']);
     Route::get('/user',     [AuthController::class, 'profile']);
     Route::put('/user',     [AuthController::class, 'updateProfile']);
+
+    // ── Notifications ─────────────────────────────────────────────────────────
+    Route::get('/notifications',              [\App\Http\Controllers\API\NotificationController::class, 'index']);
+    Route::put('/notifications/read-all',     [\App\Http\Controllers\API\NotificationController::class, 'markAllRead']);
+    Route::put('/notifications/{id}/read',    [\App\Http\Controllers\API\NotificationController::class, 'markRead']);
+    Route::delete('/notifications/{id}',      [\App\Http\Controllers\API\NotificationController::class, 'destroy']);
 
     // ── Customer Routes ───────────────────────────────────────────────────────
     Route::middleware('role:customer')->group(function () {
@@ -61,11 +73,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // ── Orders ────────────────────────────────────────────────────────────
         Route::get('/orders',              [OrderController::class, 'index']);
-        Route::post('/orders',             [OrderController::class, 'store']);
+        Route::post('/orders',             [OrderController::class, 'store'])->middleware('throttle:checkout');
         Route::get('/orders/{order}',      [OrderController::class, 'show']);
 
-        // ── Reviews ───────────────────────────────────────────────────────────
-        Route::post('/{type}/{id}/reviews', [ReviewController::class, 'store'])->whereIn('type', ['products', 'vendors']);
+        // ── Reviews ───────────────────────────────────────────────────────
+        Route::post('/{type}/{id}/reviews',              [ReviewController::class, 'store'])->whereIn('type', ['products', 'vendors']);
+        Route::put('/{type}/{id}/reviews/{review}',       [ReviewController::class, 'update'])->whereIn('type', ['products', 'vendors']);
+        Route::delete('/{type}/{id}/reviews/{review}',   [ReviewController::class, 'destroy'])->whereIn('type', ['products', 'vendors']);
+        Route::post('/{type}/{id}/reviews/{review}/helpful', [ReviewController::class, 'markHelpful'])->whereIn('type', ['products', 'vendors']);
 
         // ── Payments ──────────────────────────────────────────────────────────
         Route::post('/orders/{order}/pay', [PaymentController::class, 'pay']);

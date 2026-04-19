@@ -3,51 +3,8 @@
 @section('title', 'Shopping Cart — Vendo')
 @section('meta_description', 'View your shopping cart and checkout on Vendo.')
 
-@php
-/* ── DUMMY CART DATA ── */
-$cartItems = [
-    [
-        'id'       => 101,
-        'name'     => 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
-        'slug'     => 'sony-wh-1000xm5',
-        'price'    => 42999,
-        'oldPrice' => 55999,
-        'qty'      => 1,
-        'image'    => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=200',
-        'icon'     => 'fa-headphones',
-        'color'    => '#4f46e5',
-        'variant'  => 'Midnight Black',
-        'vendor'   => 'SoundZone PK',
-        'vendorSlug'=>'soundzone-pk',
-    ],
-    [
-        'id'       => 102,
-        'name'     => 'Nike Air Max 270 — Men\'s Running Shoes',
-        'slug'     => 'nike-air-max-270',
-        'price'    => 18500,
-        'oldPrice' => 24000,
-        'qty'      => 2,
-        'image'    => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=200',
-        'icon'     => 'fa-shoe-prints',
-        'color'    => '#0891b2',
-        'variant'  => 'Size: 42 (Black/White)',
-        'vendor'   => 'SportsHub',
-        'vendorSlug'=>'sportshub',
-    ]
-];
-
-// Calculate totals
-$subtotal = 0;
-$savings  = 0;
-foreach($cartItems as $item) {
-    $subtotal += ($item['price'] * $item['qty']);
-    if($item['oldPrice']) {
-        $savings += (($item['oldPrice'] - $item['price']) * $item['qty']);
-    }
-}
-$shipping = $subtotal > 2000 ? 0 : 250;
-$total = $subtotal + $shipping;
-@endphp
+$shipping = 0; // Handled purely in JS
+$total = 0; // Handled purely in JS
 
 @section('content')
 
@@ -66,16 +23,13 @@ $total = $subtotal + $shipping;
 
 {{-- CART SECTION --}}
 <section class="cp-section">
-    <div class="container-xl">
-        <h1 class="cp-page-title">Shopping Cart <span class="cp-title-count">({{ count($cartItems) }} items)</span></h1>
+    <div class="container-xl" id="cartContainer">
+        <h1 class="cp-page-title">Shopping Cart <span class="cp-title-count" id="cartTitleCount">(-- items)</span></h1>
 
-        @if(count($cartItems) > 0)
-        <div class="row g-4 g-xl-5 mt-2">
-
+        <div class="row g-4 g-xl-5 mt-2 d-none" id="cartLayout">
             {{-- ══ LEFT: CART ITEMS ══ --}}
             <div class="col-12 col-lg-8">
                 <div class="cart-items-wrap">
-
                     {{-- Table Header (Desktop) --}}
                     <div class="cart-table-header d-none d-md-flex">
                         <div class="ct-col-product">Product</div>
@@ -85,64 +39,8 @@ $total = $subtotal + $shipping;
                     </div>
 
                     {{-- Items List --}}
-                    <div class="cart-items-list">
-                        @foreach($cartItems as $item)
-                        <div class="cart-item-row" id="cart-item-{{ $item['id'] }}">
-
-                            {{-- Product Info --}}
-                            <div class="ct-col-product">
-                                <a href="{{ url('/products/'.$item['slug']) }}" class="ci-img-wrap"
-                                   style="background: linear-gradient(135deg,{{ $item['color'] }}22,{{ $item['color'] }}11);">
-                                    @if($item['image'])
-                                        <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}">
-                                    @else
-                                        <i class="fa {{ $item['icon'] }}" style="color:{{ $item['color'] }};"></i>
-                                    @endif
-                                </a>
-                                <div class="ci-info">
-                                    <a href="{{ url('/products/'.$item['slug']) }}" class="ci-name">{{ $item['name'] }}</a>
-                                    @if($item['variant'])
-                                        <span class="ci-variant">{{ $item['variant'] }}</span>
-                                    @endif
-                                    <a href="{{ url('/vendors/'.$item['vendorSlug']) }}" class="ci-vendor">Sold by {{ $item['vendor'] }}</a>
-
-                                    {{-- Mobile Price (hidden on desktop table) --}}
-                                    <div class="ci-mobile-price d-md-none mt-2">
-                                        <span class="ci-price">Rs {{ number_format($item['price']) }}</span>
-                                        @if($item['oldPrice'])
-                                            <span class="ci-old-price">Rs {{ number_format($item['oldPrice']) }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Price Col --}}
-                            <div class="ct-col-price text-center d-none d-md-block">
-                                <span class="ci-price">Rs {{ number_format($item['price']) }}</span>
-                                @if($item['oldPrice'])
-                                    <br><span class="ci-old-price">Rs {{ number_format($item['oldPrice']) }}</span>
-                                @endif
-                            </div>
-
-                            {{-- Quantity Col --}}
-                            <div class="ct-col-qty">
-                                <div class="ci-qty-ctrl">
-                                    <button class="ci-qty-btn" onclick="updateCartQty({{ $item['id'] }}, -1)"><i class="fa fa-minus"></i></button>
-                                    <input type="number" class="ci-qty-input" id="qty-{{ $item['id'] }}" value="{{ $item['qty'] }}" min="1" max="10" readonly>
-                                    <button class="ci-qty-btn" onclick="updateCartQty({{ $item['id'] }}, 1)"><i class="fa fa-plus"></i></button>
-                                </div>
-                                <button class="ci-remove-btn mt-2" onclick="removeCartItem({{ $item['id'] }})">
-                                    <i class="fa-regular fa-trash-can me-1"></i> Remove
-                                </button>
-                            </div>
-
-                            {{-- Total Col --}}
-                            <div class="ct-col-total text-end d-none d-md-block">
-                                <span class="ci-line-total" id="total-{{ $item['id'] }}">Rs {{ number_format($item['price'] * $item['qty']) }}</span>
-                            </div>
-
-                        </div>
-                        @endforeach
+                    <div class="cart-items-list" id="cartItemsList">
+                        <!-- JS injected here -->
                     </div>
 
                     {{-- Cart Footer Actions --}}
@@ -150,11 +48,10 @@ $total = $subtotal + $shipping;
                         <a href="{{ url('/shop') }}" class="btn btn-outline-brand">
                             <i class="fa fa-arrow-left me-2"></i> Continue Shopping
                         </a>
-                        <button class="btn btn-outline-secondary">
-                            <i class="fa fa-rotate-right me-2"></i> Update Cart
+                        <button class="btn btn-outline-danger" onclick="clearCart()">
+                            <i class="fa fa-trash me-2"></i> Clear Cart
                         </button>
                     </div>
-
                 </div>
             </div>
 
@@ -165,47 +62,25 @@ $total = $subtotal + $shipping;
 
                     <div class="summary-lines">
                         <div class="summary-line">
-                            <span class="text-secondary">Subtotal ({{ count($cartItems) }} items)</span>
-                            <span class="fw-700">Rs {{ number_format($subtotal) }}</span>
+                            <span class="text-secondary" id="subtotalLabel">Subtotal (-- items)</span>
+                            <span class="fw-700" id="subtotalAmount">Rs 0</span>
                         </div>
-                        <div class="summary-line text-success">
+                        <div class="summary-line d-none text-success" id="savingsRow">
                             <span>Discount / Savings</span>
-                            <span>- Rs {{ number_format($savings) }}</span>
+                            <span>- Rs <span id="savingsAmount">0</span></span>
                         </div>
                         <div class="summary-line">
                             <span class="text-secondary">Shipping Estimate</span>
-                            <span>{{ $shipping === 0 ? 'Free' : 'Rs '.number_format($shipping) }}</span>
+                            <span id="shippingAmount">Free</span>
                         </div>
 
-                        {{-- Free shipping progress demo --}}
-                        @if($shipping > 0 && $subtotal < 2000)
-                        <div class="shipping-progress mt-3">
-                            <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;">
-                                <span>Add Rs {{ number_format(2000 - $subtotal) }} for <strong>Free Shipping</strong></span>
-                            </div>
-                            <div class="progress" style="height:6px;">
-                                <div class="progress-bar bg-warning" style="width:{{ ($subtotal/2000)*100 }}%"></div>
-                            </div>
-                        </div>
-                        @else
-                        <div class="shipping-alert mt-3 text-success">
-                            <i class="fa fa-truck-fast me-1"></i> You've unlocked Free Shipping!
-                        </div>
-                        @endif
-                    </div>
-
-                    {{-- Promo Code --}}
-                    <div class="promo-box mt-4">
-                        <label class="promo-label">Have a promo code?</label>
-                        <div class="promo-input-group">
-                            <input type="text" class="promo-input" placeholder="Enter code">
-                            <button class="promo-btn">Apply</button>
-                        </div>
+                        {{-- Free shipping progress --}}
+                        <div id="shippingProgressBlock"></div>
                     </div>
 
                     <div class="summary-total mt-4">
                         <span>Total Amount</span>
-                        <span class="total-price">Rs {{ number_format($total) }}</span>
+                        <span class="total-price" id="totalAmount">Rs 0</span>
                     </div>
                     <p class="text-muted text-end mb-4" style="font-size:.7rem;">VAT included, where applicable</p>
 
@@ -222,15 +97,12 @@ $total = $subtotal + $shipping;
                             <i class="fa-brands fa-cc-paypal"></i>
                         </div>
                     </div>
-
                 </div>
             </div>
+        </div>
 
-        </div>{{-- /row --}}
-
-        @else
         {{-- EMPTY CART STATE --}}
-        <div class="empty-cart-state text-center py-5">
+        <div class="empty-cart-state text-center py-5 d-none" id="emptyCartState">
             <div class="empty-icon-wrap mb-4 mx-auto">
                 <i class="fa fa-cart-arrow-down shadow-sm"></i>
             </div>
@@ -238,7 +110,14 @@ $total = $subtotal + $shipping;
             <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
             <a href="{{ url('/shop') }}" class="btn btn-brand btn-lg px-5">Start Shopping</a>
         </div>
-        @endif
+        
+        {{-- LOADING STATE --}}
+        <div class="text-center py-5" id="cartLoadingState">
+            <i class="fa fa-spinner fa-spin fa-2x text-brand"></i>
+            <p class="mt-2 text-muted">Loading your cart...</p>
+        </div>
+
+    </div>
 
     </div>
 </section>
@@ -400,27 +279,185 @@ $total = $subtotal + $shipping;
 
 @push('scripts')
 <script>
-/* Demo UI Updates */
-function updateCartQty(id, delta) {
-    const input = document.getElementById('qty-' + id);
-    if(input) {
-        let val = parseInt(input.value) + delta;
-        val = Math.max(1, Math.min(val, 10)); // min 1, max 10 for demo
-        input.value = val;
-        // In real app, trigger AJAX cart update here
+let localCartItems = [];
+const FREE_SHIPPING_THRESHOLD = 5000;
+
+document.addEventListener('DOMContentLoaded', () => {
+    initCart();
+});
+
+async function initCart() {
+    if (!window.CartAPI || !window.Auth.check()) {
+        window.location.href = '/login';
+        return;
+    }
+    await loadCartData();
+}
+
+async function loadCartData() {
+    document.getElementById('cartLoadingState').classList.remove('d-none');
+    document.getElementById('cartLayout').classList.add('d-none');
+    document.getElementById('emptyCartState').classList.add('d-none');
+
+    const res = await window.CartAPI.fetch();
+    document.getElementById('cartLoadingState').classList.add('d-none');
+    
+    if (res && res.status === 'success' && res.data.items.length > 0) {
+        localCartItems = res.data.items;
+        renderCart(res.data);
+    } else {
+        document.getElementById('emptyCartState').classList.remove('d-none');
+        document.getElementById('cartTitleCount').textContent = '(0 items)';
     }
 }
 
-function removeCartItem(id) {
+function renderCart(cartData) {
+    document.getElementById('cartLayout').classList.remove('d-none');
+    const list = document.getElementById('cartItemsList');
+    list.innerHTML = '';
+    
+    const count = cartData.total_quantity;
+    document.getElementById('cartTitleCount').textContent = `(${count} items)`;
+    document.getElementById('subtotalLabel').textContent = `Subtotal (${count} items)`;
+    
+    let subtotal = parseFloat(cartData.subtotal || 0);
+    
+    localCartItems.forEach(item => {
+        const p = item.product;
+        const thumbnail = p.thumbnail || '/placeholder.jpg';
+        const priceFmt = new Intl.NumberFormat().format(item.unit_price);
+        const lineTotalFmt = new Intl.NumberFormat().format(item.line_total);
+        
+        list.insertAdjacentHTML('beforeend', `
+        <div class="cart-item-row" id="cart-item-${item.id}">
+            <div class="ct-col-product">
+                <a href="/products/${p.slug}" class="ci-img-wrap">
+                    <img src="${thumbnail}" alt="${p.name}">
+                </a>
+                <div class="ci-info">
+                    <a href="/products/${p.slug}" class="ci-name">${p.name}</a>
+                    <div class="ci-mobile-price d-md-none mt-2">
+                        <span class="ci-price">Rs ${priceFmt}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ct-col-price text-center d-none d-md-block">
+                <span class="ci-price">Rs ${priceFmt}</span>
+            </div>
+            <div class="ct-col-qty">
+                <div class="ci-qty-ctrl">
+                    <button class="ci-qty-btn" onclick="updateCartQty(${item.id}, -1)"><i class="fa fa-minus"></i></button>
+                    <input type="number" class="ci-qty-input" id="qty-${item.id}" value="${item.quantity}" min="1" max="${p.stock}" readonly>
+                    <button class="ci-qty-btn" onclick="updateCartQty(${item.id}, 1)"><i class="fa fa-plus"></i></button>
+                </div>
+                <button class="ci-remove-btn mt-2" onclick="removeCartItem(${item.id})">
+                    <i class="fa-regular fa-trash-can me-1"></i> Remove
+                </button>
+            </div>
+            <div class="ct-col-total text-end d-none d-md-block">
+                <span class="ci-line-total" id="total-${item.id}">Rs ${lineTotalFmt}</span>
+            </div>
+        </div>`);
+    });
+
+    renderSummary(subtotal);
+}
+
+function renderSummary(subtotal) {
+    document.getElementById('subtotalAmount').textContent = `Rs ${new Intl.NumberFormat().format(subtotal)}`;
+    
+    let shipping = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : 250;
+    document.getElementById('shippingAmount').textContent = shipping === 0 ? 'Free' : `Rs ${shipping}`;
+    
+    // Shipping progress
+    const progressBlock = document.getElementById('shippingProgressBlock');
+    if (shipping > 0 && subtotal < FREE_SHIPPING_THRESHOLD) {
+        const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+        const pct = (subtotal / FREE_SHIPPING_THRESHOLD) * 100;
+        progressBlock.innerHTML = `
+            <div class="shipping-progress mt-3">
+                <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;">
+                    <span>Add Rs ${new Intl.NumberFormat().format(remaining)} for <strong>Free Shipping</strong></span>
+                </div>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-warning" style="width:${pct}%"></div>
+                </div>
+            </div>`;
+    } else {
+        progressBlock.innerHTML = `
+            <div class="shipping-alert mt-3 text-success">
+                <i class="fa fa-truck-fast me-1"></i> You've unlocked Free Shipping!
+            </div>`;
+    }
+
+    const total = subtotal + shipping;
+    document.getElementById('totalAmount').textContent = `Rs ${new Intl.NumberFormat().format(total)}`;
+}
+
+async function updateCartQty(id, delta) {
+    const input = document.getElementById('qty-' + id);
+    if (!input) return;
+    
+    let val = parseInt(input.value) + delta;
+    if (val < 1) val = 1;
+    if (val > parseInt(input.max)) val = parseInt(input.max);
+    
+    if (val === parseInt(input.value)) return;
+    
+    input.value = val;
+    // Loading overlay could be added here
+    
+    const res = await window.CartAPI.update(id, val);
+    if (res && res.status === 'success') {
+        const globalRes = await window.CartAPI.fetch();
+        if(globalRes && globalRes.data) {
+            localCartItems = globalRes.data.items;
+            // update global pill
+            updateBadges('.cart-badge:not(.wishlist-badge)', globalRes.data.items.length);
+            renderCart(globalRes.data);
+        }
+    } else {
+        alert(res?.message || 'Failed to update quantity');
+        loadCartData(); // Revert on failure
+    }
+}
+
+async function removeCartItem(id) {
+    if(!confirm("Remove this item?")) return;
+    
     const row = document.getElementById('cart-item-' + id);
     if(row) {
         row.style.opacity = '0.5';
-        row.style.transform = 'scale(0.98)';
-        setTimeout(() => {
-            row.remove();
-            // In real app, trigger AJAX cart delete here
-        }, 300);
+        row.style.pointerEvents = 'none';
+        
+        const res = await window.CartAPI.remove(id);
+        if (res && res.status === 'success') {
+            const globalRes = await window.CartAPI.fetch();
+            if(globalRes && globalRes.data) {
+                updateBadges('.cart-badge:not(.wishlist-badge)', globalRes.data.items.length);
+                if (globalRes.data.items.length === 0) {
+                    loadCartData(); // Show empty state
+                } else {
+                    localCartItems = globalRes.data.items;
+                    renderCart(globalRes.data);
+                }
+            }
+        } else {
+            alert(res?.message || 'Failed to remove item');
+            loadCartData(); // Revert
+        }
     }
+}
+
+async function clearCart() {
+    if(!confirm("Are you sure you want to clear your cart?")) return;
+    try {
+        const res = await fetch('/api/cart', { method: 'DELETE', headers: window.Auth.getAuthHeaders() });
+        if(res.ok) {
+            updateBadges('.cart-badge:not(.wishlist-badge)', 0);
+            loadCartData();
+        }
+    } catch(e) { alert("Error clearing cart"); }
 }
 </script>
 @endpush

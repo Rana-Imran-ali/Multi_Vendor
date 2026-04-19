@@ -31,7 +31,15 @@ class ProductService
             }
 
             if (!empty($data['images'])) {
-                $product->images()->createMany($data['images']);
+                $imageRecords = [];
+                foreach ($data['images'] as $index => $image) {
+                    $path = $image->store('product-images', 'public');
+                    $imageRecords[] = [
+                        'image_path' => $path,
+                        'is_primary' => $index === 0,
+                    ];
+                }
+                $product->images()->createMany($imageRecords);
             }
 
             return $product->load(['category', 'variants', 'images']);
@@ -59,8 +67,23 @@ class ProductService
             }
 
             if (isset($data['images'])) {
+                // Delete old images
+                foreach ($product->images as $oldImage) {
+                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldImage->image_path)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldImage->image_path);
+                    }
+                }
                 $product->images()->delete();
-                $product->images()->createMany($data['images']);
+
+                $imageRecords = [];
+                foreach ($data['images'] as $index => $image) {
+                    $path = $image->store('product-images', 'public');
+                    $imageRecords[] = [
+                        'image_path' => $path,
+                        'is_primary' => $index === 0,
+                    ];
+                }
+                $product->images()->createMany($imageRecords);
             }
 
             return $product->fresh(['category', 'variants', 'images']);

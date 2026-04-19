@@ -17,7 +17,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         return $this->model
             ->where('user_id', $userId)
-            ->with(['items.product.images'])
+            ->whereNull('parent_id') // Only parent orders
+            ->with(['subOrders.vendor', 'subOrders.items.product.images'])
             ->latest()
             ->paginate(15);
     }
@@ -25,11 +26,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function getByVendor(int $vendorId): LengthAwarePaginator
     {
         return $this->model
-            ->whereHas('items.product', fn($q) => $q->where('vendor_id', $vendorId))
+            ->where('vendor_id', $vendorId)
             ->with([
-                'items' => fn($q) => $q
-                    ->whereHas('product', fn($q2) => $q2->where('vendor_id', $vendorId))
-                    ->with('product.images'),
+                'items.product.images',
                 'user:id,name,email',
             ])
             ->latest()
@@ -39,7 +38,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function getAllPaginated(int $perPage = 20): LengthAwarePaginator
     {
         return $this->model
-            ->with(['user:id,name,email', 'items.product'])
+            ->whereNull('parent_id') // Admin sees parent orders by default
+            ->with(['user:id,name,email', 'subOrders.items.product', 'subOrders.vendor'])
             ->latest()
             ->paginate($perPage);
     }

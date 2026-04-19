@@ -23,7 +23,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = $this->categoryRepository->getAllNested();
+        $categories = Cache::remember('categories.all', now()->addHours(24), function () {
+            return $this->categoryRepository->getAllNested();
+        });
 
         return $this->successResponse($categories, 'Categories retrieved successfully.');
     }

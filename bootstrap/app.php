@@ -18,6 +18,19 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->report(function (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Unhandled System Exception', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => array_slice($e->getTrace(), 0, 5), // Keep it concise
+                'url'     => request()->url(),
+                'method'  => request()->method(),
+                'ip'      => request()->ip(),
+                'user_id' => request()->user()?->id ?? 'guest'
+            ]);
+        });
+
         $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
             if ($request->is('api/*')) {
                 $statusCode = 500;

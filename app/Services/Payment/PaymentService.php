@@ -33,6 +33,14 @@ class PaymentService
                     'payment_status' => 'paid',
                     'transaction_id' => $result['transaction_id'],
                 ]);
+
+                // Cascade payment status to sub-orders
+                if ($order->subOrders()->exists()) {
+                    $order->subOrders()->update([
+                        'payment_status' => 'paid',
+                        'transaction_id' => $result['transaction_id'],
+                    ]);
+                }
             }
 
             return $result;
@@ -59,6 +67,11 @@ class PaymentService
 
         if ($result['success']) {
             $order->update(['payment_status' => 'refunded']);
+
+            // Cascade refund status to sub-orders
+            if ($order->subOrders()->exists()) {
+                $order->subOrders()->update(['payment_status' => 'refunded']);
+            }
         }
 
         return $result;

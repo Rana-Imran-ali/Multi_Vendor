@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // ── Stripe ────────────────────────────────────────────────────────────────
+    'stripe' => [
+        'gateway'        => env('PAYMENT_GATEWAY', 'mock'), // 'stripe' | 'mock'
+        'key'            => env('STRIPE_KEY'),
+        'secret'         => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];

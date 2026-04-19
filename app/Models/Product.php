@@ -33,6 +33,24 @@ class Product extends Model
         return $this->morphMany(Review::class, 'reviewable');
     }
 
+    /** Only publicly approved reviews. */
+    public function approvedReviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable')->where('status', 'approved');
+    }
+
+    /** Live average rating attribute — e.g. $product->average_rating */
+    public function getAverageRatingAttribute(): float
+    {
+        return round((float) $this->approvedReviews()->avg('rating'), 2);
+    }
+
+    /** Count of approved reviews — e.g. $product->reviews_count */
+    public function getReviewsCountAttribute(): int
+    {
+        return $this->approvedReviews()->count();
+    }
+
     /**
      * All cart line items that reference this product.
      */

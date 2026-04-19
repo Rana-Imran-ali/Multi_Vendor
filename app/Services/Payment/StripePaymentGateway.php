@@ -12,42 +12,38 @@ class StripePaymentGateway implements PaymentGatewayInterface
 {
     public function __construct()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
     }
 
     public function charge(float $amount, string $currency, array $metadata = []): array
     {
         try {
-            // Note: Amount is expected in cents or smallest unit if handled correctly,
-            // but Stripe's Checkout Session expects `amount_decimal` in subunits (cents).
-            // Let's assume $amount is passed as standard decimal (e.g., 29.99USD) and format it, 
-            // OR the interface meant to pass it generally. I'll convert it to cents.
             $amountInCents = (int) round($amount * 100);
 
             $session = Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
-                        'currency' => strtolower($currency),
+                        'currency'     => strtolower($currency),
                         'product_data' => [
                             'name' => 'Order #' . ($metadata['order_id'] ?? 'Multiple Items'),
                         ],
-                        'unit_amount' => $amountInCents,
+                        'unit_amount'  => $amountInCents,
                     ],
                     'quantity' => 1,
                 ]],
-                'mode' => 'payment',
-                'metadata' => $metadata,
-                // Replace these with actual frontend routes once available
+                'mode'        => 'payment',
+                'metadata'    => $metadata,
                 'success_url' => url('/ecommerce_frontend/index.html?payment=success&order_id=' . ($metadata['order_id'] ?? '')),
-                'cancel_url' => url('/ecommerce_frontend/checkout.html?payment=cancel'),
+                'cancel_url'  => url('/ecommerce_frontend/checkout.html?payment=cancel'),
             ]);
 
             return [
                 'success'        => true,
-                'transaction_id' => $session->id, // We store session ID as transaction_id temporarily
+                // Store checkout session ID; PaymentIntent resolved via webhook
+                'transaction_id' => $session->id,
                 'payment_url'    => $session->url,
-                'message'        => 'Stripe Checkout Session created successfully.',
+                'message'        => 'Stripe Checkout Session created. Redirect user to payment_url.',
             ];
         } catch (\Exception $e) {
             return [
@@ -62,18 +58,25 @@ class StripePaymentGateway implements PaymentGatewayInterface
     public function refund(string $transactionId, ?float $amount = null): array
     {
         try {
-            // Because transactionId could be a Session ID or a PaymentIntent ID,
-            // we should ideally store the PaymentIntent ID. But for simplicity,
-            // assuming it's a valid ID to refund against.
-            $params = ['payment_intent' => $transactionId];
+            // transaction_id may be a Session ID or PaymentIntent ID.
+            // After webhook processing we store the PaymentIntent ID.
+            // If it starts with 'cs_' it's a Session — resolve to PaymentIntent first.
+            $paymentIntentId = $transactionId;
+            if (str_starts_with($transactionId, 'cs_')) {
+                $session         = Session::retrieve($transactionId);
+                $paymentIntentId = $session->payment_intent;
+            }
+
+            $params = ['payment_intent' => $paymentIntentId];
             if ($amount) {
                 $params['amount'] = (int) round($amount * 100);
             }
+
             $refund = Refund::create($params);
 
             return [
                 'success' => true,
-                'message' => 'Refund processed successfully. ID: ' . $refund->id,
+                'message' => 'Refund processed. ID: ' . $refund->id,
             ];
         } catch (\Exception $e) {
             return [

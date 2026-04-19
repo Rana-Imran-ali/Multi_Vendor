@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\VendorStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
@@ -9,6 +10,8 @@ use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -22,16 +25,77 @@ class AdminController extends Controller
      */
     public function dashboard(): JsonResponse
     {
+        // Revenue: sum of paid parent orders
+        $totalRevenue = (float) Order::whereNull('parent_id')
+            ->where('payment_status', 'paid')
+            ->sum('total_amount');
+
+        // Monthly revenue for last 6 months (SQLite-safe)
+        $monthlyRevenue = DB::table('orders')
+            ->whereNull('parent_id')
+            ->where('payment_status', 'paid')
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->selectRaw("strftime('%Y-%m', created_at) as month, SUM(total_amount) as revenue")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Order breakdown
+        $ordersByStatus = Order::whereNull('parent_id')
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        // Recent orders (last 10)
+        $recentOrders = Order::whereNull('parent_id')
+            ->with(['user:id,name,email', 'subOrders'])
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        // Top Vendors by Completed Order Revenue
+        $topVendors = DB::table('orders')
+            ->join('vendors', 'orders.vendor_id', '=', 'vendors.id')
+            ->whereNotNull('orders.vendor_id')
+            ->where('orders.status', 'delivered') // only count delivered ones
+            ->selectRaw('vendors.id, vendors.store_name, vendors.logo, SUM(orders.total_amount) as total_sales, COUNT(orders.id) as orders_count')
+            ->groupBy('vendors.id', 'vendors.store_name', 'vendors.logo')
+            ->orderByDesc('total_sales')
+            ->limit(5)
+            ->get();
+
+        // Top Products by Quantity Sold
+        $topProducts = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->where('orders.status', '!=', 'cancelled')
+            ->selectRaw('products.id, products.name, SUM(order_items.quantity) as qty_sold, SUM(order_items.price * order_items.quantity) as revenue')
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('qty_sold')
+            ->limit(5)
+            ->get();
+
         return response()->json([
             'status' => 'success',
             'data'   => [
+                // User & vendor counts
                 'total_users'        => User::where('role', User::ROLE_CUSTOMER)->count(),
                 'total_vendors'      => User::where('role', User::ROLE_VENDOR)->count(),
                 'pending_vendors'    => Vendor::where('status', Vendor::STATUS_PENDING)->count(),
                 'approved_vendors'   => Vendor::where('status', Vendor::STATUS_APPROVED)->count(),
                 'rejected_vendors'   => Vendor::where('status', Vendor::STATUS_REJECTED)->count(),
+                // Product counts
                 'total_products'     => Product::count(),
-                'total_orders'       => Order::count(),
+                'pending_products'   => Product::where('status', 'pending')->count(),
+                'active_products'    => Product::where('status', 'active')->count(),
+                // Order & revenue
+                'total_orders'       => Order::whereNull('parent_id')->count(),
+                'orders_by_status'   => $ordersByStatus,
+                'total_revenue'      => $totalRevenue,
+                'monthly_revenue'    => $monthlyRevenue,
+                'recent_orders'      => $recentOrders,
+                'top_vendors'        => $topVendors,
+                'top_products'       => $topProducts,
             ],
         ]);
     }
@@ -234,6 +298,9 @@ class AdminController extends Controller
         }
 
         $action = $validated['status'] === Vendor::STATUS_APPROVED ? 'approved' : 'rejected';
+
+        // Fire event instead of direct notification
+        Event::dispatch(new VendorStatusUpdated($vendor->fresh(), $validated['status']));
 
         return response()->json([
             'status'  => 'success',

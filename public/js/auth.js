@@ -127,5 +127,79 @@ const Auth = {
     }
 };
 
+/**
+ * Global Cart API Handle
+ */
+const CartAPI = {
+    async fetch() {
+        if (!Auth.check()) return null;
+        try {
+            const res = await fetch('/api/cart', { headers: Auth.getAuthHeaders() });
+            return await res.json();
+        } catch (e) {
+            return null;
+        }
+    },
+    async add(productId, quantity = 1, variant = null) {
+        if (!Auth.check()) {
+            window.location.href = '/login';
+            return null;
+        }
+        const res = await fetch('/api/cart', {
+            method: 'POST',
+            headers: Auth.getAuthHeaders(),
+            body: JSON.stringify({ product_id: productId, quantity, variant })
+        });
+        return await res.json();
+    },
+    async update(itemId, quantity) {
+        const res = await fetch(`/api/cart/${itemId}`, {
+            method: 'PUT',
+            headers: Auth.getAuthHeaders(),
+            body: JSON.stringify({ quantity })
+        });
+        return await res.json();
+    },
+    async remove(itemId) {
+        const res = await fetch(`/api/cart/${itemId}`, {
+            method: 'DELETE',
+            headers: Auth.getAuthHeaders()
+        });
+        return await res.json();
+    }
+};
+
+/**
+ * Global Wishlist API Handle
+ */
+const WishlistAPI = {
+    async fetch() {
+        if (!Auth.check()) return null;
+        const res = await fetch('/api/wishlist', { headers: Auth.getAuthHeaders() });
+        return await res.json();
+    },
+    async add(productId) {
+        if (!Auth.check()) {
+            window.location.href = '/login';
+            return null;
+        }
+        const res = await fetch('/api/wishlist', {
+            method: 'POST',
+            headers: Auth.getAuthHeaders(),
+            body: JSON.stringify({ product_id: productId })
+        });
+        return await res.json();
+    },
+    async remove(productId) {
+        const res = await fetch(`/api/wishlist/${productId}`, {
+            method: 'DELETE',
+            headers: Auth.getAuthHeaders()
+        });
+        return await res.json();
+    }
+};
+
 // Global Exposure
 window.Auth = Auth;
+window.CartAPI = CartAPI;
+window.WishlistAPI = WishlistAPI;

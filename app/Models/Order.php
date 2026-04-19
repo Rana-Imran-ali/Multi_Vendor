@@ -23,6 +23,8 @@ class Order extends Model
         'transaction_id',
         'payment_method',
         'notes',
+        'parent_id',
+        'vendor_id',
     ];
 
     protected $casts = [
@@ -53,6 +55,21 @@ class Order extends Model
     public function coupon()
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Order::class, 'parent_id');
+    }
+
+    public function subOrders()
+    {
+        return $this->hasMany(Order::class, 'parent_id');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
     }
 
     // ── Scopes ────────────────────────────────────────────────────────────────

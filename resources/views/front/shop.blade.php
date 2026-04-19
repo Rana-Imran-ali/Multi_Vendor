@@ -13,36 +13,19 @@
 ============================================================ --}}
 
 @php
-/* ── DUMMY DATA ─────────────────────────────────────────── */
-$totalResults = 284;
+/* ── DUMMY DATA (Categories/Brands) ─────────────────────── */
+$totalResults = 0; // Managed by JS now
 
 $categories = [
-    ['name'=>'All Products',   'slug'=>'',             'count'=>284, 'active'=>true ],
-    ['name'=>'Electronics',    'slug'=>'electronics',   'count'=>92,  'active'=>false],
-    ['name'=>'Fashion',        'slug'=>'fashion',       'count'=>74,  'active'=>false],
-    ['name'=>'Home & Living',  'slug'=>'home-living',   'count'=>48,  'active'=>false],
-    ['name'=>'Beauty',         'slug'=>'beauty',        'count'=>31,  'active'=>false],
-    ['name'=>'Sports',         'slug'=>'sports',        'count'=>19,  'active'=>false],
-    ['name'=>'Books',          'slug'=>'books',         'count'=>12,  'active'=>false],
-    ['name'=>'Automotive',     'slug'=>'automotive',    'count'=>8,   'active'=>false],
+    ['name'=>'All Products',   'slug'=>'',             'count'=>0, 'active'=>true ],
+    ['name'=>'Electronics',    'slug'=>'electronics',   'count'=>0, 'active'=>false],
+    ['name'=>'Fashion',        'slug'=>'fashion',       'count'=>0, 'active'=>false],
+    ['name'=>'Home & Living',  'slug'=>'home-living',   'count'=>0, 'active'=>false],
+    ['name'=>'Beauty',         'slug'=>'beauty',        'count'=>0, 'active'=>false],
 ];
 
-$brands = ['Apple','Samsung','Nike','Sony','Adidas','Xiaomi','Dyson','IKEA','L\'Oréal','Levi\'s'];
+$brands = ['Apple','Samsung','Nike','Sony','Adidas','Xiaomi'];
 
-$products = [
-    ['id'=>1, 'name'=>'Sony WH-1000XM5 Headphones',        'slug'=>'sony-wh-1000xm5',     'price'=>42999, 'oldPrice'=>55999, 'discount'=>23, 'rating'=>5, 'reviewsCount'=>1284,'icon'=>'fa-headphones',     'image'=>'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=400', 'badge'=>'Best Seller','badgeType'=>'hot',      'vendorId'=>10,'vendorName'=>'SoundZone PK', 'vendorSlug'=>'soundzone-pk','inStock'=>true ],
-    ['id'=>2, 'name'=>'Nike Air Max 270 Running Shoes',     'slug'=>'nike-air-max-270',     'price'=>18500, 'oldPrice'=>24000, 'discount'=>23, 'rating'=>4, 'reviewsCount'=>832, 'icon'=>'fa-shoe-prints',    'image'=>'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400', 'badge'=>'New',        'badgeType'=>'new',      'vendorId'=>11,'vendorName'=>'SportsHub',    'vendorSlug'=>'sportshub',   'inStock'=>true ],
-    ['id'=>3, 'name'=>'Xiaomi 4K Android TV — 55"',         'slug'=>'xiaomi-4k-tv-55',      'price'=>89900, 'oldPrice'=>110000,'discount'=>18, 'rating'=>4, 'reviewsCount'=>521, 'icon'=>'fa-tv',             'image'=>'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&q=80&w=400', 'badge'=>'Hot Deal',   'badgeType'=>'sale',     'vendorId'=>12,'vendorName'=>'TechMart PK',  'vendorSlug'=>'techmart-pk', 'inStock'=>true ],
-    ['id'=>4, 'name'=>'L\'Oréal Revitalift Serum — 30ml',   'slug'=>'loreal-revitalift',    'price'=>3200,  'oldPrice'=>4300,  'discount'=>26, 'rating'=>4, 'reviewsCount'=>378, 'icon'=>'fa-flask',          'image'=>'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400', 'badge'=>'Sale',       'badgeType'=>'sale',     'vendorId'=>13,'vendorName'=>'GlowStore',   'vendorSlug'=>'glowstore',   'inStock'=>true ],
-    ['id'=>5, 'name'=>'Hamilton Beach Stand Mixer 4.5 Qt',  'slug'=>'hamilton-beach-mixer', 'price'=>12800, 'oldPrice'=>null,  'discount'=>null,'rating'=>5,'reviewsCount'=>204, 'icon'=>'fa-blender',        'image'=>'https://images.unsplash.com/photo-1596738148858-6bb7f28edde2?auto=format&fit=crop&q=80&w=400', 'badge'=>'New',        'badgeType'=>'new',      'vendorId'=>14,'vendorName'=>'HomeChef',    'vendorSlug'=>'homechef',    'inStock'=>true ],
-    ['id'=>6, 'name'=>'Samsung Galaxy A55 — 8/256GB',       'slug'=>'samsung-galaxy-a55',   'price'=>74999, 'oldPrice'=>82000, 'discount'=>10, 'rating'=>4, 'reviewsCount'=>967, 'icon'=>'fa-mobile-screen',  'image'=>'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400', 'badge'=>'Sale',       'badgeType'=>'sale',     'vendorId'=>12,'vendorName'=>'TechMart PK',  'vendorSlug'=>'techmart-pk', 'inStock'=>true ],
-    ['id'=>7, 'name'=>'IKEA ALEX Desk Drawer Unit',         'slug'=>'ikea-alex-drawer',     'price'=>24500, 'oldPrice'=>null,  'discount'=>null,'rating'=>4,'reviewsCount'=>156, 'icon'=>'fa-table-columns',  'image'=>'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=400', 'badge'=>null,         'badgeType'=>null,       'vendorId'=>15,'vendorName'=>'FurnishAll',  'vendorSlug'=>'furnishall',  'inStock'=>true ],
-    ['id'=>8, 'name'=>'Adidas Ultraboost 22 Shoes',         'slug'=>'adidas-ultraboost-22', 'price'=>27999, 'oldPrice'=>34999, 'discount'=>20, 'rating'=>5, 'reviewsCount'=>642, 'icon'=>'fa-shoe-prints',    'image'=>'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&q=80&w=400', 'badge'=>'Featured',   'badgeType'=>'featured', 'vendorId'=>11,'vendorName'=>'SportsHub',    'vendorSlug'=>'sportshub',   'inStock'=>false],
-    ['id'=>9, 'name'=>'Apple AirPods Pro 2nd Gen',          'slug'=>'airpods-pro-2',        'price'=>44999, 'oldPrice'=>64999, 'discount'=>31, 'rating'=>5, 'reviewsCount'=>2101,'icon'=>'fa-headphones',     'image'=>'https://images.unsplash.com/photo-1606220588913-b3eea405b550?auto=format&fit=crop&q=80&w=400', 'badge'=>'Flash Sale', 'badgeType'=>'hot',      'vendorId'=>12,'vendorName'=>'TechMart PK',  'vendorSlug'=>'techmart-pk', 'inStock'=>true ],
-    ['id'=>10,'name'=>'Dyson V12 Detect Slim Vacuum',       'slug'=>'dyson-v12',            'price'=>78000, 'oldPrice'=>105000,'discount'=>26, 'rating'=>5, 'reviewsCount'=>894, 'icon'=>'fa-broom',          'image'=>'https://images.unsplash.com/photo-1558317374-067fb5f300cb?auto=format&fit=crop&q=80&w=400', 'badge'=>'Flash Sale', 'badgeType'=>'hot',      'vendorId'=>15,'vendorName'=>'FurnishAll',  'vendorSlug'=>'furnishall',  'inStock'=>true ],
-    ['id'=>11,'name'=>'Levi\'s 511 Slim Fit Jeans',         'slug'=>'levis-511',            'price'=>6500,  'oldPrice'=>9500,  'discount'=>32, 'rating'=>4, 'reviewsCount'=>1530,'icon'=>'fa-shirt',          'image'=>'https://images.unsplash.com/photo-1542272604-78016ec485ec?auto=format&fit=crop&q=80&w=400', 'badge'=>'Flash Sale', 'badgeType'=>'hot',      'vendorId'=>11,'vendorName'=>'SportsHub',    'vendorSlug'=>'sportshub',   'inStock'=>true ],
-    ['id'=>12,'name'=>'Nescafé Gold Blend — 200g Tin',      'slug'=>'nescafe-gold-200',     'price'=>1899,  'oldPrice'=>2500,  'discount'=>24, 'rating'=>4, 'reviewsCount'=>672, 'icon'=>'fa-mug-hot',        'image'=>'https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=400', 'badge'=>'Flash Sale', 'badgeType'=>'hot',      'vendorId'=>16,'vendorName'=>'GroceryBox',  'vendorSlug'=>'grocerybox',  'inStock'=>true ],
-];
 
 $sortOptions = [
     'featured'    => 'Featured',
@@ -71,9 +54,9 @@ $currentSort = request('sort', 'featured');
                 </nav>
             </div>
             <div class="shop-header-right d-none d-md-flex align-items-center gap-2">
-                <span class="results-badge">
-                    <i class="fa fa-box-open me-1"></i>
-                    <strong>{{ number_format($totalResults) }}</strong> Products Found
+                <span class="results-badge" id="resultsBadge">
+                    <i class="fa fa-spinner fa-spin me-1"></i>
+                    Loading products...
                 </span>
             </div>
         </div>
@@ -262,8 +245,8 @@ $currentSort = request('sort', 'featured');
                             <i class="fa fa-sliders me-2"></i> Filters
                         </button>
                         {{-- Results count --}}
-                        <p class="toolbar-count mb-0">
-                            Showing <strong>1–{{ min(12, $totalResults) }}</strong> of <strong>{{ number_format($totalResults) }}</strong> results
+                        <p class="toolbar-count mb-0" id="toolbarCountText">
+                            Loading results…
                         </p>
                     </div>
                     <div class="toolbar-right">
@@ -309,43 +292,13 @@ $currentSort = request('sort', 'featured');
 
                 {{-- ── PRODUCT GRID ── --}}
                 <div class="row g-3 g-md-4 row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-3" id="productGrid">
-                    @foreach($products as $product)
-                    <div class="col product-grid-item">
-                        <x-product-card
-                            :id="$product['id']"
-                            :name="$product['name']"
-                            :slug="$product['slug']"
-                            :price="$product['price']"
-                            :oldPrice="$product['oldPrice'] ?? null"
-                            :discount="$product['discount'] ?? null"
-                            :rating="$product['rating']"
-                            :reviewsCount="$product['reviewsCount']"
-                            :icon="$product['icon']"
-                            :badge="$product['badge'] ?? null"
-                            :badgeType="$product['badgeType'] ?? 'sale'"
-                            :vendorId="$product['vendorId']"
-                            :vendorName="$product['vendorName']"
-                            :vendorSlug="$product['vendorSlug']"
-                            :inStock="$product['inStock']"
-                        />
-                    </div>
-                    @endforeach
+                    {{-- Rendered via JS API Call --}}
                 </div>
 
                 {{-- ── Pagination ── --}}
                 <nav class="shop-pagination" aria-label="Product pages">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <span class="page-link pg-link"><i class="fa fa-chevron-left"></i></span>
-                        </li>
-                        <li class="page-item active"><a class="page-link pg-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link pg-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link pg-link" href="#">3</a></li>
-                        <li class="page-item"><span class="page-link pg-link pg-ellipsis">…</span></li>
-                        <li class="page-item"><a class="page-link pg-link" href="#">24</a></li>
-                        <li class="page-item">
-                            <a class="page-link pg-link" href="#"><i class="fa fa-chevron-right"></i></a>
-                        </li>
+                    <ul class="pagination justify-content-center" id="paginationWrap">
+                        {{-- Rendered via JS API --}}
                     </ul>
                 </nav>
 
@@ -993,14 +946,204 @@ if (filterOffcanvas) {
     });
 }
 
-/* ── Sort change (demo: reload with param) ───────────────── */
-const sortSelect = document.getElementById('sortSelect');
-if (sortSelect) {
-    sortSelect.addEventListener('change', function() {
-        const url = new URL(window.location.href);
-        url.searchParams.set('sort', this.value);
-        window.location.href = url.toString();
+    /* ── Sort change (demo: reload with param) ───────────────── */
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sort', this.value);
+            window.location.href = url.toString();
+        });
+    }
+
+    // ====================================================
+    // DYNAMIC SHOP API INTEGRATION
+    // ====================================================
+    const params = new URLSearchParams(window.location.search);
+    let currentPage = params.get('page') || 1;
+    let currentCategory = params.get('category') || '';
+    let currentSearch = params.get('q') || '';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProducts();
+        
+        // UI Binds
+        document.getElementById('sortSelect')?.addEventListener('change', (e) => {
+            params.set('sort', e.target.value);
+            window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+            fetchProducts();
+        });
+        
+        document.getElementById('productSearchInput')?.addEventListener('keyup', (e) => {
+            if(e.key === 'Enter') {
+                currentSearch = e.target.value;
+                params.set('q', currentSearch);
+                currentPage = 1; params.set('page', 1);
+                window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+                fetchProducts();
+            }
+        });
+        
+        document.getElementById('applyFiltersBtn')?.addEventListener('click', () => fetchProducts());
     });
-}
+    
+    async function fetchProducts() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = `<div class="w-100 text-center py-5"><i class="fa fa-spinner fa-spin fs-4 text-brand"></i></div>`;
+        
+        let endpoint = `/api/products?page=${currentPage}&limit=12`;
+        if(currentCategory) endpoint += `&category=${currentCategory}`;
+        if(currentSearch) endpoint += `&search=${currentSearch}`;
+        if(params.get('sort')) endpoint += `&sort=${params.get('sort')}`;
+        // Additional filters could be appended here (price, rating, brand)
+        
+        try {
+            const response = await fetch(endpoint, { headers: { 'Accept': 'application/json' }});
+            const data = await response.json();
+            
+            if(data.status === 'success') {
+                renderProducts(data.data.data || data.data);
+                if(data.data.last_page) renderPagination(data.data);
+                updateCounts(data.data.total || data.data.length, data.data.from || 1, data.data.to || data.data.length);
+            }
+        } catch (e) {
+            grid.innerHTML = `<div class="w-100 text-center py-5 text-danger">Failed to load products.</div>`;
+        }
+    }
+    
+    function renderProducts(items) {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '';
+        if(!items || items.length === 0) {
+            grid.innerHTML = `<div class="w-100 text-center py-5 text-muted">No products found matching your criteria.</div>`;
+            return;
+        }
+        
+        let output = '';
+        items.forEach(p => {
+            const imgPath = p.images && p.images.length ? p.images[0].path : '';
+            const imgUrl = imgPath ? (imgPath.startsWith('http') ? imgPath : '/' + imgPath) : '';
+            const priceStr = new Intl.NumberFormat().format(p.price);
+            
+            // Build card identically to x-product-card
+            output += `
+            <div class="col product-grid-item">
+                <div class="pc-card">
+                    <div class="pc-image-wrap">
+                        <a href="/products/${p.slug}" class="pc-image-link">
+                            ${imgUrl ? `<img src="${imgUrl}" class="pc-img" loading="lazy">` : 
+                            `<div class="pc-img-placeholder"><i class="fa fa-box"></i></div>`}
+                        </a>
+                        <div class="pc-actions">
+                            <button class="pc-action-btn" onclick="addToWishlist(${p.id}, event)"><i class="fa-regular fa-heart"></i></button>
+                            <a href="/products/${p.slug}" class="pc-action-btn"><i class="fa-regular fa-eye"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="pc-body">
+                        <a href="/vendors/${p.vendor?.slug || p.vendor_id || '#'}" class="pc-vendor-name">
+                            <i class="fa-solid fa-store fs-xs me-1"></i>${p.vendor?.store_name || 'Vendo Store'}
+                        </a>
+                        <a href="/products/${p.slug}" class="pc-product-name">${p.name}</a>
+                        
+                        <div class="pc-rating">
+                            <div class="pc-stars">
+                                ${'<i class="fa-solid fa-star"></i>'.repeat(Math.round(p.average_rating || 0))}
+                                ${'<i class="fa-regular fa-star"></i>'.repeat(5 - Math.round(p.average_rating || 0))}
+                            </div>
+                            <span class="pc-review-count">(${p.reviews_count || 0})</span>
+                        </div>
+                        
+                        <div class="pc-price-row mt-1">
+                            <div class="pc-prices">
+                                <span class="pc-price">Rs ${priceStr}</span>
+                            </div>
+                        </div>
+                        
+                        <button class="pc-add-cart ${p.stock <= 0 ? 'pc-add-cart--disabled' : ''}" 
+                            onclick="addToCart(${p.id}, event)" ${p.stock <= 0 ? 'disabled' : ''}>
+                            ${p.stock <= 0 ? '<i class="fa-solid fa-ban me-1"></i> Out of Stock' : '<i class="fa-solid fa-cart-plus me-1"></i> Add to Cart'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        });
+        
+        grid.innerHTML = output;
+    }
+    
+    function renderPagination(meta) {
+        const wrap = document.getElementById('paginationWrap');
+        if(meta.last_page <= 1) {
+            wrap.innerHTML = ''; return;
+        }
+        
+        let html = '';
+        if(meta.current_page > 1) {
+            html += `<li class="page-item"><a class="page-link pg-link" href="#" onclick="changePage(${meta.current_page - 1}, event)"><i class="fa fa-chevron-left"></i></a></li>`;
+        }
+        
+        for(let i=1; i<=meta.last_page; i++) {
+            if(i === 1 || i === meta.last_page || Math.abs(meta.current_page - i) <= 2) {
+                html += `<li class="page-item ${i === meta.current_page ? 'active' : ''}">
+                    <a class="page-link pg-link" href="#" onclick="changePage(${i}, event)">${i}</a>
+                </li>`;
+            } else if(Math.abs(meta.current_page - i) === 3) {
+                html += `<li class="page-item"><span class="page-link pg-link pg-ellipsis">…</span></li>`;
+            }
+        }
+        
+        if(meta.current_page < meta.last_page) {
+            html += `<li class="page-item"><a class="page-link pg-link" href="#" onclick="changePage(${meta.current_page + 1}, event)"><i class="fa fa-chevron-right"></i></a></li>`;
+        }
+        
+        wrap.innerHTML = html;
+    }
+    
+    function changePage(page, e) {
+        if(e) e.preventDefault();
+        currentPage = page;
+        params.set('page', page);
+        window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+        fetchProducts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function updateCounts(total, from, to) {
+        document.getElementById('resultsBadge').innerHTML = `<i class="fa fa-box-open me-1"></i> <strong>${total}</strong> Products Found`;
+        document.getElementById('toolbarCountText').innerHTML = `Showing <strong>${from || 0}–${to || 0}</strong> of <strong>${total}</strong> results`;
+    }
+    
+    // Quick Add interactions
+    async function addToCart(id, event) {
+        if(!window.CartAPI) return;
+        const btn = event.target.closest('button');
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+        
+        const res = await window.CartAPI.add(id, 1);
+        if(res && res.status === 'success') {
+            btn.innerHTML = '<i class="fa fa-check text-success"></i> Added';
+            // update global counts
+            window.CartAPI.fetch().then(r => updateBadges('.cart-badge:not(.wishlist-badge)', r.data.items.length));
+        } else {
+            btn.innerHTML = origText;
+            alert('Failed to add to cart. ' + (res?.message || 'Login required.'));
+        }
+        setTimeout(() => { if(btn.innerHTML.includes('Added')) btn.innerHTML = origText; }, 2000);
+    }
+    
+    async function addToWishlist(id, event) {
+        if(!window.WishlistAPI) return;
+        const btn = event.target.closest('button');
+        const res = await window.WishlistAPI.add(id);
+        if(res && res.status === 'success') {
+            btn.querySelector('i').classList.replace('fa-regular', 'fa-solid');
+            btn.querySelector('i').classList.add('text-danger');
+            window.WishlistAPI.fetch().then(r => updateBadges('.wishlist-badge', r.data.total || r.data.length));
+        } else {
+            alert('Failed to add to wishlist.');
+        }
+    }
 </script>
 @endpush

@@ -52,14 +52,8 @@ $product = [
     'tags'      => ['Headphones','Wireless','Noise Cancelling','Sony','Audio'],
 ];
 
-$reviews = [
-    ['id'=>1,'author'=>'Ahmed R.','avatar'=>'AR','rating'=>5,'date'=>'March 20, 2026','title'=>'Absolutely worth it!','body'=>'Crystal-clear audio, unbelievable noise cancellation. Wore these on a 10-hour flight and couldn\'t hear anything but my music. Build quality is premium.','helpful'=>48],
-    ['id'=>2,'author'=>'Sara K.',  'avatar'=>'SK','rating'=>5,'date'=>'March 15, 2026','title'=>'Best headphones I\'ve ever owned','body'=>'Comfort is on another level — wore for 6 hours straight with zero fatigue. Touch controls are very intuitive. Highly recommend.','helpful'=>31],
-    ['id'=>3,'author'=>'Bilal M.', 'avatar'=>'BM','rating'=>4,'date'=>'March 10, 2026','title'=>'Great but pricey','body'=>'Sound and ANC are top-notch. Battery life is impressive. Docking two devices at once is super handy. Only 4 stars because the case feels a bit flimsy.','helpful'=>22],
-    ['id'=>4,'author'=>'Zara T.',  'avatar'=>'ZT','rating'=>5,'date'=>'March 5, 2026', 'title'=>'Exceeded expectations','body'=>'Compared with Bose QC45 and Sony wins for me. The Speak-to-Chat feature is a game changer. Packaging was lovely too.','helpful'=>17],
-];
-
-$ratingBreakdown = [5=>72, 4=>18, 3=>6, 2=>3, 1=>1];
+$reviews = [];
+$ratingBreakdown = [5=>0, 4=>0, 3=>0, 2=>0, 1=>0];
 
 $relatedProducts = [
     ['id'=>9, 'name'=>'Apple AirPods Pro 2nd Gen','slug'=>'airpods-pro-2','price'=>44999,'oldPrice'=>64999,'discount'=>31,'rating'=>5,'reviewsCount'=>2101,'icon'=>'fa-headphones','image'=>'https://images.unsplash.com/photo-1606220588913-b3eea405b550?auto=format&fit=crop&q=80&w=400','badge'=>'Flash Sale','badgeType'=>'hot','vendorId'=>12,'vendorName'=>'TechMart PK','vendorSlug'=>'techmart-pk','inStock'=>true],
@@ -125,7 +119,9 @@ $relatedProducts = [
 
                     {{-- Share & Save --}}
                     <div class="pd-share-row">
-                        <button class="pd-share-btn"><i class="fa-regular fa-heart me-1"></i> Save to Wishlist</button>
+                        <button class="pd-share-btn" onclick="addToWishlist({{ $product['id'] }}, this)">
+                            <i class="fa-regular fa-heart me-1"></i> Save to Wishlist
+                        </button>
                         <button class="pd-share-btn"><i class="fa fa-share-nodes me-1"></i> Share</button>
                         <button class="pd-share-btn"><i class="fa fa-scale-balanced me-1"></i> Compare</button>
                     </div>
@@ -202,11 +198,15 @@ $relatedProducts = [
 
                     {{-- CTA Buttons --}}
                     <div class="pd-cta-group">
-                        <button class="pd-btn-cart {{ $product['stock']<=0?'disabled':'' }}" {{ $product['stock']<=0?'disabled':'' }}>
+                        <button class="pd-btn-cart {{ $product['stock']<=0?'disabled':'' }}" 
+                                {{ $product['stock']<=0?'disabled':'' }} 
+                                onclick="addToCart({{ $product['id'] }}, event)">
                             <i class="fa fa-cart-plus me-2"></i>
                             {{ $product['stock']>0?'Add to Cart':'Out of Stock' }}
                         </button>
-                        <button class="pd-btn-buy {{ $product['stock']<=0?'disabled':'' }}" {{ $product['stock']<=0?'disabled':'' }}>
+                        <button class="pd-btn-buy {{ $product['stock']<=0?'disabled':'' }}" 
+                                {{ $product['stock']<=0?'disabled':'' }}
+                                onclick="buyNow({{ $product['id'] }}, event)">
                             <i class="fa fa-bolt me-2"></i> Buy Now
                         </button>
                     </div>
@@ -346,18 +346,18 @@ $relatedProducts = [
                                     <p class="text-muted mb-0" style="font-size:.8rem;">{{ number_format($product['reviewsCount']) }} reviews</p>
                                 </div>
                             </div>
-                            <div class="rv-breakdown">
-                                @foreach($ratingBreakdown as $star => $pct)
+                            <div class="rv-breakdown" id="ratingBreakdownWrap">
+                                @foreach([5,4,3,2,1] as $star)
                                 <div class="rv-bar-row">
                                     <span class="rv-bar-label">{{ $star }}★</span>
                                     <div class="rv-bar-track">
-                                        <div class="rv-bar-fill" style="width:{{ $pct }}%;"></div>
+                                        <div class="rv-bar-fill" id="star-bar-{{ $star }}" style="width:0%;"></div>
                                     </div>
-                                    <span class="rv-bar-pct">{{ $pct }}%</span>
+                                    <span class="rv-bar-pct" id="star-pct-{{ $star }}">0%</span>
                                 </div>
                                 @endforeach
                             </div>
-                            <a href="#writeReview" class="btn btn-brand w-100 mt-3">
+                            <a href="#writeReview" class="btn btn-brand w-100 mt-3" onclick="document.getElementById('reviewForm').focus()">
                                 <i class="fa fa-pen me-2"></i> Write a Review
                             </a>
                         </div>
@@ -376,35 +376,12 @@ $relatedProducts = [
                             </div>
                         </div>
 
-                        <div class="rv-list">
-                            @foreach($reviews as $rv)
-                            <div class="rv-card">
-                                <div class="rv-card-header">
-                                    <div class="rv-author-avatar">{{ $rv['avatar'] }}</div>
-                                    <div class="rv-author-info">
-                                        <strong class="rv-author-name">{{ $rv['author'] }}</strong>
-                                        <div class="rv-stars-row">
-                                            @for($i=1;$i<=5;$i++)
-                                                <i class="fa-{{ $i<=$rv['rating']?'solid':'regular' }} fa-star"></i>
-                                            @endfor
-                                            <span class="rv-date ms-2">{{ $rv['date'] }}</span>
-                                        </div>
-                                    </div>
-                                    <span class="rv-verified-badge"><i class="fa fa-circle-check me-1"></i>Verified</span>
-                                </div>
-                                <h6 class="rv-title">{{ $rv['title'] }}</h6>
-                                <p class="rv-body">{{ $rv['body'] }}</p>
-                                <div class="rv-helpful">
-                                    <span class="text-muted" style="font-size:.8rem;">Was this helpful?</span>
-                                    <button class="rv-helpful-btn"><i class="fa-regular fa-thumbs-up me-1"></i>Yes ({{ $rv['helpful'] }})</button>
-                                    <button class="rv-helpful-btn"><i class="fa-regular fa-thumbs-down me-1"></i>No</button>
-                                </div>
-                            </div>
-                            @endforeach
+                        <div class="rv-list" id="reviewsList">
+                            <div class="py-4 text-center text-muted"><i class="fa fa-spinner fa-spin"></i> Loading reviews...</div>
                         </div>
 
-                        <div class="text-center mt-3">
-                            <button class="btn btn-outline-brand px-4">Load More Reviews</button>
+                        <div class="text-center mt-3 d-none" id="loadMoreReviewsWrap">
+                            <button class="btn btn-outline-brand px-4" onclick="loadMoreReviews()">Load More Reviews</button>
                         </div>
                     </div>
 
@@ -412,33 +389,32 @@ $relatedProducts = [
                     <div class="col-12" id="writeReview">
                         <div class="rv-write-box">
                             <h5 class="pd-content-heading">Write a Review</h5>
-                            <form>
-                                @csrf
+                            <form id="reviewForm" onsubmit="submitReview(event, {{ $product['id'] }})">
+                                <div class="alert alert-danger d-none" id="reviewError"></div>
+                                <div class="alert alert-success d-none" id="reviewSuccess"></div>
+                                
                                 <div class="mb-3">
                                     <label class="form-label rv-form-label">Your Rating</label>
                                     <div class="rv-star-picker" id="starPicker">
+                                        <input type="hidden" id="rvRatingInput" value="5" required>
                                         @for($i=1;$i<=5;$i++)
-                                        <button type="button" class="rv-star-pick" data-val="{{ $i }}">
-                                            <i class="fa-regular fa-star"></i>
+                                        <button type="button" class="rv-star-pick {{ $i===5?'active':'' }}" data-val="{{ $i }}">
+                                            <i class="{{ $i===5?'fa-solid':'fa-regular' }} fa-star"></i>
                                         </button>
                                         @endfor
                                     </div>
                                 </div>
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label rv-form-label">Your Name</label>
-                                        <input type="text" class="pd-form-input" placeholder="e.g. Ahmed R.">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label rv-form-label">Review Title</label>
-                                        <input type="text" class="pd-form-input" placeholder="Summarise your review">
+                                    <div class="col-md-12">
+                                        <label class="form-label rv-form-label">Review Title (Optional)</label>
+                                        <input type="text" class="pd-form-input" id="rvTitleInput" placeholder="Summarise your review" maxlength="255">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label rv-form-label">Review</label>
-                                        <textarea class="pd-form-input" rows="4" placeholder="Share your experience with this product…"></textarea>
+                                        <textarea class="pd-form-input" id="rvBodyInput" rows="4" placeholder="Share your experience with this product…" required></textarea>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-brand mt-3 px-4">
+                                <button type="submit" class="btn btn-brand mt-3 px-4" id="rvSubmitBtn">
                                     <i class="fa fa-paper-plane me-2"></i> Submit Review
                                 </button>
                             </form>
@@ -877,6 +853,7 @@ function changeQty(delta) {
 const starPicks = document.querySelectorAll('.rv-star-pick');
 starPicks.forEach((btn, idx) => {
     btn.addEventListener('click', () => {
+        document.getElementById('rvRatingInput').value = idx + 1;
         starPicks.forEach((b, i) => {
             b.classList.toggle('active', i <= idx);
             b.querySelector('i').className = i <= idx ? 'fa-solid fa-star' : 'fa-regular fa-star';
@@ -913,6 +890,209 @@ if (reviewTab) {
             setTimeout(() => { bar.style.width = w; }, 50);
         });
     });
+}
+
+/* ── API Integrations ── */
+async function addToCart(productId, event) {
+    if (!window.CartAPI) return;
+    const btn = event.currentTarget;
+    const origHtml = btn.innerHTML;
+    const qty = parseInt(document.getElementById('qtyInput')?.value || 1);
+    
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i> Adding...';
+    btn.disabled = true;
+    
+    const res = await window.CartAPI.add(productId, qty);
+    if (res && res.status === 'success') {
+        btn.innerHTML = '<i class="fa fa-check text-success me-2"></i> Added to Cart';
+        btn.style.borderColor = '#16a34a';
+        btn.style.color = '#16a34a';
+        btn.style.background = '#f0fdf4';
+        
+        // Refresh Navbar Counters
+        window.CartAPI.fetch().then(r => {
+            if(r.data && r.data.items) {
+                document.querySelectorAll('.cart-badge:not(.wishlist-badge)').forEach(el => {
+                    el.textContent = r.data.items.length;
+                    el.style.display = r.data.items.length > 0 ? 'flex' : 'none';
+                });
+            }
+        });
+        
+        setTimeout(() => {
+            btn.innerHTML = origHtml;
+            btn.disabled = false;
+            btn.style = '';
+        }, 3000);
+    } else {
+        btn.innerHTML = '<i class="fa fa-triangle-exclamation me-2"></i> Error';
+        setTimeout(() => { btn.innerHTML = origHtml; btn.disabled = false; }, 2000);
+        alert(res?.message || 'Please log in first.');
+    }
+}
+
+async function buyNow(productId, event) {
+    if (!window.CartAPI) return;
+    const btn = event.currentTarget;
+    const origHtml = btn.innerHTML;
+    const qty = parseInt(document.getElementById('qtyInput')?.value || 1);
+    
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i> Processing...';
+    btn.disabled = true;
+    
+    const res = await window.CartAPI.add(productId, qty);
+    if (res && res.status === 'success') {
+        window.location.href = '/checkout';
+    } else {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+        alert(res?.message || 'Please log in first.');
+    }
+}
+
+async function addToWishlist(productId, btn) {
+    if (!window.WishlistAPI) return;
+    const icon = btn.querySelector('i');
+    icon.className = 'fa fa-spinner fa-spin me-1';
+    
+    const res = await window.WishlistAPI.add(productId);
+    if (res && res.status === 'success') {
+        icon.className = 'fa-solid fa-heart me-1 text-danger';
+        btn.innerHTML = icon.outerHTML + ' Saved to Wishlist';
+        
+        window.WishlistAPI.fetch().then(r => {
+            if(r.data) {
+                const total = r.data.total || r.data.length || 0;
+                document.querySelectorAll('.wishlist-badge').forEach(el => {
+                    el.textContent = total;
+                    el.style.display = total > 0 ? 'flex' : 'none';
+                });
+            }
+        });
+    } else {
+        icon.className = 'fa-regular fa-heart me-1';
+        alert(res?.message || 'Please log in to use your wishlist.');
+    }
+}
+async function fetchReviews(page = 1) {
+    try {
+        const res = await fetch(`/api/products/{{ $product['id'] }}/reviews?page=${page}&limit=5`, {
+            headers: window.Auth ? Auth.getAuthHeaders() : { 'Accept': 'application/json' }
+        });
+        const json = await res.json();
+        
+        if (json.status === 'success') {
+            const wrap = document.getElementById('reviewsList');
+            if (page === 1) wrap.innerHTML = '';
+            
+            if (json.data.reviews.data.length === 0 && page === 1) {
+                wrap.innerHTML = `<div class="text-center py-4 text-muted">No reviews yet. Be the first to review this product!</div>`;
+            } else {
+                json.data.reviews.data.forEach(rv => {
+                    const starsHtml = Array.from({length: 5}, (_, i) => 
+                        `<i class="fa-${i < rv.rating ? 'solid' : 'regular'} fa-star"></i>`
+                    ).join('');
+                    
+                    wrap.insertAdjacentHTML('beforeend', `
+                    <div class="rv-card">
+                        <div class="rv-card-header">
+                            <div class="rv-author-avatar">${rv.user ? rv.user.name.charAt(0).toUpperCase() : 'U'}</div>
+                            <div class="rv-author-info">
+                                <strong class="rv-author-name">${rv.user ? rv.user.name : 'Unknown'}</strong>
+                                <div class="rv-stars-row">
+                                    ${starsHtml}
+                                    <span class="rv-date ms-2">${new Date(rv.created_at).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="rv-body mb-0">${rv.comment}</p>
+                    </div>`);
+                });
+            }
+            
+            // Enable Load More
+            const loadMoreBtn = document.getElementById('loadMoreReviewsWrap');
+            if (json.data.reviews.current_page < json.data.reviews.last_page) {
+                loadMoreBtn.classList.remove('d-none');
+                loadMoreBtn.querySelector('button').onclick = () => fetchReviews(page + 1);
+            } else {
+                loadMoreBtn.classList.add('d-none');
+            }
+            
+            // Update Summary Bar if page 1
+            if (page === 1 && json.data.summary) {
+                const s = json.data.summary;
+                if(s.breakdown) {
+                    Object.keys(s.breakdown).forEach(star => {
+                        const pct = s.breakdown[star].percentage;
+                        const bar = document.getElementById(`star-bar-${star}`);
+                        const lbl = document.getElementById(`star-pct-${star}`);
+                        if(bar) {
+                            bar.style.width = '0';
+                            setTimeout(() => { bar.style.width = pct + '%'; }, 100);
+                        }
+                        if(lbl) lbl.textContent = pct + '%';
+                    });
+                }
+            }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// Fetch initial reviews on load
+document.addEventListener('DOMContentLoaded', () => {
+    fetchReviews(1);
+});
+
+async function submitReview(e, productId) {
+    e.preventDefault();
+    if (!window.Auth || !window.Auth.check()) {
+        alert("Please log in to submit a review.");
+        window.location.href = '/login';
+        return;
+    }
+    
+    const btn = document.getElementById('rvSubmitBtn');
+    const errObj = document.getElementById('reviewError');
+    const sucObj = document.getElementById('reviewSuccess');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i> Submitting...';
+    errObj.classList.add('d-none');
+    sucObj.classList.add('d-none');
+    
+    try {
+        const payload = {
+            rating: document.getElementById('rvRatingInput').value,
+            comment: document.getElementById('rvBodyInput').value
+        };
+        
+        const res = await fetch(`/api/products/${productId}/reviews`, {
+            method: 'POST',
+            headers: window.Auth.getAuthHeaders(),
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        if (data.status === 'success') {
+            sucObj.textContent = "Review submitted successfully! Pending moderation.";
+            sucObj.classList.remove('d-none');
+            document.getElementById('reviewForm').reset();
+            // Refetch reviews
+            fetchReviews(1);
+        } else {
+            errObj.textContent = data.message || "Failed to submit review.";
+            errObj.classList.remove('d-none');
+        }
+    } catch (err) {
+        errObj.textContent = "Network error. Please try again.";
+        errObj.classList.remove('d-none');
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa fa-paper-plane me-2"></i> Submit Review';
 }
 </script>
 @endpush

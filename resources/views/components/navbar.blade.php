@@ -43,7 +43,7 @@
         <div class="d-flex d-xl-none align-items-center gap-2 ms-auto">
             <a href="{{ url('/cart') }}" class="nav-icon-btn position-relative">
                 <i class="fa fa-bag-shopping fs-5"></i>
-                <span class="cart-badge">3</span>
+                <span class="cart-badge" style="display:none;">0</span>
             </a>
             <button class="navbar-toggler border-0 shadow-none" type="button"
                     data-bs-toggle="collapse" data-bs-target="#vendoNavMenu"
@@ -184,13 +184,13 @@
                 {{-- Wishlist --}}
                 <a href="{{ url('/wishlist') }}" class="nav-icon-btn d-none d-xl-flex position-relative" title="Wishlist">
                     <i class="fa-regular fa-heart fs-5"></i>
-                    <span class="cart-badge">5</span>
+                    <span class="wishlist-badge cart-badge" style="display:none;">0</span>
                 </a>
 
                 {{-- Cart --}}
                 <a href="{{ url('/cart') }}" class="nav-icon-btn d-none d-xl-flex position-relative" title="Cart">
                     <i class="fa fa-bag-shopping fs-5"></i>
-                    <span class="cart-badge">3</span>
+                    <span class="cart-badge" style="display:none;">0</span>
                 </a>
 
                 {{-- Auth Buttons (Handled by JS) --}}
@@ -684,12 +684,38 @@
             if (user.role === 'admin') {
                 document.getElementById('nav-admin-link').style.display = 'block';
             }
+
+            // Load Cart/Wishlist Counts
+            if (typeof window.CartAPI !== 'undefined') {
+                window.CartAPI.fetch().then(res => {
+                    if (res && res.status === 'success' && res.data) {
+                        const count = res.data.items ? res.data.items.length : 0;
+                        updateBadges('.cart-badge:not(.wishlist-badge)', count);
+                    }
+                });
+                window.WishlistAPI.fetch().then(res => {
+                    if (res && res.status === 'success' && res.data) {
+                        const count = res.data.total || (Array.isArray(res.data) ? res.data.length : res.data.items?.length) || 0;
+                        updateBadges('.wishlist-badge', count);
+                    }
+                });
+            }
+
         } else {
             // Show Guest Menu, Hide Auth Menu
             guestMenu.style.display = 'flex';
             authMenu.style.display = 'none';
+            // Show empty badges
+            updateBadges('.cart-badge', 0);
         }
     });
+
+    function updateBadges(selector, count) {
+        document.querySelectorAll(selector).forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
+        });
+    }
 
     // API Logout Handler
     async function handleLogout() {

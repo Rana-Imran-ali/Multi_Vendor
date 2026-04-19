@@ -17,8 +17,11 @@ class Vendor extends Model
     protected $fillable = [
         'user_id',
         'store_name',
+        'slug',
         'description',
+        'logo',
         'status',
+        'rejection_reason',
     ];
 
     /**
@@ -43,6 +46,18 @@ class Vendor extends Model
     public function reviews()
     {
         return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    /** Only publicly approved reviews. */
+    public function approvedReviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable')->where('status', 'approved');
+    }
+
+    /** Average star rating across approved reviews. */
+    public function getAverageRatingAttribute(): float
+    {
+        return round((float) $this->approvedReviews()->avg('rating'), 2);
     }
 
     /**

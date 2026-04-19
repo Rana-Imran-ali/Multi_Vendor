@@ -3,22 +3,13 @@
 @section('title', 'Secure Checkout — Vendo')
 @section('meta_description', 'Complete your purchase securely on Vendo.')
 
-@php
-/* ── DUMMY CHECKOUT DATA ── */
-$cartItems = [
-    ['name' => 'Sony WH-1000XM5 Headphones', 'price' => 42999, 'qty' => 1, 'image' => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=200', 'icon' => 'fa-headphones', 'color' => '#4f46e5'],
-    ['name' => 'Nike Air Max 270',           'price' => 18500, 'qty' => 2, 'image' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=200', 'icon' => 'fa-shoe-prints', 'color' => '#0891b2']
-];
+$subtotal = 0;
+$shipping = 0; 
+$discount = 0;
+$total    = 0;
 
-$subtotal = 79999;
-$shipping = 0; // Free shipping
-$discount = 5000;
-$total    = $subtotal + $shipping - $discount;
-
-$savedAddresses = [
-    ['id'=>1, 'type'=>'Home', 'name'=>'Ahmed R.', 'phone'=>'0300 1234567', 'address'=>'House 123, Street 4, Phase 5, DHA', 'city'=>'Lahore', 'isDefault'=>true],
-    ['id'=>2, 'type'=>'Office','name'=>'Ahmed R.', 'phone'=>'0300 1234567', 'address'=>'Floor 6, IT Tower, Gulberg III', 'city'=>'Lahore', 'isDefault'=>false],
-];
+$savedAddresses = [];
+// Assuming Address model has an endpoint, but for now we'll rely on the manual inputs from the user since Address is not fully mapped in the backend summary.
 @endphp
 
 @section('content')
@@ -82,80 +73,43 @@ $savedAddresses = [
                         <h4 class="step-title">Shipping Address</h4>
                     </div>
                     <div class="ck-step-body">
-                        
-                        {{-- Saved Addresses (if logged in & has data) --}}
-                        @auth
-                        <div class="row g-3 mb-4">
-                            @foreach($savedAddresses as $addr)
-                            <div class="col-md-6">
-                                <label class="saved-addr-card {{ $addr['isDefault'] ? 'selected' : '' }}">
-                                    <input type="radio" name="address_id" value="{{ $addr['id'] }}" class="addr-radio" {{ $addr['isDefault'] ? 'checked' : '' }}>
-                                    <div class="addr-content">
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <strong>{{ $addr['name'] }} <span class="badge bg-light text-dark border ms-1">{{ $addr['type'] }}</span></strong>
-                                            @if($addr['isDefault']) <span class="text-success"><i class="fa fa-check-circle"></i></span> @endif
-                                        </div>
-                                        <p class="mb-1">{{ $addr['address'] }}</p>
-                                        <p class="mb-1">{{ $addr['city'] }}</p>
-                                        <p class="mb-0 text-muted">{{ $addr['phone'] }}</p>
-                                    </div>
-                                </label>
-                            </div>
-                            @endforeach
-                            <div class="col-12 mt-3">
-                                <button class="btn btn-outline-brand btn-sm"><i class="fa fa-plus me-1"></i> Add New Address</button>
-                            </div>
-                        </div>
-                        @else
-
-                        {{-- New Address Form (Guest or no saved addresses) --}}
+                        {{-- New Address Form --}}
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="ck-label">First Name *</label>
-                                <input type="text" class="ck-input" required>
+                                <input type="text" class="ck-input" id="billFirstName" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="ck-label">Last Name *</label>
-                                <input type="text" class="ck-input" required>
+                                <input type="text" class="ck-input" id="billLastName" required>
                             </div>
                             <div class="col-12">
                                 <label class="ck-label">Street Address *</label>
-                                <input type="text" class="ck-input mb-2" placeholder="House number and street name" required>
-                                <input type="text" class="ck-input" placeholder="Apartment, suite, unit, etc. (optional)">
+                                <input type="text" class="ck-input mb-2" id="billStreet" placeholder="House number and street name" required>
+                                <input type="text" class="ck-input" id="billAppt" placeholder="Apartment, suite, unit, etc. (optional)">
                             </div>
                             <div class="col-md-6">
                                 <label class="ck-label">City *</label>
-                                <select class="ck-select" required>
+                                <select class="ck-select" id="billCity" required>
                                     <option value="">Select City</option>
-                                    <option value="karachi">Karachi</option>
-                                    <option value="lahore">Lahore</option>
-                                    <option value="islamabad">Islamabad</option>
-                                    <option value="rawalpindi">Rawalpindi</option>
-                                    <option value="peshawar">Peshawar</option>
+                                    <option value="Karachi">Karachi</option>
+                                    <option value="Lahore">Lahore</option>
+                                    <option value="Islamabad">Islamabad</option>
+                                    <option value="Rawalpindi">Rawalpindi</option>
+                                    <option value="Peshawar">Peshawar</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="ck-label">Province / Region *</label>
-                                <select class="ck-select" required>
+                                <select class="ck-select" id="billProv" required>
                                     <option value="">Select Province</option>
-                                    <option value="punjab">Punjab</option>
-                                    <option value="sindh">Sindh</option>
-                                    <option value="kpk">Khyber Pakhtunkhwa</option>
-                                    <option value="balochistan">Balochistan</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Sindh">Sindh</option>
+                                    <option value="KPK">Khyber Pakhtunkhwa</option>
+                                    <option value="Balochistan">Balochistan</option>
                                 </select>
                             </div>
-                            <div class="col-12 mt-3">
-                                <label class="ck-check-row">
-                                    <input type="checkbox" class="ck-checkbox" checked>
-                                    <span>Billing address is the same as shipping address</span>
-                                </label>
-                                <label class="ck-check-row mt-2">
-                                    <input type="checkbox" class="ck-checkbox">
-                                    <span>Save this information for next time</span>
-                                </label>
-                            </div>
                         </div>
-                        @endauth
                     </div>
                 </div>
 
@@ -247,47 +201,30 @@ $savedAddresses = [
                     
                     <h5 class="summary-title">Order Summary <span class="badge bg-light text-dark border float-end">{{ count($cartItems) }} Items</span></h5>
 
-                    <div class="ck-item-list">
-                        @foreach($cartItems as $item)
-                        <div class="ck-item">
-                            <div class="ck-item-img-wrap" style="background: linear-gradient(135deg,{{ $item['color'] }}22,{{ $item['color'] }}11);">
-                                <i class="fa {{ $item['icon'] }}" style="color:{{ $item['color'] }};"></i>
-                                <span class="ck-item-qty">{{ $item['qty'] }}</span>
-                            </div>
-                            <div class="ck-item-info">
-                                <p class="ck-item-name">{{ $item['name'] }}</p>
-                                <p class="ck-item-price">Rs {{ number_format($item['price']) }}</p>
-                            </div>
-                        </div>
-                        @endforeach
+                    <div class="ck-item-list" id="ckCartList">
+                        <div class="text-center py-4 text-muted"><i class="fa fa-spinner fa-spin"></i> Loading...</div>
                     </div>
 
                     <div class="summary-lines mt-4">
                         <div class="summary-line">
                             <span class="text-secondary">Subtotal</span>
-                            <span class="fw-700">Rs {{ number_format($subtotal) }}</span>
+                            <span class="fw-700" id="ckSubtotal">Rs 0</span>
                         </div>
                         <div class="summary-line">
                             <span class="text-secondary">Shipping</span>
-                            <span class="{{ $shipping===0 ? 'text-success fw-600' : '' }}">{{ $shipping===0 ? 'Free' : 'Rs '.number_format($shipping) }}</span>
+                            <span id="ckShipping">Free</span>
                         </div>
-                        @if($discount > 0)
-                        <div class="summary-line text-success">
-                            <span>Discount Applied</span>
-                            <span>- Rs {{ number_format($discount) }}</span>
-                        </div>
-                        @endif
                     </div>
 
                     <div class="summary-total mt-4 border-top pt-3">
                         <span class="fs-5 text-dark">Total</span>
                         <div class="text-end">
                             <span class="fs-xs text-muted d-block mb-1">PKR</span>
-                            <span class="fs-3 fw-900 text-brand line-height-1">Rs {{ number_format($total) }}</span>
+                            <span class="fs-3 fw-900 text-brand line-height-1" id="ckTotal">Rs 0</span>
                         </div>
                     </div>
 
-                    <button class="btn btn-brand w-100 btn-lg shadow mt-4" onclick="alert('Order placed successfully! (Demo)')">
+                    <button class="btn btn-brand w-100 btn-lg shadow mt-4" id="btnPlaceOrder" onclick="placeOrder()">
                         Place Order <i class="fa fa-lock ms-2"></i>
                     </button>
 
@@ -427,7 +364,6 @@ $savedAddresses = [
 @endpush
 
 @push('scripts')
-<script>
 /* Payment UI Togglers */
 function selectPayment(radio) {
     document.querySelectorAll('.pay-method-card').forEach(card => card.classList.remove('selected'));
@@ -443,12 +379,112 @@ function selectPayment(radio) {
     if(body) body.style.display = 'block';
 }
 
-/* Saved Address Selector */
-document.querySelectorAll('input[name="address_id"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        document.querySelectorAll('.saved-addr-card').forEach(c => c.classList.remove('selected'));
-        if(this.checked) this.closest('.saved-addr-card').classList.add('selected');
-    });
+const FREE_SHIPPING_THRESHOLD = 5000;
+
+document.addEventListener('DOMContentLoaded', () => {
+    if(!window.Auth || !window.Auth.check()) {
+        window.location.href = '/login?redirect=/checkout';
+        return;
+    }
+    loadCheckoutCart();
 });
+
+async function loadCheckoutCart() {
+    const res = await window.CartAPI.fetch();
+    if(res && res.status === 'success') {
+        if(res.data.items.length === 0) {
+            window.location.href = '/cart'; // Redirect empty cart
+            return;
+        }
+        renderCheckoutCart(res.data);
+    }
+}
+
+function renderCheckoutCart(cartData) {
+    const list = document.getElementById('ckCartList');
+    list.innerHTML = '';
+    
+    let subtotal = parseFloat(cartData.subtotal);
+    
+    cartData.items.forEach(item => {
+        const p = item.product;
+        const thumbnail = p.thumbnail || '/placeholder.jpg';
+        const fp = new Intl.NumberFormat().format(item.unit_price);
+        
+        list.insertAdjacentHTML('beforeend', `
+        <div class="ck-item">
+            <div class="ck-item-img-wrap" style="background:#f7f8fa;">
+                <img src="${thumbnail}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">
+                <span class="ck-item-qty">${item.quantity}</span>
+            </div>
+            <div class="ck-item-info">
+                <p class="ck-item-name">${p.name}</p>
+                <p class="ck-item-price">Rs ${fp}</p>
+            </div>
+        </div>`);
+    });
+    
+    document.getElementById('ckSubtotal').textContent = `Rs ${new Intl.NumberFormat().format(subtotal)}`;
+    
+    let shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 250;
+    document.getElementById('ckShipping').textContent = shipping === 0 ? 'Free' : `Rs ${shipping}`;
+    
+    let total = subtotal + shipping;
+    document.getElementById('ckTotal').textContent = `Rs ${new Intl.NumberFormat().format(total)}`;
+}
+
+async function placeOrder() {
+    const first = document.getElementById('billFirstName').value.trim();
+    const last = document.getElementById('billLastName').value.trim();
+    const street = document.getElementById('billStreet').value.trim();
+    const appt = document.getElementById('billAppt').value.trim();
+    const city = document.getElementById('billCity').value;
+    const prov = document.getElementById('billProv').value;
+    
+    if(!first || !last || !street || !city || !prov) {
+        alert("Please fill out all required shipping fields.");
+        return;
+    }
+    
+    const shipping_address = `${first} ${last}, ${street} ${appt ? appt : ''}, ${city}, ${prov}`;
+    const payment_method = document.querySelector('input[name="payment"]:checked').value;
+    
+    // We only support 'card' and 'cod' from the allowed API strings in this simplified demo scope
+    const apiPaymentMethod = payment_method === 'card' ? 'card' : 'cod'; // Map wallet to cod for fallback
+    
+    const btn = document.getElementById('btnPlaceOrder');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: window.Auth.getAuthHeaders(),
+            body: JSON.stringify({ shipping_address, payment_method: apiPaymentMethod })
+        });
+        
+        const data = await res.json();
+        
+        if(res.ok && data.status === 'success') {
+            // Success
+            if (data.payment_url) {
+                // Redirect to stripe form
+                window.location.href = data.payment_url;
+            } else {
+                alert('Order placed successfully!');
+                window.location.href = '/dashboard/orders';
+            }
+        } else {
+            alert(data.message || 'Failed to place order.');
+            btn.innerHTML = origHTML;
+            btn.disabled = false;
+        }
+    } catch(err) {
+        alert('Internal server error.');
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+    }
+}
 </script>
 @endpush

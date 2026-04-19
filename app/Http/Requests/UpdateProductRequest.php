@@ -41,9 +41,8 @@ class UpdateProductRequest extends FormRequest
             'variants.*.price_adjustment' => 'nullable|numeric',
 
             // Images validation
-            'images' => 'nullable|array',
-            'images.*.image_path' => 'required_with:images|string',
-            'images.*.is_primary' => 'nullable|boolean',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
     }
 }

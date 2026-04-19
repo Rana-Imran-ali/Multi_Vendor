@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\OrderPlaced;
+use App\Events\OrderStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Interfaces\OrderRepositoryInterface;
 use App\Models\Cart;
@@ -10,6 +12,7 @@ use App\Models\OrderItem;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 class OrderController extends Controller
 {
@@ -77,7 +80,7 @@ class OrderController extends Controller
             }
 
             // Create the parent order
-            $order = Order::create([
+            $parentOrder = Order::create([
                 'user_id'          => $user->id,
                 'total_amount'     => $total,
                 'status'           => 'pending',
@@ -85,18 +88,38 @@ class OrderController extends Controller
                 'shipping_address' => $validated['shipping_address'],
             ]);
 
-            // Create order items and reduce stock
+            // Group items by vendor
+            $vendorGroups = $itemsToCheckout->groupBy('product.vendor_id');
+
             $itemIds = [];
-            foreach ($itemsToCheckout as $item) {
-                OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $item->product_id,
-                    'quantity'   => $item->quantity,
-                    'price'      => $item->product->price,
+
+            foreach ($vendorGroups as $vendorId => $vendorItems) {
+                $vendorTotal = $vendorItems->sum(function($item) {
+                    return $item->product->price * $item->quantity;
+                });
+
+                $subOrder = Order::create([
+                    'user_id'          => $user->id,
+                    'parent_id'        => $parentOrder->id,
+                    'vendor_id'        => $vendorId,
+                    'total_amount'     => $vendorTotal,
+                    'status'           => 'pending',
+                    'payment_status'   => 'unpaid',
+                    'shipping_address' => $validated['shipping_address'],
                 ]);
 
-                $item->product->decrement('stock', $item->quantity);
-                $itemIds[] = $item->id;
+                foreach ($vendorItems as $item) {
+                    OrderItem::create([
+                        'order_id'   => $subOrder->id,
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product->name,
+                        'quantity'   => $item->quantity,
+                        'price'      => $item->product->price,
+                    ]);
+
+                    $item->product->decrement('stock', $item->quantity);
+                    $itemIds[] = $item->id;
+                }
             }
 
             // Clear checked out items only
@@ -104,10 +127,13 @@ class OrderController extends Controller
 
             DB::commit();
 
+            // Fire event instead of direct notification
+            Event::dispatch(new OrderPlaced($parentOrder));
+
             // Handle payment initiation if card is selected
             $paymentUrl = null;
             if ($validated['payment_method'] === 'card') {
-                $paymentResult = $this->paymentService->payForOrder($order);
+                $paymentResult = $this->paymentService->payForOrder($parentOrder);
                 if ($paymentResult['success'] && !empty($paymentResult['payment_url'])) {
                     $paymentUrl = $paymentResult['payment_url'];
                 }
@@ -116,7 +142,7 @@ class OrderController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Order placed successfully.',
-                'data' => $order->load('items.product'),
+                'data' => $parentOrder->load('subOrders.items.product'),
                 'payment_url' => $paymentUrl
             ], 201);
         } catch (\Exception $e) {
@@ -175,7 +201,14 @@ class OrderController extends Controller
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
         ]);
 
+        $previousStatus = $order->status;
+
         $this->orderRepository->updateStatus($order->id, $validated['status']);
+
+        $order->refresh();
+
+        // Fire event instead of direct notification
+        Event::dispatch(new OrderStatusUpdated($order, $previousStatus));
 
         return $this->successResponse($order->fresh(), 'Order status updated successfully.');
     }
